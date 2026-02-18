@@ -128,6 +128,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="noodle.cpp" />
+    <ClCompile Include="NoodleAllocator.cpp" />
+    <ClCompile Include="NoodlePch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NoodleAllocator.h" />
+    <ClInclude Include="NoodleDefines.h" />
+    <ClInclude Include="NoodlePch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

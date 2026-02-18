@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="noodle.vcxproj" />
+  <Project Path="noodle.vcxproj" Id="4c3a513c-b0f2-4c89-a427-6bc8f4608a03" />
 </Solution>
