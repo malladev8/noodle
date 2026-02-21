@@ -3,40 +3,35 @@
 
 #include <cstdlib>
 
-StackAllocator::StackAllocator(uint32 size)
-	:m_StackSize(size)
+LinearAllocator::LinearAllocator(uint32 size)
+	:m_Size(size)
 {
-	m_StackAddress = std::malloc(m_StackSize);
+	m_Address = std::malloc(m_Size);
 }
 
-StackAllocator::~StackAllocator()
+LinearAllocator::~LinearAllocator()
 {
-	Destroy();
-}
-
-void StackAllocator::Destroy()
-{
-	std::free(m_StackAddress);
-	m_StackAddress = nullptr;
-	m_StackSize = 0;
+	std::free(m_Address);
+	m_Address = nullptr;
+	m_Size = 0;
 	m_Marker = 0;
 }
 
-void* StackAllocator::Alloc(uint32 size)
+void* LinearAllocator::Alloc(uint32 size)
 {
-	NASSERT(size + m_Marker <= m_StackSize, "Insufficient stack space remaining.");
-	char* chunk = static_cast<char*>(m_StackAddress) + m_Marker;
+	NASSERT(size + m_Marker <= m_Size, "Insufficient space remaining.");
+	char* chunk = static_cast<char*>(m_Address) + m_Marker;
 	m_Marker += size;
 	return static_cast<void*>(chunk);
 }
 
-void StackAllocator::Free(uint32 size)
-{
-	NASSERT(size <= m_Marker, "Free call will underflow Stack Allocator");
-	m_Marker -= size;
-}
-
-void StackAllocator::Clear()
+void LinearAllocator::Clear()
 {
 	m_Marker = 0;
+}
+
+void StackAllocator::FreeToMarker(uint32 marker)
+{
+	NASSERT(marker <= m_Marker, "New marker exceeds current marker.");
+	m_Marker = marker;
 }

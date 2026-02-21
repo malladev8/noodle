@@ -1,18 +1,24 @@
 #pragma once
 #include "NoodleDefines.h"
 
-class StackAllocator
+class LinearAllocator
 {
 public:
-	StackAllocator(uint32 size);
-	~StackAllocator();
-	void Destroy();
+	LinearAllocator(uint32 size);
+	virtual ~LinearAllocator();
 	void* Alloc(uint32 size);
-	void Free(uint32 size);
 	void Clear();
 protected:
-private:
-	void* m_StackAddress = nullptr;
 	uint32 m_Marker = 0;
-	uint32 m_StackSize = 0;
+private:
+	void* m_Address = nullptr;
+	uint32 m_Size = 0;
+};
+
+class StackAllocator : public LinearAllocator
+{
+public:
+	StackAllocator(uint32 size) : LinearAllocator(size) {}
+	uint32 GetMarker() const { return m_Marker; }
+	void FreeToMarker(uint32 marker);
 };
