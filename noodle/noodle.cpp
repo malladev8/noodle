@@ -1,11 +1,8 @@
 #include "NoodlePch.h"
-#include "NoodleAllocator.h"
-
-#include<iostream>
+#include "NoodleApp.h"
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Hello World";
-
+	std::cout << "Unsupported Platform. Closing Noodle.";
 	return 0;
 }

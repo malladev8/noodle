@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{554275e0-274a-454a-a4ff-01918ceb550c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="noodle.cpp">
@@ -24,16 +27,37 @@
     <ClCompile Include="NoodlePch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NoodleApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NoodleInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NoodleAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NoodleDefines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NoodlePch.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NoodleApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NoodleInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NoodleConfig.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NoodleCore.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NoodlePlatform.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NoodleTypes.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

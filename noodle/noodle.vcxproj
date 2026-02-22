@@ -129,11 +129,18 @@
   <ItemGroup>
     <ClCompile Include="noodle.cpp" />
     <ClCompile Include="NoodleAllocator.cpp" />
+    <ClCompile Include="NoodleApp.cpp" />
+    <ClCompile Include="NoodleInput.cpp" />
     <ClCompile Include="NoodlePch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\NoodleConfig.h" />
+    <ClInclude Include="Core\NoodleCore.h" />
+    <ClInclude Include="Core\NoodlePlatform.h" />
+    <ClInclude Include="Core\NoodleTypes.h" />
     <ClInclude Include="NoodleAllocator.h" />
-    <ClInclude Include="NoodleDefines.h" />
+    <ClInclude Include="NoodleApp.h" />
+    <ClInclude Include="NoodleInput.h" />
     <ClInclude Include="NoodlePch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -3,7 +3,7 @@
 
 #include <cstdlib>
 
-LinearAllocator::LinearAllocator(uint32 size)
+LinearAllocator::LinearAllocator(size_t size)
 	:m_Size(size)
 {
 	m_Address = std::malloc(m_Size);
@@ -17,7 +17,7 @@ LinearAllocator::~LinearAllocator()
 	m_Marker = 0;
 }
 
-void* LinearAllocator::Alloc(uint32 size)
+void* LinearAllocator::Alloc(size_t size)
 {
 	NASSERT(size + m_Marker <= m_Size, "Insufficient space remaining.");
 	char* chunk = static_cast<char*>(m_Address) + m_Marker;
@@ -30,7 +30,7 @@ void LinearAllocator::Clear()
 	m_Marker = 0;
 }
 
-void StackAllocator::FreeToMarker(uint32 marker)
+void StackAllocator::FreeToMarker(size_t marker)
 {
 	NASSERT(marker <= m_Marker, "New marker exceeds current marker.");
 	m_Marker = marker;
