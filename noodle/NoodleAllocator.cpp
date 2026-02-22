@@ -11,10 +11,13 @@ LinearAllocator::LinearAllocator(size_t size)
 
 LinearAllocator::~LinearAllocator()
 {
-	std::free(m_Address);
-	m_Address = nullptr;
-	m_Size = 0;
-	m_Marker = 0;
+	if (m_Address)
+	{
+		std::free(m_Address);
+		m_Address = nullptr;
+		m_Size = 0;
+		m_Marker = 0;
+	}
 }
 
 void* LinearAllocator::Alloc(size_t size)

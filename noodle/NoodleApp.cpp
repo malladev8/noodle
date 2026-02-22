@@ -12,8 +12,8 @@ NoodleApp::~NoodleApp()
 
 void NoodleApp::Run()
 {
-	while (true)
-	{
-		
-	}
+	//while (true)
+	//{
+	//	
+	//}
 }
