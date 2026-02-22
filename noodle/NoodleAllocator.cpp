@@ -6,18 +6,16 @@
 LinearAllocator::LinearAllocator(size_t size)
 	:m_Size(size)
 {
+	NASSERT(size > 0, "Cannot allocate 0 memory");
 	m_Address = std::malloc(m_Size);
 }
 
 LinearAllocator::~LinearAllocator()
 {
-	if (m_Address)
-	{
-		std::free(m_Address);
-		m_Address = nullptr;
-		m_Size = 0;
-		m_Marker = 0;
-	}
+	std::free(m_Address);
+	m_Address = nullptr;
+	m_Size = 0;
+	m_Marker = 0;
 }
 
 void* LinearAllocator::Alloc(size_t size)
