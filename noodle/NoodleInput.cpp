@@ -24,7 +24,7 @@ namespace Input
 		memcpy(sInputState.pointerState.previousButtons, sInputState.pointerState.currentButtons, sizeof(sInputState.pointerState.currentButtons));
 	}
 
-	static void sSetKeyState(eButtonState& outState, bool current, bool previous)
+	static void sSetButtonState(eButtonState& outState, bool current, bool previous)
 	{
 		if (current && !previous)
 			outState = eButtonState::PRESSED;
@@ -42,14 +42,14 @@ namespace Input
 		{
 			bool prev = sInputState.keyboardState.previousKeys[i];
 			bool curr = sInputState.keyboardState.currentKeys[i];
-			sSetKeyState(sInputState.keyboardState.keys[i], curr, prev);
+			sSetButtonState(sInputState.keyboardState.keys[i], curr, prev);
 		}
 
 		for (uint32 i = 0; i < sMaxPointerInputs; ++i)
 		{
 			bool prev = sInputState.pointerState.previousButtons[i];
 			bool curr = sInputState.pointerState.currentButtons[i];
-			sSetKeyState(sInputState.pointerState.buttons[i], curr, prev);
+			sSetButtonState(sInputState.pointerState.buttons[i], curr, prev);
 		}
 	}
 }
