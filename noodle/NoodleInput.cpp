@@ -1,48 +1,55 @@
 #include "NoodlePch.h"
 #include "NoodleInput.h"
 
-static const uint32 sMaxInputs = 256;
-static bool sCurrentInput[sMaxInputs];
-static bool sPreviousInput[sMaxInputs];
-
-#if defined(WINDOWS)
-LRESULT CALLBACK WndProc(
-	HWND hwnd,
-	UINT msg,
-	WPARAM wParam,
-	LPARAM lParam)
+namespace Input
 {
-	switch (msg)
+	static InputState sInputState;
+
+	InputState& GetMutableInput()
 	{
-	case WM_KEYDOWN:
+		return sInputState;
+	}
+
+	const InputState& GetInput()
 	{
-		// wParam = virtual key code
-		if (wParam == 'W')
+		return sInputState;
+	}
+
+	void BeginFrame()
+	{
+		sInputState.pointerState.deltaX = 0.0f;
+		sInputState.pointerState.deltaY = 0.0f;
+
+		memcpy(sInputState.keyboardState.previousKeys, sInputState.keyboardState.currentKeys, sizeof(sInputState.keyboardState.currentKeys));
+		memcpy(sInputState.pointerState.previousButtons, sInputState.pointerState.currentButtons, sizeof(sInputState.pointerState.currentButtons));
+	}
+
+	static void sSetKeyState(eButtonState& outState, bool current, bool previous)
+	{
+		if (current && !previous)
+			outState = eButtonState::PRESSED;
+		else if (current && previous)
+			outState = eButtonState::HELD;
+		else if (!current && previous)
+			outState = eButtonState::RELEASED;
+		else
+			outState = eButtonState::UP;
+	}
+
+	void EndFrame()
+	{
+		for (uint32 i = 0; i < sMaxKeyInputs; ++i)
 		{
-			// W key pressed
+			bool prev = sInputState.keyboardState.previousKeys[i];
+			bool curr = sInputState.keyboardState.currentKeys[i];
+			sSetKeyState(sInputState.keyboardState.keys[i], curr, prev);
 		}
-		break;
+
+		for (uint32 i = 0; i < sMaxPointerInputs; ++i)
+		{
+			bool prev = sInputState.pointerState.previousButtons[i];
+			bool curr = sInputState.pointerState.currentButtons[i];
+			sSetKeyState(sInputState.pointerState.buttons[i], curr, prev);
+		}
 	}
-	default:
-		break;
-	}
-	return DefWindowProc(hwnd, msg, wParam, lParam);
-}
-#endif
-
-void NoodleInput::Update()
-{
-	memcpy(sPreviousInput, sCurrentInput, sizeof(sCurrentInput));
-}
-
-bool NoodleInput::InputPressed(uint32 key)
-{
-	NASSERT(key < sMaxInputs, "Invalid Input");
-	return sCurrentInput[key] && !sPreviousInput[key];
-}
-
-bool NoodleInput::InputReleased(uint32 key)
-{
-	NASSERT(key < sMaxInputs, "Invalid Input");
-	return sPreviousInput[key] && !sCurrentInput[key];
 }

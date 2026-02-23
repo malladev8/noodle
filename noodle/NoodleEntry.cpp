@@ -1,6 +1,7 @@
 #include "NoodlePch.h"
 #include "NoodleEntry.h"
 #include "NoodleApp.h"
+#include "NoodleInput.h"
 
 int NoodleMain()
 {
@@ -16,7 +17,9 @@ int NoodleMain()
 	NoodleApp app;
 	while (!PlatformShouldExit())
 	{
+		Input::BeginFrame();
 		PlatformDispatchMessages();
+		Input::EndFrame();
 		app.Run();
 	}
 	
