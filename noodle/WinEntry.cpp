@@ -160,6 +160,20 @@ LRESULT CALLBACK Win32WndProc(
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+#if defined(DEBUG)
+void CreateDebugConsole()
+{
+    AllocConsole();
+
+    FILE* fp;
+    freopen_s(&fp, "CONOUT$", "w", stdout);
+    freopen_s(&fp, "CONOUT$", "w", stderr);
+    freopen_s(&fp, "CONIN$", "r", stdin);
+
+    printf("Noodle Console\n");
+}
+#endif
+
 bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc)
 {
     HINSTANCE instance = GetModuleHandle(nullptr);
@@ -213,10 +227,16 @@ void PlatformShutdown()
         DestroyWindow(sHwnd);
         sHwnd = nullptr;
     }
+#if defined(DEBUG)
+    FreeConsole();
+#endif
 }
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+#if defined(DEBUG)
+    CreateDebugConsole();
+#endif
     return NoodleMain();
 }
 #endif
