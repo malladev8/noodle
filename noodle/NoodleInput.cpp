@@ -17,11 +17,10 @@ namespace Input
 
 	void BeginFrame()
 	{
-		sInputState.pointerState.deltaX = 0.0f;
-		sInputState.pointerState.deltaY = 0.0f;
+		sInputState.deltaX = 0.0f;
+		sInputState.deltaY = 0.0f;
 
-		memcpy(sInputState.keyboardState.previousKeys, sInputState.keyboardState.currentKeys, sizeof(sInputState.keyboardState.currentKeys));
-		memcpy(sInputState.pointerState.previousButtons, sInputState.pointerState.currentButtons, sizeof(sInputState.pointerState.currentButtons));
+		memcpy(sInputState.previousKeys, sInputState.currentKeys, sizeof(sInputState.currentKeys));
 	}
 
 	static void sSetButtonState(eButtonState& outState, bool current, bool previous)
@@ -38,18 +37,11 @@ namespace Input
 
 	void EndFrame()
 	{
-		for (uint32 i = 0; i < sMaxKeyInputs; ++i)
+		for (uint32 i = 0; i < (uint64)eKey::NUM_KEYS; ++i)
 		{
-			bool prev = sInputState.keyboardState.previousKeys[i];
-			bool curr = sInputState.keyboardState.currentKeys[i];
-			sSetButtonState(sInputState.keyboardState.keys[i], curr, prev);
-		}
-
-		for (uint32 i = 0; i < sMaxPointerInputs; ++i)
-		{
-			bool prev = sInputState.pointerState.previousButtons[i];
-			bool curr = sInputState.pointerState.currentButtons[i];
-			sSetButtonState(sInputState.pointerState.buttons[i], curr, prev);
+			bool prev = sInputState.previousKeys[i];
+			bool curr = sInputState.currentKeys[i];
+			sSetButtonState(sInputState.keys[i], curr, prev);
 		}
 	}
 }
