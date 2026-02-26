@@ -35,7 +35,7 @@ namespace Input
 			outState = eButtonState::UP;
 	}
 
-	void EndFrame()
+	void UpdateButtonStates()
 	{
 		for (uint32 i = 0; i < (uint64)eKey::NUM_KEYS; ++i)
 		{

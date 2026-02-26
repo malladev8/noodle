@@ -20,7 +20,8 @@ int NoodleMain()
 	{
 		Input::BeginFrame();
 		PlatformDispatchMessages();
-		Input::EndFrame();
+		Input::UpdateButtonStates();
+
 		app.Run();
 	}
 	

@@ -49,5 +49,5 @@ namespace Input
 	InputState& GetMutableInput();
 	const InputState& GetInput();
 	void BeginFrame();
-	void EndFrame();
+	void UpdateButtonStates();
 }
