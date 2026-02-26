@@ -13,6 +13,7 @@ int NoodleMain()
 	};
 
 	PlatformCreateWindow(windowDesc);
+	PlatformInitLogger();
 
 	NoodleApp app;
 	while (!PlatformShouldExit())

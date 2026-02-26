@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\NoodleLogger.cpp" />
     <ClCompile Include="NoodleAllocator.cpp" />
     <ClCompile Include="NoodleApp.cpp" />
     <ClCompile Include="NoodleInput.cpp" />
@@ -141,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="Core\NoodleConfig.h" />
     <ClInclude Include="Core\NoodleCore.h" />
+    <ClInclude Include="Core\NoodleLogger.h" />
     <ClInclude Include="Core\NoodlePlatform.h" />
     <ClInclude Include="Core\NoodleTypes.h" />
     <ClInclude Include="NoodleAllocator.h" />

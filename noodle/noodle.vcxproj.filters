@@ -36,6 +36,9 @@
     <ClCompile Include="WinEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\NoodleLogger.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NoodleAllocator.h">
@@ -64,6 +67,9 @@
     </ClInclude>
     <ClInclude Include="NoodleEntry.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NoodleLogger.h">
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

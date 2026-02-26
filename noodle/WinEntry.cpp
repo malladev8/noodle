@@ -160,6 +160,18 @@ LRESULT CALLBACK Win32WndProc(
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+static void Win32LogOutput(const char* msg)
+{
+    printf("%s\n", msg);
+    OutputDebugStringA(msg);
+    OutputDebugStringA("\n");
+}
+
+void PlatformInitLogger()
+{
+    LogRegisterCallback(Win32LogOutput);
+}
+
 #if defined(DEBUG)
 void CreateDebugConsole()
 {
