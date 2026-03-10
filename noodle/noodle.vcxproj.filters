@@ -16,6 +16,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{554275e0-274a-454a-a4ff-01918ceb550c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{c9f76ccd-a1ec-44b2-8075-2498bb76d3fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NoodleAllocator.cpp">
@@ -38,6 +41,9 @@
     </ClCompile>
     <ClCompile Include="Core\NoodleLogger.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\NoodleMath.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="Core\NoodleLogger.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\NoodleMath.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
