@@ -3,50 +3,62 @@
 
 constexpr float EPSILON = 1e-6f;
 
-struct float2
+struct vec2
 {
-	float32 x, y;
+	union
+	{
+		struct{ float32 x, y; };
+		struct{ float32 r, g; };
+		float32 data[2];
+	};
+	
 
-	float2() : x(0.0f), y(0.0f) {}
-	float2(float32 x, float32 y) : x(x), y(y) {}
-	float2(const float2& other) = default;
-	float2& operator= (const float2& other) = default;
+	vec2() : x(0.0f), y(0.0f) {}
+	vec2(float32 x, float32 y) : x(x), y(y) {}
+	vec2(const vec2& other) = default;
+	vec2& operator= (const vec2& other) = default;
 
-	float2 operator+(const float2& other) const { return float2(x + other.x, y + other.y); }
-	void operator+=(const float2& other) { x += other.x; y += other.y; }
+	vec2 operator+(const vec2& other) const { return vec2(x + other.x, y + other.y); }
+	void operator+=(const vec2& other) { x += other.x; y += other.y; }
 
-	float2 operator-(const float2& other) const { return float2(x - other.x, y - other.y); }
-	void operator-=(const float2& other) { x -= other.x; y -= other.y; }
+	vec2 operator-(const vec2& other) const { return vec2(x - other.x, y - other.y); }
+	void operator-=(const vec2& other) { x -= other.x; y -= other.y; }
 
-	float2 operator*(float s) const { return float2(x * s, y * s); }
+	vec2 operator*(float s) const { return vec2(x * s, y * s); }
 	void operator*=(float s) { x *= s; y *= s; }
 
-	float2 operator/(float s) const { return float2(x / s, y / s); }
+	vec2 operator/(float s) const { return vec2(x / s, y / s); }
 	void operator/=(float s) { x /= s; y /= s; }
 
 	float LengthSq() const { return std::powf(x, 2.0f) + std::powf(y, 2.0f); }
 	float Length() const { return std::sqrtf(LengthSq()); }
 };
 
-struct float3
+struct vec3
 {
-	float32 x, y, z;
+	union
+	{
+		struct{ float32 x, y, z; };
+		struct{ float32 r, g, b; };
+		float32 data[3];
+	};
+	
 
-	float3() : x(0.0f), y(0.0f), z(0.0f) {}
-	float3(float32 x, float32 y, float32 z) : x(x), y(y), z(z) {}
-	float3(const float3& other) = default;
-	float3& operator= (const float3& other) = default;
+	vec3() : x(0.0f), y(0.0f), z(0.0f) {}
+	vec3(float32 x, float32 y, float32 z) : x(x), y(y), z(z) {}
+	vec3(const vec3& other) = default;
+	vec3& operator= (const vec3& other) = default;
 
-	float3 operator+ (const float3& other) const { return float3(x + other.x, y + other.y, z + other.z); }
-	void operator+= (const float3& other) { x += other.x; y += other.y; z += other.z; }
+	vec3 operator+ (const vec3& other) const { return vec3(x + other.x, y + other.y, z + other.z); }
+	void operator+= (const vec3& other) { x += other.x; y += other.y; z += other.z; }
 
-	float3 operator- (const float3& other) const { return float3(x - other.x, y - other.y, z - other.z); }
-	void operator-= (const float3& other) { x -= other.x; y -= other.y; z -= other.z; }
+	vec3 operator- (const vec3& other) const { return vec3(x - other.x, y - other.y, z - other.z); }
+	void operator-= (const vec3& other) { x -= other.x; y -= other.y; z -= other.z; }
 
-	float3 operator*(float s) const { return float3(x * s, y * s, z * s); }
+	vec3 operator*(float s) const { return vec3(x * s, y * s, z * s); }
 	void operator*=(float s) { x *= s; y *= s; z *= s; }
 
-	float3 operator/(float s) const { return float3(x / s, y / s, z / s); }
+	vec3 operator/(float s) const { return vec3(x / s, y / s, z / s); }
 	void operator/=(float s) { x /= s; y /= s; z /= s; }
 
 	float LengthSq() const { return std::powf(x, 2.0f) + std::powf(y, 2.0f) + std::powf(z, 2.0f); }
@@ -54,41 +66,72 @@ struct float3
 	void Normalize();
 };
 
-struct float4
+struct vec4
 {
-	float32 x, y, z, w;
+	union
+	{
+		struct { float32 x, y, z, w; };
+		struct { float32 r, g, b, a; };
+		float32 data[4];
+	};
+	
 
-	float4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-	float4(float32 x, float32 y, float32 z, float32 w) : x(x), y(y), z(z), w(w) {}
-	float4(const float4& other) = default;
-	float4& operator= (const float4& other) = default;
+	vec4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+	vec4(float32 x, float32 y, float32 z, float32 w) : x(x), y(y), z(z), w(w) {}
+	vec4(const vec4& other) = default;
+	vec4& operator= (const vec4& other) = default;
 
-	float4 operator+ (const float4& other) const { return float4(x + other.x, y + other.y, z + other.z, w + other.w); }
-	void operator+= (const float4& other) { x += other.x; y += other.y; z += other.z; w += other.w; }
+	vec4 operator+ (const vec4& other) const { return vec4(x + other.x, y + other.y, z + other.z, w + other.w); }
+	void operator+= (const vec4& other) { x += other.x; y += other.y; z += other.z; w += other.w; }
 
-	float4 operator- (const float4& other) const { return float4(x - other.x, y - other.y, z - other.z, w - other.w); }
-	void operator-= (const float4& other) { x -= other.x; y -= other.y; z -= other.z; w -= other.w; }
+	vec4 operator- (const vec4& other) const { return vec4(x - other.x, y - other.y, z - other.z, w - other.w); }
+	void operator-= (const vec4& other) { x -= other.x; y -= other.y; z -= other.z; w -= other.w; }
 
-	float4 operator*(float s) const { return float4(x * s, y * s, z * s, w * s); }
+	vec4 operator*(float s) const { return vec4(x * s, y * s, z * s, w * s); }
 	void operator*=(float s) { x *= s; y *= s; z *= s; }
 
-	float4 operator/(float s) const { return float4(x / s, y / s, z / s, w / s); }
+	vec4 operator/(float s) const { return vec4(x / s, y / s, z / s, w / s); }
 	void operator/=(float s) { x /= s; y /= s; z /= s; w /= s; }
 
 	float LengthSq() const { return std::powf(x, 2.0f) + std::powf(y, 2.0f) + std::powf(z, 2.0f) + std::powf(w, 2.0f); }
 	float Length() const { return std::sqrtf(LengthSq()); }
 };
 
-float Dot(const float3& f0, const float3& f1);
-float3 Cross(const float3& f0, const float3& f1);
-float3 Normalize(const float3& f0);
+float32 Dot(const vec3& v0, const vec3& v1);
+vec3 Cross(const vec3& v0, const vec3& v1);
+vec3 Normalize(const vec3& v);
 
-struct float3x3
+struct mat3x3
 {
-	float3 r0, r1, r2;
+	union
+	{
+		float32 m[3][3]; // [row][column]
+
+		struct
+		{
+			float32 m00, m01, m02;
+			float32 m10, m11, m12;
+			float32 m20, m21, m22;
+		};
+
+		vec3 rows[3];
+	};
 };
 
-struct float4x4
+struct mat4x4
 {
-	float4 r0, r1, r2, r3;
+	union
+	{
+		float32 m[4][4]; // [row][column]
+
+		struct
+		{
+			float32 m00, m01, m02, m03;
+			float32 m10, m11, m12, m13;
+			float32 m20, m21, m22, m23;
+			float32 m30, m31, m32, m33;
+		};
+
+		vec4 rows[4];
+	};
 };

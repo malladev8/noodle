@@ -1,33 +1,33 @@
 #include "../NoodlePch.h"
 #include "NoodleMath.h"
 
-float32 Dot(const float3& f0, const float3& f1)
+float32 Dot(const vec3& v0, const vec3& v1)
 {
-	return (f0.x * f1.x) + (f0.y * f1.y) + (f0.z * f1.z);
+	return (v0.x * v1.x) + (v0.y * v1.y) + (v0.z * v1.z);
 }
 
-float3 Cross(const float3& f0, const float3& f1)
+vec3 Cross(const vec3& v0, const vec3& v1)
 {
 	return 
 	{
-		(f0.y * f1.z) - (f0.z * f1.y),
-		(f0.z * f1.x) - (f0.x * f1.z),
-		(f0.x * f1.y) - (f0.y * f1.x)
+		(v0.y * v1.z) - (v0.z * v1.y),
+		(v0.z * v1.x) - (v0.x * v1.z),
+		(v0.x * v1.y) - (v0.y * v1.x)
 	};
 }
 
-float3 Normalize(const float3& f0)
+vec3 Normalize(const vec3& v)
 {
-	float3 f = f0;
-	float length = f.Length();
+	vec3 copy = v;
+	float length = copy.Length();
 	if (length > EPSILON)
 	{
-		return f / length;
+		return copy / length;
 	}
-	return f;
+	return copy;
 }
 
-void float3::Normalize()
+void vec3::Normalize()
 {
 	float length = Length();
 	if (length > EPSILON)
