@@ -1,6 +1,8 @@
 #pragma once
 #include "../Core/NoodleCore.h"
 
+constexpr float EPSILON = 1e-6f;
+
 struct float2
 {
 	float32 x, y;
@@ -10,11 +12,20 @@ struct float2
 	float2(const float2& other) = default;
 	float2& operator= (const float2& other) = default;
 
-	float2 operator+ (const float2& other) const { return float2(x + other.x, y + other.y); }
-	void operator+= (const float2& other) { x += other.x; y += other.y; }
+	float2 operator+(const float2& other) const { return float2(x + other.x, y + other.y); }
+	void operator+=(const float2& other) { x += other.x; y += other.y; }
 
-	float2 operator- (const float2& other) const { return float2(x - other.x, y - other.y); }
-	void operator-= (const float2& other) { x -= other.x; y -= other.y; }
+	float2 operator-(const float2& other) const { return float2(x - other.x, y - other.y); }
+	void operator-=(const float2& other) { x -= other.x; y -= other.y; }
+
+	float2 operator*(float s) const { return float2(x * s, y * s); }
+	void operator*=(float s) { x *= s; y *= s; }
+
+	float2 operator/(float s) const { return float2(x / s, y / s); }
+	void operator/=(float s) { x /= s; y /= s; }
+
+	float LengthSq() const { return std::powf(x, 2.0f) + std::powf(y, 2.0f); }
+	float Length() const { return std::sqrtf(LengthSq()); }
 };
 
 struct float3
@@ -31,6 +42,16 @@ struct float3
 
 	float3 operator- (const float3& other) const { return float3(x - other.x, y - other.y, z - other.z); }
 	void operator-= (const float3& other) { x -= other.x; y -= other.y; z -= other.z; }
+
+	float3 operator*(float s) const { return float3(x * s, y * s, z * s); }
+	void operator*=(float s) { x *= s; y *= s; z *= s; }
+
+	float3 operator/(float s) const { return float3(x / s, y / s, z / s); }
+	void operator/=(float s) { x /= s; y /= s; z /= s; }
+
+	float LengthSq() const { return std::powf(x, 2.0f) + std::powf(y, 2.0f) + std::powf(z, 2.0f); }
+	float Length() const { return std::sqrtf(LengthSq()); }
+	void Normalize();
 };
 
 struct float4
@@ -47,10 +68,20 @@ struct float4
 
 	float4 operator- (const float4& other) const { return float4(x - other.x, y - other.y, z - other.z, w - other.w); }
 	void operator-= (const float4& other) { x -= other.x; y -= other.y; z -= other.z; w -= other.w; }
+
+	float4 operator*(float s) const { return float4(x * s, y * s, z * s, w * s); }
+	void operator*=(float s) { x *= s; y *= s; z *= s; }
+
+	float4 operator/(float s) const { return float4(x / s, y / s, z / s, w / s); }
+	void operator/=(float s) { x /= s; y /= s; z /= s; w /= s; }
+
+	float LengthSq() const { return std::powf(x, 2.0f) + std::powf(y, 2.0f) + std::powf(z, 2.0f) + std::powf(w, 2.0f); }
+	float Length() const { return std::sqrtf(LengthSq()); }
 };
 
 float Dot(const float3& f0, const float3& f1);
 float3 Cross(const float3& f0, const float3& f1);
+float3 Normalize(const float3& f0);
 
 struct float3x3
 {
