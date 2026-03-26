@@ -22,7 +22,7 @@ vec3 Normalize(const vec3& v)
 	float length = copy.Length();
 	if (length > EPSILON)
 	{
-		return copy / length;
+		return copy * (1.0f / length);
 	}
 	return copy;
 }
@@ -32,7 +32,7 @@ void vec3::Normalize()
 	float length = Length();
 	if (length > EPSILON)
 	{
-		*this /= length;
+		*this *= (1.0f / length);
 	}
 }
 
@@ -56,6 +56,26 @@ mat3x3::mat3x3(float32 _00, float32 _01, float32 _02,
 {
 }
 
+mat3x3 mat3x3::Identity()
+{
+	return 
+	{
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f
+	};
+}
+
+mat3x3 mat3x3::Transpose() const
+{
+	return 
+	{
+		m00, m10, m20,
+		m01, m11, m21,
+		m02, m12, m22
+	};
+}
+
 mat4x4::mat4x4() 
 {
 	for (uint32 i = 0; i < 4; ++i)
@@ -76,4 +96,73 @@ mat4x4::mat4x4(float32 _00, float32 _01, float32 _02, float32 _03,
 			   m20(_20), m21(_21), m22(_22), m23(_23),
 			   m30(_20), m31(_21), m32(_22), m33(_33)
 {
+}
+
+mat4x4 mat4x4::Identity()
+{
+	return 
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+}
+
+mat4x4 mat4x4::Transpose() const
+{
+	return
+	{
+		m00, m10, m20, m30,
+		m01, m11, m21, m31,
+		m02, m12, m22, m32,
+		m03, m13, m23, m33
+	};
+}
+
+mat4x4 mat4x4::InverseTransform() const
+{
+	mat4x4 r;
+
+	// Transpose rotation
+	for (uint32 i = 0; i < 3; ++i)
+	{
+		for (uint32 j = 0; j < 3; ++j)
+		{
+			r.m[i][j] = m[j][i];
+		}
+	}
+
+	// Invert translation
+	r.m[0][3] = -1.0f * (r.m[0][0] * m[0][3] + r.m[0][1] * m[1][3] + r.m[0][2] * m[2][3]);
+	r.m[1][3] = -1.0f * (r.m[1][0] * m[0][3] + r.m[1][1] * m[1][3] + r.m[1][2] * m[2][3]);
+	r.m[2][3] = -1.0f * (r.m[2][0] * m[0][3] + r.m[2][1] * m[1][3] + r.m[2][2] * m[2][3]);
+
+	// Last row
+	r.m[3][0] = r.m[3][1] = r.m[3][2] = 0.0f;
+	r.m[3][3] = 1.0f;
+
+	return r;
+}
+
+mat4x4 operator*(const mat4x4& a, const mat4x4& b) 
+{
+	mat4x4 r;
+	for (uint32 i = 0; i < 4; ++i)
+	{
+		for (uint32 j = 0; j < 4; ++j)
+		{
+			r.m[i][j] = (a.m[i][0] * b.m[0][j] +
+				         a.m[i][1] * b.m[1][j] +
+				         a.m[i][2] * b.m[2][j] + 
+				         a.m[i][3] * b.m[3][j]);
+		}
+	}
+	return r;
+}
+
+mat4x4& mat4x4::operator*=(const mat4x4& other)
+{
+	*this = *this * other;
+	return *this;
 }
