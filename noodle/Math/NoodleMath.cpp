@@ -161,6 +161,128 @@ mat4x4 operator*(const mat4x4& a, const mat4x4& b)
 	return r;
 }
 
+mat4x4 Translation(float32 x, float32 y, float32 z)
+{
+	mat4x4 m;
+	m.m[0][3] = x;
+	m.m[1][3] = y;
+	m.m[2][3] = z;
+	return m;
+}
+
+mat4x4 Scale(float32 x, float32 y, float32 z)
+{
+	mat4x4 m;
+	m.m[0][0] = x;
+	m.m[1][1] = y;
+	m.m[2][2] = z;
+	m.m[3][3] = 1.0f;
+	return m;
+}
+
+mat4x4 Scale(float32 scale)
+{
+	return Scale(scale, scale, scale);
+}
+
+mat4x4 RotationX(float32 angle)
+{
+	float c = cosf(angle);
+	float s = sinf(angle);
+
+	mat4x4 m;
+
+	m.m[1][1] = c;
+	m.m[1][2] = -1.0f * s;
+	m.m[2][1] = s;
+	m.m[2][2] = c;
+
+	return m;
+}
+
+mat4x4 RotationY(float32 angle)
+{
+	float c = cosf(angle);
+	float s = sinf(angle);
+
+	mat4x4 m;
+
+	m.m[0][0] = c;
+	m.m[0][2] = s;
+	m.m[2][0] = -1.0f * s;
+	m.m[2][2] = c;
+
+	return m;
+}
+
+mat4x4 RotationZ(float32 angle)
+{
+	float c = cosf(angle);
+	float s = sinf(angle);
+
+	mat4x4 m;
+
+	m.m[0][0] = c;
+	m.m[0][1] = -1.0f * s;
+	m.m[1][0] = s;
+	m.m[1][1] = c;
+
+	return m;
+}
+
+mat4x4 Rotation(float32 roll, float32 pitch, float32 yaw)
+{
+	mat4x4 rz = RotationZ(yaw);
+	mat4x4 ry = RotationY(pitch);
+	mat4x4 rx = RotationX(roll);
+	return rz * ry * rx;
+}
+
+mat4x4 LookAt(const vec3& eye, const vec3& target, const vec3& up)
+{
+	vec3 forward = Normalize(target - eye);
+	vec3 right = Normalize(Cross(up, forward));
+	vec3 newUp = Cross(forward, right);
+
+	// X axis (forward)
+	mat4x4 m;
+	m.m[0][0] = forward.x;
+	m.m[0][1] = forward.y;
+	m.m[0][2] = forward.z;
+	m.m[0][3] = -1.0f * Dot(forward, eye);
+
+	// Y axis (right)
+	m.m[1][0] = right.x;
+	m.m[1][1] = right.y;
+	m.m[1][2] = right.z;
+	m.m[1][3] = -1.0f * Dot(right, eye);
+
+	// Z axis (up)
+	m.m[2][0] = newUp.x;
+	m.m[2][1] = newUp.y;
+	m.m[2][2] = newUp.z;
+	m.m[2][3] = -1.0f * Dot(newUp, eye);
+
+	m.m[3][3] = 1.0f;
+
+	return m;
+}
+
+mat4x4 Perspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ)
+{
+	float f = 1.0f / tanf(fov * 0.5f);
+
+	mat4x4 m;
+
+	m.m[0][0] = f / aspect;
+	m.m[1][1] = f;
+	m.m[2][2] = farZ / (farZ - nearZ);
+	m.m[2][3] = (-1.0f * nearZ * farZ) / (farZ - nearZ);
+	m.m[3][2] = 1.0f;
+
+	return m;
+}
+
 mat4x4& mat4x4::operator*=(const mat4x4& other)
 {
 	*this = *this * other;

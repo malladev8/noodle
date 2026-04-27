@@ -1,7 +1,24 @@
 #pragma once
 #include "../Core/NoodleCore.h"
 
+// Noodle uses a left handed coordinate system where: X - forward, Y - right, Z - up
+
 constexpr float EPSILON = 1e-6f;
+constexpr float EPSILON_SQ = EPSILON * EPSILON;
+
+constexpr float PI = 3.14159265358979323846f;
+constexpr float TWO_PI = 2.0f * PI;
+constexpr float HALF_PI = 0.5f * PI;
+
+constexpr float32 RadToDeg(float32 rad)
+{
+	return rad * (180.0f / PI);
+}
+
+constexpr float32 DegToRad(float32 deg)
+{
+	return deg * (PI / 180.0f);
+}
 
 struct vec2
 {
@@ -145,3 +162,14 @@ struct mat4x4
 };
 
 mat4x4 operator*(const mat4x4& a, const mat4x4& b);
+
+// Transform Builders
+mat4x4 Translation(float32 x, float32 y, float32 z);
+mat4x4 Scale(float32 x, float32 y, float32 z);
+mat4x4 Scale(float32 scale);
+mat4x4 RotationX(float32 angle);
+mat4x4 RotationY(float32 angle);
+mat4x4 RotationZ(float32 angle);
+mat4x4 Rotation(float32 roll, float32 pitch, float32 yaw);
+mat4x4 LookAt(const vec3& eye, const vec3& target, const vec3& up);
+mat4x4 Perspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ);
