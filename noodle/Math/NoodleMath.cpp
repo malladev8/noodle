@@ -18,13 +18,12 @@ vec3 Cross(const vec3& v0, const vec3& v1)
 
 vec3 Normalize(const vec3& v)
 {
-	vec3 copy = v;
-	float length = copy.Length();
+	float length = v.Length();
 	if (length > EPSILON)
 	{
-		return copy * (1.0f / length);
+		return v * (1.0f / length);
 	}
-	return copy;
+	return v;
 }
 
 void vec3::Normalize()
@@ -161,7 +160,7 @@ mat4x4 operator*(const mat4x4& a, const mat4x4& b)
 	return r;
 }
 
-mat4x4 Translation(float32 x, float32 y, float32 z)
+mat4x4 BuildTranslation(float32 x, float32 y, float32 z)
 {
 	mat4x4 m;
 	m.m[0][3] = x;
@@ -170,7 +169,7 @@ mat4x4 Translation(float32 x, float32 y, float32 z)
 	return m;
 }
 
-mat4x4 Scale(float32 x, float32 y, float32 z)
+mat4x4 BuildScale(float32 x, float32 y, float32 z)
 {
 	mat4x4 m;
 	m.m[0][0] = x;
@@ -180,15 +179,15 @@ mat4x4 Scale(float32 x, float32 y, float32 z)
 	return m;
 }
 
-mat4x4 Scale(float32 scale)
+mat4x4 BuildScale(float32 scale)
 {
-	return Scale(scale, scale, scale);
+	return BuildScale(scale, scale, scale);
 }
 
-mat4x4 RotationX(float32 angle)
+mat4x4 BuildRotationX(float32 radians)
 {
-	float c = cosf(angle);
-	float s = sinf(angle);
+	float c = cosf(radians);
+	float s = sinf(radians);
 
 	mat4x4 m;
 
@@ -200,10 +199,10 @@ mat4x4 RotationX(float32 angle)
 	return m;
 }
 
-mat4x4 RotationY(float32 angle)
+mat4x4 BuildRotationY(float32 radians)
 {
-	float c = cosf(angle);
-	float s = sinf(angle);
+	float c = cosf(radians);
+	float s = sinf(radians);
 
 	mat4x4 m;
 
@@ -215,10 +214,10 @@ mat4x4 RotationY(float32 angle)
 	return m;
 }
 
-mat4x4 RotationZ(float32 angle)
+mat4x4 BuildRotationZ(float32 radians)
 {
-	float c = cosf(angle);
-	float s = sinf(angle);
+	float c = cosf(radians);
+	float s = sinf(radians);
 
 	mat4x4 m;
 
@@ -230,15 +229,15 @@ mat4x4 RotationZ(float32 angle)
 	return m;
 }
 
-mat4x4 Rotation(float32 roll, float32 pitch, float32 yaw)
+mat4x4 BuildRotation(float32 rollRadians, float32 pitchRadians, float32 yawRadians)
 {
-	mat4x4 rz = RotationZ(yaw);
-	mat4x4 ry = RotationY(pitch);
-	mat4x4 rx = RotationX(roll);
+	mat4x4 rz = BuildRotationZ(yawRadians);
+	mat4x4 ry = BuildRotationY(pitchRadians);
+	mat4x4 rx = BuildRotationX(rollRadians);
 	return rz * ry * rx;
 }
 
-mat4x4 LookAt(const vec3& eye, const vec3& target, const vec3& up)
+mat4x4 BuildLookAt(const vec3& eye, const vec3& target, const vec3& up)
 {
 	vec3 forward = Normalize(target - eye);
 	vec3 right = Normalize(Cross(up, forward));
@@ -268,7 +267,7 @@ mat4x4 LookAt(const vec3& eye, const vec3& target, const vec3& up)
 	return m;
 }
 
-mat4x4 Perspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ)
+mat4x4 BuildPerspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ)
 {
 	float f = 1.0f / tanf(fov * 0.5f);
 
@@ -287,4 +286,43 @@ mat4x4& mat4x4::operator*=(const mat4x4& other)
 {
 	*this = *this * other;
 	return *this;
+}
+
+vec4 operator*(const mat4x4& m, const vec4& v)
+{
+	vec4 r;
+
+	r.x = m.m[0][0] * v.x + m.m[0][1] * v.y + m.m[0][2] * v.z + m.m[0][3] * v.w;
+	r.y = m.m[1][0] * v.x + m.m[1][1] * v.y + m.m[1][2] * v.z + m.m[1][3] * v.w;
+	r.z = m.m[2][0] * v.x + m.m[2][1] * v.y + m.m[2][2] * v.z + m.m[2][3] * v.w;
+	r.w = m.m[3][0] * v.x + m.m[3][1] * v.y + m.m[3][2] * v.z + m.m[3][3] * v.w;
+
+	return r;
+}
+
+vec3 TransformPoint(const mat4x4& m, const vec3& v)
+{
+	vec4 r = m * vec4{ v.x, v.y, v.z, 1.0f };
+	return {r.x / r.w, r.y / r.w, r.z / r.w};
+}
+
+vec3 TransformVector(const mat4x4& m, const vec3& v)
+{
+	vec4 r = m * vec4{ v.x, v.y, v.z, 0.0f };
+	return { r.x, r.y, r.z };
+}
+
+vec3 GetForward(const mat4x4& m)
+{
+	return Normalize({ m.m[0][0], m.m[1][0], m.m[2][0] });
+}
+
+vec3 GetRight(const mat4x4& m)
+{
+	return Normalize({ m.m[0][1], m.m[1][1], m.m[2][1] });
+}
+
+vec3 GetUp(const mat4x4& m)
+{
+	return Normalize({ m.m[0][2], m.m[1][2], m.m[2][2] });
 }

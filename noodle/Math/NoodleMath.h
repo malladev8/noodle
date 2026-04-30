@@ -1,14 +1,14 @@
 #pragma once
 #include "../Core/NoodleCore.h"
 
-// Noodle uses a left handed coordinate system where: X - forward, Y - right, Z - up
+// Noodle uses a left handed coordinate system where: X is forward, Y is right, Z is up
 
-constexpr float EPSILON = 1e-6f;
-constexpr float EPSILON_SQ = EPSILON * EPSILON;
+constexpr float32 EPSILON = 1e-6f;
+constexpr float32 EPSILON_SQ = EPSILON * EPSILON;
 
-constexpr float PI = 3.14159265358979323846f;
-constexpr float TWO_PI = 2.0f * PI;
-constexpr float HALF_PI = 0.5f * PI;
+constexpr float32 PI = 3.14159265358979323846f;
+constexpr float32 TWO_PI = 2.0f * PI;
+constexpr float32 HALF_PI = 0.5f * PI;
 
 constexpr float32 RadToDeg(float32 rad)
 {
@@ -106,6 +106,7 @@ vec4 operator-(const vec4& a, const vec4& b) { return { a.x - b.x, a.y - b.y, a.
 vec4 operator*(const vec4& v, float s) { return { v.x * s, v.y * s, v.z * s, v.w * s }; }
 vec4 operator*(float s, const vec4& v) { return v * s; }
 
+// Matrices use column vectors with row-major storage
 struct mat3x3
 {
 	union
@@ -164,12 +165,22 @@ struct mat4x4
 mat4x4 operator*(const mat4x4& a, const mat4x4& b);
 
 // Transform Builders
-mat4x4 Translation(float32 x, float32 y, float32 z);
-mat4x4 Scale(float32 x, float32 y, float32 z);
-mat4x4 Scale(float32 scale);
-mat4x4 RotationX(float32 angle);
-mat4x4 RotationY(float32 angle);
-mat4x4 RotationZ(float32 angle);
-mat4x4 Rotation(float32 roll, float32 pitch, float32 yaw);
-mat4x4 LookAt(const vec3& eye, const vec3& target, const vec3& up);
-mat4x4 Perspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ);
+mat4x4 BuildTranslation(float32 x, float32 y, float32 z);
+mat4x4 BuildScale(float32 x, float32 y, float32 z);
+mat4x4 BuildScale(float32 scale);
+mat4x4 BuildRotationX(float32 radians);
+mat4x4 BuildRotationY(float32 radians);
+mat4x4 BuildRotationZ(float32 radians);
+mat4x4 BuildRotation(float32 rollRadians, float32 pitchRadians, float32 yawRadians);
+mat4x4 BuildLookAt(const vec3& eye, const vec3& target, const vec3& up);
+mat4x4 BuildPerspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ);
+
+// Matrix / Vector Transforms
+vec4 operator*(const mat4x4& m, const vec4& v);
+vec3 TransformPoint(const mat4x4& m, const vec3& v);
+vec3 TransformVector(const mat4x4& m, const vec3& v);
+
+// Directions
+vec3 GetForward(const mat4x4& m);
+vec3 GetRight(const mat4x4& m);
+vec3 GetUp(const mat4x4& m);

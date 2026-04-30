@@ -5,17 +5,19 @@
 
 int NoodleMain()
 {
+	// Initialization
 	NoodleWindowDesc windowDesc
 	{
 		1280,
 		720,
 		"Noodle"
 	};
-
-	PlatformCreateWindow(windowDesc);
+	
 	PlatformInitLogger();
-
+	PlatformCreateWindow(windowDesc);
 	NoodleApp app;
+	
+	// Game Loop
 	while (!PlatformShouldExit())
 	{
 		Input::BeginFrame();
@@ -25,6 +27,7 @@ int NoodleMain()
 		app.Run();
 	}
 	
+	// Shutdown
 	PlatformShutdown();
 	return 0;
 }
