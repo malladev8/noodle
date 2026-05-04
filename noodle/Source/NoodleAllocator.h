@@ -48,7 +48,7 @@ public:
 private:
 	unsigned char** m_RawMemoryArray = nullptr;
 	unsigned char* m_Head = nullptr;
-	uint32 m_ChunkSize = 0; // Size of each chunk
+	size_t m_ChunkSize = 0; // Size of each chunk
 	uint32 m_NumChunks = 0; // Number of chunks per array
 	uint32 m_ArraySize = 0; // Number of elements in the memory array
 	bool m_AllowResize = false;
