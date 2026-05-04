@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)..\Temp\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\Lib\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>..\Temp\$(ProjectName)\$(PlatformName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)..\Temp\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\Lib\$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>..\Temp\$(ProjectName)\$(PlatformName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actor\ActorFactory.cpp" />
     <ClCompile Include="Core\NoodleLogger.cpp" />
     <ClCompile Include="Math\NoodleMath.cpp" />
     <ClCompile Include="NoodleAllocator.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="WinEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor\ActorFactory.h" />
     <ClInclude Include="Core\NoodleConfig.h" />
     <ClInclude Include="Core\NoodleCore.h" />
     <ClInclude Include="Core\NoodleLogger.h" />
