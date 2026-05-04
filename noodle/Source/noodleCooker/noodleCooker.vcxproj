@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4c3a513c-b0f2-4c89-a427-6bc8f4608a03}</ProjectGuid>
-    <RootNamespace>noodle</RootNamespace>
+    <ProjectGuid>{151c5857-54c7-469a-a7fa-efa70c2744f1}</ProjectGuid>
+    <RootNamespace>noodleCooker</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -95,9 +95,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -111,9 +110,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,9 +123,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,35 +138,12 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Actor\ActorFactory.cpp" />
-    <ClCompile Include="Core\NoodleLogger.cpp" />
-    <ClCompile Include="Math\NoodleMath.cpp" />
-    <ClCompile Include="NoodleAllocator.cpp" />
-    <ClCompile Include="NoodleApp.cpp" />
-    <ClCompile Include="NoodleInput.cpp" />
-    <ClCompile Include="NoodlePch.cpp" />
-    <ClCompile Include="NoodleEntry.cpp" />
-    <ClCompile Include="WinEntry.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Actor\ActorFactory.h" />
-    <ClInclude Include="Core\NoodleConfig.h" />
-    <ClInclude Include="Core\NoodleCore.h" />
-    <ClInclude Include="Core\NoodleLogger.h" />
-    <ClInclude Include="Core\NoodlePlatform.h" />
-    <ClInclude Include="Core\NoodleTypes.h" />
-    <ClInclude Include="Math\NoodleMath.h" />
-    <ClInclude Include="NoodleAllocator.h" />
-    <ClInclude Include="NoodleApp.h" />
-    <ClInclude Include="NoodleInput.h" />
-    <ClInclude Include="NoodleEntry.h" />
-    <ClInclude Include="NoodlePch.h" />
+    <ClCompile Include="CookerEntry.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
