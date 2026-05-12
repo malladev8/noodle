@@ -416,3 +416,9 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Cooked Assets
+noodle/Cooked/
+*.bin
+RedAngel/Cooked/
+*.bin
