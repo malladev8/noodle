@@ -147,9 +147,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Actor\Actor.cpp" />
     <ClCompile Include="Actor\ActorFactory.cpp" />
+    <ClCompile Include="Actor\Components\ActorComponent.cpp" />
+    <ClCompile Include="Actor\Components\Transform.cpp" />
     <ClCompile Include="Core\NoodleLogger.cpp" />
-    <ClCompile Include="Math\NoodleMath.cpp" />
     <ClCompile Include="NoodleAllocator.cpp" />
     <ClCompile Include="NoodleApp.cpp" />
     <ClCompile Include="NoodleInput.cpp" />
@@ -158,7 +160,12 @@
     <ClCompile Include="WinEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Actor\Actor.h" />
     <ClInclude Include="Actor\ActorFactory.h" />
+    <ClInclude Include="Actor\Components\ActorComponent.h" />
+    <ClInclude Include="Actor\Components\ComponentIds.h" />
+    <ClInclude Include="Actor\Components\Transform.h" />
+    <ClInclude Include="Actor\Components\TransformInterface.h" />
     <ClInclude Include="Core\NoodleConfig.h" />
     <ClInclude Include="Core\NoodleCore.h" />
     <ClInclude Include="Core\NoodleLogger.h" />

@@ -15,7 +15,8 @@ int NoodleMain()
 	
 	PlatformInitLogger();
 	PlatformCreateWindow(windowDesc);
-	NoodleApp app;
+	NoodleApp* app = N_NEW(NoodleApp);
+	app->Init();
 	
 	// Game Loop
 	while (!PlatformShouldExit())
@@ -24,10 +25,11 @@ int NoodleMain()
 		PlatformDispatchMessages();
 		Input::UpdateButtonStates();
 
-		app.Run();
+		app->Run();
 	}
 	
 	// Shutdown
+	delete app;
 	PlatformShutdown();
 	return 0;
 }

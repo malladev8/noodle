@@ -22,6 +22,9 @@
     <Filter Include="Actor">
       <UniqueIdentifier>{69ec4099-ac43-4356-ac46-bc3342db86b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Actor\Components">
+      <UniqueIdentifier>{9e2c4701-3f57-4770-97bc-d2208fefeeb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NoodleAllocator.cpp">
@@ -45,11 +48,17 @@
     <ClCompile Include="Core\NoodleLogger.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="Math\NoodleMath.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="Actor\ActorFactory.cpp">
       <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor\Actor.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor\Components\ActorComponent.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor\Components\Transform.cpp">
+      <Filter>Actor\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +97,21 @@
     </ClInclude>
     <ClInclude Include="Actor\ActorFactory.h">
       <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Actor.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Components\ActorComponent.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Components\TransformInterface.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Components\Transform.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Components\ComponentIds.h">
+      <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

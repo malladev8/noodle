@@ -20,8 +20,8 @@ bool LinearAllocator::Init(size_t size)
 
 void* LinearAllocator::Alloc(size_t size)
 {
-	NASSERT(m_Size > 0, "Allocator is uninitialized. Call Init() before using.");
-	NASSERT(size + m_Marker <= m_Size, "Insufficient space remaining.");
+	N_ASSERT(m_Size > 0, "Allocator is uninitialized. Call Init() before using.");
+	N_ASSERT(size + m_Marker <= m_Size, "Insufficient space remaining.");
 	char* chunk = static_cast<char*>(m_Address) + m_Marker;
 	m_Marker += size;
 	return static_cast<void*>(chunk);
@@ -34,7 +34,7 @@ void LinearAllocator::Clear()
 
 void StackAllocator::FreeToMarker(size_t marker)
 {
-	NASSERT(marker <= m_Marker, "New marker exceeds current marker.");
+	N_ASSERT(marker <= m_Marker, "New marker exceeds current marker.");
 	m_Marker = marker;
 }
 

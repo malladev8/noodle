@@ -6,7 +6,14 @@
 
 #ifdef DEBUG
 #include <cassert>
-#define NASSERT(expr, msg) assert((expr) && (msg))
+#define N_ASSERT(expr, msg) assert((expr) && (msg))
 #else
-#define NASSERT(expr, msg) ((void)0)
+#define N_ASSERT(expr, msg) ((void)0)
+#endif
+
+#ifdef DEBUG
+#include <crtdbg.h>
+#define N_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__) // Helps with memory leak detection
+#else
+#define N_NEW new
 #endif

@@ -6,7 +6,7 @@ void LogRegisterCallback(LogCallback cb);
 void LogWrite(const char* fmt, ...);
 
 #ifdef _DEBUG
-#define LOG(...) LogWrite(__VA_ARGS__)
+#define N_LOG(...) LogWrite(__VA_ARGS__)
 #else
-#define LOG(...) ((void)0)
+#define N_LOG(...) ((void)0)
 #endif

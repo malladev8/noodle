@@ -8,6 +8,7 @@ public:
 	NoodleApp();
 	virtual ~NoodleApp();
 
+	void Init();
 	void Run();
 
 protected:
