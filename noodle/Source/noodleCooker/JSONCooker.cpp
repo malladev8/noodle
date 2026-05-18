@@ -7,6 +7,9 @@
 #include <sstream>
 #include <iostream>
 #include <cstdio>
+#include <filesystem>
+
+static const std::filesystem::path APPLICATION_ASSEST_ROOT = "../../../RedAngel/Assets/";
 
 static bool sLoadFileToString(const std::string& path, std::string& out)
 {
@@ -106,6 +109,28 @@ static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
     }
 }
 
+static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::Document& jsonDoc, std::ofstream& out)
+{
+    eComponentId transformId = eComponentId::COMPONENT_TRANSFORM;
+    out.write(reinterpret_cast<const char*>(&transformId), sizeof(eComponentId));
+
+    vec3 posVec, rotVec, scaleVec;
+    if (!sReadVec3(jsonValue["Position"], posVec) ||
+        !sReadVec3(jsonValue["Rotation"], rotVec) ||
+        !sReadVec3(jsonValue["Scale"], scaleVec))
+    {
+        return false;
+    }
+
+    mat4x4 translation = BuildTranslation(posVec.x, posVec.y, posVec.z);
+    mat4x4 rotation = BuildRotation(DegToRad(rotVec.x), DegToRad(rotVec.y), DegToRad(rotVec.z));
+    mat4x4 scale = BuildScale(scaleVec.x, scaleVec.y, scaleVec.z);
+    mat4x4 transform = translation * rotation * scale;
+
+    out.write(reinterpret_cast<const char*>(&transform), sizeof(mat4x4));
+    return true;
+}
+
 static bool sConvertActorJsonToBinary(rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     if (jsonDoc.HasMember("Components"))
@@ -132,25 +157,15 @@ static bool sConvertActorJsonToBinary(rapidjson::Document& jsonDoc, std::ofstrea
             std::string type = component["Type"].GetString();
             printf("Parsing %s component...\n", type.c_str());
 
+            // Note, Transform components are typically defined in the scene json, relative to the scene's origin
             if (type == "Transform")
             {
-                eComponentId transformId = eComponentId::COMPONENT_TRANSFORM;
-                out.write(reinterpret_cast<const char*>(&transformId), sizeof(eComponentId));
-
-                vec3 posVec, rotVec, scaleVec;
-                if (!sReadVec3(component["Position"], posVec) ||
-                    !sReadVec3(component["Rotation"], rotVec) ||
-                    !sReadVec3(component["Scale"], scaleVec))
+                printf("WARNING: Parsing Transform component directly from Actor json. Make sure this is intentional.\n");
+                if (!sCookTransform(component, jsonDoc, out))
                 {
+                    printf("Failed to parse Transform component.\n");
                     return false;
                 }
-
-                mat4x4 translation = BuildTranslation(posVec.x, posVec.y, posVec.z);
-                mat4x4 rotation = BuildRotation(DegToRad(rotVec.x), DegToRad(rotVec.y), DegToRad(rotVec.z));
-                mat4x4 scale = BuildScale(scaleVec.x, scaleVec.y, scaleVec.z);
-                mat4x4 trans = translation * rotation * scale;
-
-                out.write(reinterpret_cast<const char*>(&trans), sizeof(mat4x4));
                 printf("Successfully parsed Transform component.\n");
             }
         }
@@ -159,7 +174,7 @@ static bool sConvertActorJsonToBinary(rapidjson::Document& jsonDoc, std::ofstrea
 	return true;
 }
 
-static bool sConvertSceneJsonToBinary(rapidjson::Document& jsonDoc, std::ofstream& out)
+static bool sConvertSceneJsonToBinary(const char* assetRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     if (jsonDoc.HasMember("Actors"))
     {
@@ -175,6 +190,7 @@ static bool sConvertSceneJsonToBinary(rapidjson::Document& jsonDoc, std::ofstrea
         printf("Scene has %i components.\n", numActors);
         out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint8));
 
+        uint32 actorIndex = 0;
         for (const rapidjson::Value& actor : actors.GetArray())
         {
             if (!actors.HasMember("Template"))
@@ -182,24 +198,50 @@ static bool sConvertSceneJsonToBinary(rapidjson::Document& jsonDoc, std::ofstrea
                 printf("Actor missing Template member.\n");
             }
 
-            // TODO: Get actor json path from template and cook
-            ConvertJsonToBinary("", "", eJsonType::ACTOR);
+            std::string templateName = actor["Template"].GetString();
+            std::string actorInstanceName = templateName + std::to_string(actorIndex);
 
-            // TODO: Convert actor scene postion to binary and write out
+            ConvertJsonToBinary(eJsonType::ACTOR, templateName.c_str(), assetRoot);
+            if (!sCookTransform(actor, jsonDoc, out))
+            {
+                printf("Failed to parse Transform component for %s\n", actorInstanceName.c_str());
+                return false;
+            }
+            printf("Successfully parsed Transform component for %s.\n", actorInstanceName.c_str());
+            ++actorIndex;
         }
     }
     return true;
 }
 
-bool ConvertJsonToBinary(const char* jsonPath, const char* binPath, eJsonType type)
+bool ConvertJsonToBinary(eJsonType type, const char* assetRoot, const char* assetName)
 {
-    std::string jsonStr;
-    if (!sLoadFileToString(jsonPath, jsonStr))
+    std::string inputPath(assetRoot);
+    std::string typeDirectory;
+    switch (type)
     {
-        printf("Failed to load JSON file to string at %s\n", jsonPath);
+    case eJsonType::ACTOR:
+    {
+        typeDirectory = "Actor/";
+        break;
+    }
+    case eJsonType::SCENE:
+    {
+        typeDirectory = "Scene/";
+        break;
+    }
+    default:
+        break;
+    }
+    inputPath += typeDirectory + assetName + ".json";
+
+    std::string jsonStr;
+    if (!sLoadFileToString(inputPath, jsonStr))
+    {
+        printf("Failed to load JSON file to string from %s\n", inputPath.c_str());
         return false;
     }
-    printf("Successfully loaded JSON file string at %s\n", jsonPath);
+    printf("Successfully loaded JSON file string from %s\n", inputPath.c_str());
 
     rapidjson::Document jsonDoc;
     jsonDoc.Parse(jsonStr.c_str());
@@ -210,13 +252,14 @@ bool ConvertJsonToBinary(const char* jsonPath, const char* binPath, eJsonType ty
         return false;
     }
 
-    std::ofstream out(binPath, std::ios::binary);
+    std::string outputPath = assetRoot + typeDirectory + assetName + ".bin";
+    std::ofstream out(outputPath, std::ios::binary);
     if (!out.is_open())
     {
-        printf("Failed to open binary output file for %s\n", binPath);
+        printf("Failed to open binary output file %s\n", outputPath.c_str());
         return false;
     }
-    printf("Successfully opened binary output file for %s\n", binPath);
+    printf("Successfully opened binary output file %s\n", outputPath.c_str());
 
     bool success = false;
 
@@ -229,7 +272,7 @@ bool ConvertJsonToBinary(const char* jsonPath, const char* binPath, eJsonType ty
     }
     case eJsonType::SCENE:
     {
-        success = sConvertSceneJsonToBinary(jsonDoc, out);
+        success = sConvertSceneJsonToBinary(assetRoot, jsonDoc, out);
         break;
     }
     default:

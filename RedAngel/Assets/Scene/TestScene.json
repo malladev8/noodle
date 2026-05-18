@@ -3,8 +3,10 @@
   "Actors":
   [
     {
-      "Template": "TestActor",
-      "Position": [ 0, 0, 0 ]
+      "Template": "Actor/TestActor",
+      "Position": [ 0.0, 0.0, 0.0 ],
+      "Rotation": [ 0.0, 0.0, 0.0 ],
+      "Scale": [ 1.0, 1.0, 1.0 ]
     }
   ]
 }
