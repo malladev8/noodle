@@ -60,6 +60,9 @@
     <ClCompile Include="Actor\Components\Transform.cpp">
       <Filter>Actor\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NoodleAllocator.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="Actor\Components\ComponentIds.h">
       <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

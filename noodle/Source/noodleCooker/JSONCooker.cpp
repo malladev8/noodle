@@ -106,33 +106,8 @@ static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
     }
 }
 
-bool ConvertActorJsonToBinary(const char* jsonPath, const char* binPath)
+static bool sConvertActorJsonToBinary(rapidjson::Document& jsonDoc, std::ofstream& out)
 {
-    std::string jsonStr;
-    if (!sLoadFileToString(jsonPath, jsonStr))
-    {
-        printf("Failed to load JSON file to string at %s\n", jsonPath);
-        return false;
-    }
-    printf("Successfully loaded JSON file string at %s\n", jsonPath);
-
-    rapidjson::Document jsonDoc;
-    jsonDoc.Parse(jsonStr.c_str());
-
-    if (jsonDoc.HasParseError())
-    {
-        sPrintParseError(jsonDoc.GetParseError());
-        return false;
-    }
-
-    std::ofstream out(binPath, std::ios::binary);
-    if (!out.is_open())
-    {
-        printf("Failed to open binary output file for %s\n", binPath);
-        return false;
-    }
-    printf("Successfully opened binary output file for %s\n", binPath);
-
     if (jsonDoc.HasMember("Components"))
     {
         const rapidjson::Value& components = jsonDoc["Components"];
@@ -140,7 +115,6 @@ bool ConvertActorJsonToBinary(const char* jsonPath, const char* binPath)
         if (!components.IsArray())
         {
             printf("Error: Components is not an array.\n");
-            out.close();
             return false;
         }
 
@@ -168,7 +142,6 @@ bool ConvertActorJsonToBinary(const char* jsonPath, const char* binPath)
                     !sReadVec3(component["Rotation"], rotVec) ||
                     !sReadVec3(component["Scale"], scaleVec))
                 {
-                    out.close();
                     return false;
                 }
 
@@ -183,6 +156,86 @@ bool ConvertActorJsonToBinary(const char* jsonPath, const char* binPath)
         }
     }
 
-    out.close();
 	return true;
+}
+
+static bool sConvertSceneJsonToBinary(rapidjson::Document& jsonDoc, std::ofstream& out)
+{
+    if (jsonDoc.HasMember("Actors"))
+    {
+        const rapidjson::Value& actors = jsonDoc["Actors"];
+
+        if (!actors.IsArray())
+        {
+            printf("Error: Actors is not an array.\n");
+            return false;
+        }
+
+        uint8 numActors = (uint8)actors.Size();
+        printf("Scene has %i components.\n", numActors);
+        out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint8));
+
+        for (const rapidjson::Value& actor : actors.GetArray())
+        {
+            if (!actors.HasMember("Template"))
+            {
+                printf("Actor missing Template member.\n");
+            }
+
+            // TODO: Get actor json path from template and cook
+            ConvertJsonToBinary("", "", eJsonType::ACTOR);
+
+            // TODO: Convert actor scene postion to binary and write out
+        }
+    }
+    return true;
+}
+
+bool ConvertJsonToBinary(const char* jsonPath, const char* binPath, eJsonType type)
+{
+    std::string jsonStr;
+    if (!sLoadFileToString(jsonPath, jsonStr))
+    {
+        printf("Failed to load JSON file to string at %s\n", jsonPath);
+        return false;
+    }
+    printf("Successfully loaded JSON file string at %s\n", jsonPath);
+
+    rapidjson::Document jsonDoc;
+    jsonDoc.Parse(jsonStr.c_str());
+
+    if (jsonDoc.HasParseError())
+    {
+        sPrintParseError(jsonDoc.GetParseError());
+        return false;
+    }
+
+    std::ofstream out(binPath, std::ios::binary);
+    if (!out.is_open())
+    {
+        printf("Failed to open binary output file for %s\n", binPath);
+        return false;
+    }
+    printf("Successfully opened binary output file for %s\n", binPath);
+
+    bool success = false;
+
+    switch (type)
+    {
+    case eJsonType::ACTOR: 
+    {
+        success = sConvertActorJsonToBinary(jsonDoc, out);
+        break;
+    }
+    case eJsonType::SCENE:
+    {
+        success = sConvertSceneJsonToBinary(jsonDoc, out);
+        break;
+    }
+    default:
+        break;
+    }
+
+    out.close();
+    return success;
 }

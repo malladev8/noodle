@@ -1,0 +1,10 @@
+{
+  "Name": "TestScene",
+  "Actors":
+  [
+    {
+      "Template": "TestActor",
+      "Position": [ 0, 0, 0 ]
+    }
+  ]
+}

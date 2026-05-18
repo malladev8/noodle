@@ -1,4 +1,11 @@
 #pragma once
 #include "../Core/NoodleCore.h"
 
-bool ConvertActorJsonToBinary(const char* jsonPath, const char* binPath);
+enum class eJsonType
+{
+	ACTOR = 0,
+	SCENE,
+	COUNT
+};
+
+bool ConvertJsonToBinary(const char* jsonPath, const char* binPath, eJsonType type);

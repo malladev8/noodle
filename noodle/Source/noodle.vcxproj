@@ -157,6 +157,7 @@
     <ClCompile Include="NoodleInput.cpp" />
     <ClCompile Include="NoodlePch.cpp" />
     <ClCompile Include="NoodleEntry.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="WinEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="NoodleInput.h" />
     <ClInclude Include="NoodleEntry.h" />
     <ClInclude Include="NoodlePch.h" />
+    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
