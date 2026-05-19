@@ -1,6 +1,5 @@
 #include "../NoodlePch.h"
 #include "Scene.h"
-#include "Actor.h"
 
 void Scene::Update(int32 deltaMs)
 {

@@ -1,7 +1,6 @@
 #pragma once
 #include "../Core/NoodleCore.h"
-
-class Scene;
+#include "Scene.h"
 
 class SceneFactory
 {

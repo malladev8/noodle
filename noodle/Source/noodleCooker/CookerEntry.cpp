@@ -27,6 +27,12 @@ int main(int argc, char** argv)
     const char* applicationRoot = argv[2];
     const char* assetName = argv[3];
 
+    if (!sJsonTypeLookup.contains(jsonType))
+    {
+        printf("Invalid json type: %s\n", jsonType);
+        return -1;
+    }
+
     if (!ConvertJsonToBinary(sJsonTypeLookup.find(jsonType)->second, applicationRoot, assetName))
     {
         printf("Cook failed.\n");

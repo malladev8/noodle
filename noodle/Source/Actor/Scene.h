@@ -1,6 +1,6 @@
 #pragma once
 #include "../Core/NoodleCore.h"
-#include <vector>
+#include "Actor.h"
 
 class Actor;
 
