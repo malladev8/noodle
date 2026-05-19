@@ -151,13 +151,14 @@
     <ClCompile Include="Actor\ActorFactory.cpp" />
     <ClCompile Include="Actor\Components\ActorComponent.cpp" />
     <ClCompile Include="Actor\Components\Transform.cpp" />
+    <ClCompile Include="Actor\Scene.cpp" />
+    <ClCompile Include="Actor\SceneFactory.cpp" />
     <ClCompile Include="Core\NoodleLogger.cpp" />
     <ClCompile Include="NoodleAllocator.cpp" />
     <ClCompile Include="NoodleApp.cpp" />
     <ClCompile Include="NoodleInput.cpp" />
     <ClCompile Include="NoodlePch.cpp" />
     <ClCompile Include="NoodleEntry.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="WinEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +168,8 @@
     <ClInclude Include="Actor\Components\ComponentIds.h" />
     <ClInclude Include="Actor\Components\Transform.h" />
     <ClInclude Include="Actor\Components\TransformInterface.h" />
+    <ClInclude Include="Actor\Scene.h" />
+    <ClInclude Include="Actor\SceneFactory.h" />
     <ClInclude Include="Core\NoodleConfig.h" />
     <ClInclude Include="Core\NoodleCore.h" />
     <ClInclude Include="Core\NoodleLogger.h" />
@@ -178,7 +181,6 @@
     <ClInclude Include="NoodleInput.h" />
     <ClInclude Include="NoodleEntry.h" />
     <ClInclude Include="NoodlePch.h" />
-    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

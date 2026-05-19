@@ -10,7 +10,7 @@ class ActorFactory
 {
 public:
 	ActorFactory();
-	Actor* CreateActor(const char* binPath);
+	Actor* CreateActor(const char* binPath, std::ifstream* sceneStream = nullptr);
 
 protected:
 	ActorComponentCreatorMap m_ActorComponentCreators;

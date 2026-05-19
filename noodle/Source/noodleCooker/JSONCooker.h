@@ -8,4 +8,4 @@ enum class eJsonType
 	COUNT
 };
 
-bool ConvertJsonToBinary(eJsonType type, const char* assetRoot, const char* assetName);
+bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char* assetName);

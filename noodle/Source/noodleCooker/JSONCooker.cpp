@@ -8,8 +8,9 @@
 #include <iostream>
 #include <cstdio>
 #include <filesystem>
+#include <unordered_set>
 
-static const std::filesystem::path APPLICATION_ASSEST_ROOT = "../../../RedAngel/Assets/";
+static std::unordered_set<std::string> sCookedActors;
 
 static bool sLoadFileToString(const std::string& path, std::string& out)
 {
@@ -46,7 +47,7 @@ static bool sReadVec3(const rapidjson::Value& arr, vec3& out)
 
 static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
 {
-    printf("JSON Parse Error:\n");
+    printf("Json Parse Error:\n");
 
     switch (errorCode)
     {
@@ -109,6 +110,36 @@ static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
     }
 }
 
+static std::string sGetTypeDirectory(eJsonType type)
+{
+    switch (type)
+    {
+    case eJsonType::ACTOR:
+    {
+        return "Actor/";
+    }
+    case eJsonType::SCENE:
+    {
+        return "Scene/";
+    }
+    default:
+        break;
+    }
+    return "";
+}
+
+static std::string sGenerateInputFilePath(const char* applicationRoot, const char* assetName, eJsonType type)
+{
+    std::string assetDirectory("Assets/");
+    return applicationRoot + assetDirectory + sGetTypeDirectory(type) + assetName + ".json";
+}
+
+static std::string sGenerateOutputFilePath(const char* applicationRoot, const char* assetName, eJsonType type)
+{
+    std::string assetDirectory("Cooked/");
+    return applicationRoot + assetDirectory + sGetTypeDirectory(type) + assetName + ".bin";
+}
+
 static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     eComponentId transformId = eComponentId::COMPONENT_TRANSFORM;
@@ -152,10 +183,11 @@ static bool sConvertActorJsonToBinary(rapidjson::Document& jsonDoc, std::ofstrea
             if (!component.HasMember("Type"))
             {
                 printf("Component missing Type member.\n");
+                return false;
             }
 
             std::string type = component["Type"].GetString();
-            printf("Parsing %s component...\n", type.c_str());
+            printf("Parsing %s component...\n", type.data());
 
             // Note, Transform components are typically defined in the scene json, relative to the scene's origin
             if (type == "Transform")
@@ -170,11 +202,10 @@ static bool sConvertActorJsonToBinary(rapidjson::Document& jsonDoc, std::ofstrea
             }
         }
     }
-
 	return true;
 }
 
-static bool sConvertSceneJsonToBinary(const char* assetRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     if (jsonDoc.HasMember("Actors"))
     {
@@ -186,65 +217,65 @@ static bool sConvertSceneJsonToBinary(const char* assetRoot, rapidjson::Document
             return false;
         }
 
-        uint8 numActors = (uint8)actors.Size();
+        uint32 numActors = (uint32)actors.Size();
         printf("Scene has %i components.\n", numActors);
-        out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint8));
+        out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint32));
 
         uint32 actorIndex = 0;
         for (const rapidjson::Value& actor : actors.GetArray())
         {
-            if (!actors.HasMember("Template"))
+            if (!actor.HasMember("Prefab"))
             {
-                printf("Actor missing Template member.\n");
+                printf("Actor missing Prefab member.\n");
             }
 
-            std::string templateName = actor["Template"].GetString();
-            std::string actorInstanceName = templateName + std::to_string(actorIndex);
+            std::string prefabName = actor["Prefab"].GetString();
+            std::string actorInstanceName = prefabName + "_" + std::to_string(actorIndex);
+            std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data(), eJsonType::ACTOR);
+            
+            // Actor Prefab Path
+            uint8 actorPathLength = (uint8)actorOutputPath.length();
+            out.write(reinterpret_cast<const char*>(&actorPathLength), sizeof(uint8));
+            out.write(actorOutputPath.data(), actorPathLength);
 
-            ConvertJsonToBinary(eJsonType::ACTOR, templateName.c_str(), assetRoot);
+            // Cook Actor Prefab
+            // Only need to cook actor prefab once per scene
+            if (!sCookedActors.contains(prefabName))
+            {
+                if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
+                {
+                    return false;
+                }
+                printf("Successfully cooked %s Actor Prefab.\n", prefabName.data());
+                sCookedActors.insert(prefabName);
+            }
+
+            // Actor Scene Transform
             if (!sCookTransform(actor, jsonDoc, out))
             {
-                printf("Failed to parse Transform component for %s\n", actorInstanceName.c_str());
+                printf("Failed to parse Transform component for %s\n", actorInstanceName.data());
                 return false;
             }
-            printf("Successfully parsed Transform component for %s.\n", actorInstanceName.c_str());
+            printf("Successfully parsed Transform component for %s.\n", actorInstanceName.data());
             ++actorIndex;
         }
     }
     return true;
 }
 
-bool ConvertJsonToBinary(eJsonType type, const char* assetRoot, const char* assetName)
+bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char* assetName)
 {
-    std::string inputPath(assetRoot);
-    std::string typeDirectory;
-    switch (type)
-    {
-    case eJsonType::ACTOR:
-    {
-        typeDirectory = "Actor/";
-        break;
-    }
-    case eJsonType::SCENE:
-    {
-        typeDirectory = "Scene/";
-        break;
-    }
-    default:
-        break;
-    }
-    inputPath += typeDirectory + assetName + ".json";
-
+    std::string inputPath = sGenerateInputFilePath(applicationRoot, assetName, type);
     std::string jsonStr;
     if (!sLoadFileToString(inputPath, jsonStr))
     {
-        printf("Failed to load JSON file to string from %s\n", inputPath.c_str());
+        printf("Failed to load json file to string from %s\n", inputPath.data());
         return false;
     }
-    printf("Successfully loaded JSON file string from %s\n", inputPath.c_str());
+    printf("Successfully loaded json file string from %s\n", inputPath.data());
 
     rapidjson::Document jsonDoc;
-    jsonDoc.Parse(jsonStr.c_str());
+    jsonDoc.Parse(jsonStr.data());
 
     if (jsonDoc.HasParseError())
     {
@@ -252,14 +283,14 @@ bool ConvertJsonToBinary(eJsonType type, const char* assetRoot, const char* asse
         return false;
     }
 
-    std::string outputPath = assetRoot + typeDirectory + assetName + ".bin";
+    std::string outputPath = sGenerateOutputFilePath(applicationRoot, assetName, type);
     std::ofstream out(outputPath, std::ios::binary);
     if (!out.is_open())
     {
-        printf("Failed to open binary output file %s\n", outputPath.c_str());
+        printf("Failed to open binary output file %s\n", outputPath.data());
         return false;
     }
-    printf("Successfully opened binary output file %s\n", outputPath.c_str());
+    printf("Successfully opened binary output file %s\n", outputPath.data());
 
     bool success = false;
 
@@ -272,7 +303,8 @@ bool ConvertJsonToBinary(eJsonType type, const char* assetRoot, const char* asse
     }
     case eJsonType::SCENE:
     {
-        success = sConvertSceneJsonToBinary(assetRoot, jsonDoc, out);
+        success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out);
+        sCookedActors.clear();
         break;
     }
     default:

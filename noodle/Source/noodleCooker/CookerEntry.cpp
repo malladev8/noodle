@@ -2,8 +2,9 @@
 #include "JSONCooker.h"
 #include <cstdio>
 #include <unordered_map>
+#include <string>
 
-static const std::unordered_map<const char*, eJsonType> sJsonTypeLookup
+static const std::unordered_map<std::string, eJsonType> sJsonTypeLookup
 {
     {"actor", eJsonType::ACTOR},
     {"scene", eJsonType::SCENE}
@@ -11,17 +12,22 @@ static const std::unordered_map<const char*, eJsonType> sJsonTypeLookup
 
 int main(int argc, char** argv)
 {
-    if (argc < 5)
+    if (argc < 4)
     {
-        printf("Usage: Cooker <type> <asset root> <input> <output>\n");
+        printf("Usage: Cooker <type> <application root> <asset name>\n");
         return -1;
     }
 
-    const char* jsonType = argv[1];
-    const char* assetName = argv[2];
-    const char* assetRoot = argv[3];
+    // Example args
+    //const char* jsonType = "scene";
+    //const char* applicationRoot = "B:/ScarlettDev/RA/RedAngel/";
+    //const char* assetName = "TestScene";
 
-    if (!ConvertJsonToBinary(sJsonTypeLookup.find(jsonType)->second, assetName, assetRoot))
+    const char* jsonType = argv[1];
+    const char* applicationRoot = argv[2];
+    const char* assetName = argv[3];
+
+    if (!ConvertJsonToBinary(sJsonTypeLookup.find(jsonType)->second, applicationRoot, assetName))
     {
         printf("Cook failed.\n");
         return -1;

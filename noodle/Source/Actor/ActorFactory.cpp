@@ -17,7 +17,7 @@ ActorFactory::ActorFactory()
 	m_ActorComponentCreators[eComponentId::COMPONENT_TRANSFORM] = sCreateTransformComponent;
 }
 
-Actor* ActorFactory::CreateActor(const char* binPath)
+Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream)
 {
 	std::ifstream bin(binPath, std::ios::binary);
 	if (!bin.is_open())
@@ -33,6 +33,14 @@ Actor* ActorFactory::CreateActor(const char* binPath)
 		N_LOG("Failed to initialize actor");
 		bin.close();
 		return actor;
+	}
+
+	// If initialized from a scene, create transform component from scene transform data
+	if (sceneStream != nullptr)
+	{
+		ActorComponent* component = CreateComponent(*sceneStream);
+		actor->AddComponent(component);
+		component->SetOwner(actor);
 	}
 
 	// Create components
