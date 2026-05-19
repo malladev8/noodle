@@ -284,6 +284,8 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     }
 
     std::string outputPath = sGenerateOutputFilePath(applicationRoot, assetName, type);
+    std::filesystem::path fsOutputPath = outputPath;
+    std::filesystem::create_directories(fsOutputPath.parent_path());
     std::ofstream out(outputPath, std::ios::binary);
     if (!out.is_open())
     {
