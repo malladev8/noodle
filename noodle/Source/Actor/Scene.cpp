@@ -1,11 +1,11 @@
 #include "../NoodlePch.h"
 #include "Scene.h"
 
-void Scene::Update(int32 deltaMs)
+void Scene::Update(float deltaSeconds)
 {
 	for (auto& actor : m_Actors)
 	{
-		actor->Update(deltaMs);
+		actor->Update(deltaSeconds);
 	}
 }
 

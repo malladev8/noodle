@@ -2,10 +2,14 @@
 #include "NoodleEntry.h"
 #include "NoodleApp.h"
 #include "NoodleInput.h"
+#include "NoodleClock.h"
 
 int NoodleMain()
 {
 	// Initialization
+	Clock clock;
+	clock.Reset();
+
 	NoodleWindowDesc windowDesc
 	{
 		1280,
@@ -21,11 +25,14 @@ int NoodleMain()
 	// Game Loop
 	while (!PlatformShouldExit())
 	{
+		clock.Tick();
+		float deltaSeconds = clock.GetDeltaSeconds();
+
 		Input::BeginFrame();
 		PlatformDispatchMessages();
 		Input::UpdateButtonStates();
 
-		app->Run();
+		app->Run(deltaSeconds);
 	}
 	
 	// Shutdown

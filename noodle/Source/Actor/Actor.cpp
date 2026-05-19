@@ -23,12 +23,12 @@ void Actor::Destroy()
 {
 }
 
-void Actor::Update(int32 deltaMs)
+void Actor::Update(float deltaSeconds)
 {
 	size_t numComponents = m_Components.size();
 	for (size_t i = 0; i < numComponents; ++i)
 	{
-		m_Components[i]->Update(deltaMs);
+		m_Components[i]->Update(deltaSeconds);
 	}
 }
 

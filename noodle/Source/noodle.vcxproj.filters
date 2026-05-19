@@ -42,6 +42,7 @@
     <ClCompile Include="NoodleInput.cpp" />
     <ClCompile Include="NoodlePch.cpp" />
     <ClCompile Include="WinEntry.cpp" />
+    <ClCompile Include="NoodleClock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\NoodleConfig.h">
@@ -91,5 +92,6 @@
     <ClInclude Include="NoodleEntry.h" />
     <ClInclude Include="NoodleInput.h" />
     <ClInclude Include="NoodlePch.h" />
+    <ClInclude Include="NoodleClock.h" />
   </ItemGroup>
 </Project>

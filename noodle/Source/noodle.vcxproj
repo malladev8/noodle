@@ -156,6 +156,7 @@
     <ClCompile Include="Core\NoodleLogger.cpp" />
     <ClCompile Include="NoodleAllocator.cpp" />
     <ClCompile Include="NoodleApp.cpp" />
+    <ClCompile Include="NoodleClock.cpp" />
     <ClCompile Include="NoodleInput.cpp" />
     <ClCompile Include="NoodlePch.cpp" />
     <ClCompile Include="NoodleEntry.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Math\NoodleMath.h" />
     <ClInclude Include="NoodleAllocator.h" />
     <ClInclude Include="NoodleApp.h" />
+    <ClInclude Include="NoodleClock.h" />
     <ClInclude Include="NoodleInput.h" />
     <ClInclude Include="NoodleEntry.h" />
     <ClInclude Include="NoodlePch.h" />

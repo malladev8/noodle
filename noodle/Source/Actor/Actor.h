@@ -18,7 +18,7 @@ public:
 	bool Init(const char* binPath);
 	void PostInit();
 	void Destroy();
-	void Update(int32 deltaMs);
+	void Update(float deltaSeconds);
 
 	ActorId GetId() const { return m_ActorId; }
 	

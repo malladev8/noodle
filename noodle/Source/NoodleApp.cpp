@@ -17,10 +17,10 @@ void NoodleApp::Init()
 	// Testing scene creation
 	SceneFactory sceneFactory;
 	Scene* scene = sceneFactory.CreateScene("B:/ScarlettDev/RA/RedAngel/Cooked/Scene/TestScene.bin");
-	delete scene;
+	m_Scene = std::unique_ptr<Scene>(scene);
 }
 
-void NoodleApp::Run()
+void NoodleApp::Run(float deltaSeconds)
 {
-	
+	m_Scene->Update(deltaSeconds);
 }

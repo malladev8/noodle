@@ -12,7 +12,7 @@ public:
 	virtual ~ActorComponent() {}
 
 	virtual void PostInit() {}
-	virtual void Update(int32 deltaMs) {}
+	virtual void Update(float deltaSeconds) {}
 	virtual eComponentId GetComponentId() const = 0;
 
 protected:
