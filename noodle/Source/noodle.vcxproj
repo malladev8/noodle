@@ -154,6 +154,7 @@
     <ClCompile Include="Actor\Scene.cpp" />
     <ClCompile Include="Actor\SceneFactory.cpp" />
     <ClCompile Include="Core\NoodleLogger.cpp" />
+    <ClCompile Include="Event\EventManager.cpp" />
     <ClCompile Include="NoodleAllocator.cpp" />
     <ClCompile Include="NoodleApp.cpp" />
     <ClCompile Include="NoodleClock.cpp" />
@@ -176,6 +177,9 @@
     <ClInclude Include="Core\NoodleLogger.h" />
     <ClInclude Include="Core\NoodlePlatform.h" />
     <ClInclude Include="Core\NoodleTypes.h" />
+    <ClInclude Include="Event\Event.h" />
+    <ClInclude Include="Event\EventManager.h" />
+    <ClInclude Include="Event\WindowResizeEvent.h" />
     <ClInclude Include="Math\NoodleMath.h" />
     <ClInclude Include="NoodleAllocator.h" />
     <ClInclude Include="NoodleApp.h" />

@@ -13,6 +13,9 @@
     <Filter Include="Actor\Components">
       <UniqueIdentifier>{9e2c4701-3f57-4770-97bc-d2208fefeeb8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Event">
+      <UniqueIdentifier>{ec8e9cba-8cea-4406-97ff-265f18825760}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\NoodleLogger.cpp">
@@ -43,6 +46,9 @@
     <ClCompile Include="NoodlePch.cpp" />
     <ClCompile Include="WinEntry.cpp" />
     <ClCompile Include="NoodleClock.cpp" />
+    <ClCompile Include="Event\EventManager.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\NoodleConfig.h">
@@ -93,5 +99,14 @@
     <ClInclude Include="NoodleInput.h" />
     <ClInclude Include="NoodlePch.h" />
     <ClInclude Include="NoodleClock.h" />
+    <ClInclude Include="Event\Event.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Event\WindowResizeEvent.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Event\EventManager.h">
+      <Filter>Event</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
