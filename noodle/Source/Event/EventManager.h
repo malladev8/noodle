@@ -16,7 +16,7 @@ using EventId = uint32;
 class EventManager
 {
 public:
-	EventManager(const char* name, bool setAsGlobal = false);
+	EventManager(const char* name);
 	virtual ~EventManager() = default;
 
 	template<typename TEvent>
@@ -47,7 +47,7 @@ public:
 	void Update(float deltaSeconds);
 
 	// Returns the Global Event Manager
-	static const EventManager* GetGlobalEventManager();
+	static EventManager* GetGlobalEventManager();
 
 protected:
 	using InternalFn = std::function<void(const void*)>;

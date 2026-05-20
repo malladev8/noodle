@@ -4,14 +4,9 @@
 
 static std::unique_ptr<EventManager> sGlobalEventManager = nullptr;
 
-EventManager::EventManager(const char* name, bool setAsGlobal)
+EventManager::EventManager(const char* name)
 	: m_Name(name), m_NextEventId(0)
 {
-	if (setAsGlobal)
-	{
-		N_ASSERT(sGlobalEventManager == nullptr,  "Global Event Manager already exists.");
-		sGlobalEventManager = std::unique_ptr<EventManager>(this);
-	}
 }
 
 void EventManager::Unsubscribe(EventId eventId)
@@ -37,7 +32,11 @@ void EventManager::Update(float deltaSeconds)
 	}
 }
 
-const EventManager* EventManager::GetGlobalEventManager()
+EventManager* EventManager::GetGlobalEventManager()
 {
+	if (sGlobalEventManager == nullptr)
+	{
+		sGlobalEventManager = std::unique_ptr<EventManager>(N_NEW EventManager("GlobalEventManager"));
+	}
 	return sGlobalEventManager.get();
 }

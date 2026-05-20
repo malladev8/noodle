@@ -3,12 +3,15 @@
 #include "NoodleApp.h"
 #include "NoodleInput.h"
 #include "NoodleClock.h"
+#include "Event/EventManager.h"
 
 int NoodleMain()
 {
 	// Initialization
 	Clock clock;
 	clock.Reset();
+
+	EventManager* globalEventManager = EventManager::GetGlobalEventManager();
 
 	NoodleWindowDesc windowDesc
 	{
@@ -22,6 +25,7 @@ int NoodleMain()
 	NoodleApp* app = N_NEW(NoodleApp);
 	app->Init();
 	
+
 	// Game Loop
 	while (!PlatformShouldExit())
 	{
@@ -31,7 +35,7 @@ int NoodleMain()
 		Input::BeginFrame();
 		PlatformDispatchMessages();
 		Input::UpdateButtonStates();
-
+		globalEventManager->Update(deltaSeconds);
 		app->Run(deltaSeconds);
 	}
 	
