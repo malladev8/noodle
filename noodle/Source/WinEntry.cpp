@@ -1,6 +1,8 @@
 #include "NoodlePch.h"
 #include "NoodleEntry.h"
 #include "NoodleInput.h"
+#include "Event/EventManager.h"
+#include "Event/WindowResizeEvent.h"
 
 #if defined(WINDOWS)
 static HWND sHwnd = nullptr;
@@ -98,7 +100,12 @@ LRESULT CALLBACK Win32WndProc(
     }
     case WM_SIZE:
     {
-        // TODO: Notify renderer about resize
+        // For future reference, wParam contains resize type. i.e. SIZE_RESTORED, SIZE_MINIMIZED, SIZE_MAXIMIZED
+
+        uint32 width = static_cast<uint32>(LOWORD(lParam));
+        uint32 height = static_cast<uint32>(HIWORD(lParam));
+        WindowResizeEvent event(width, height);
+        EventManager::GetGlobalEventManager()->QueueEvent(event);
         return 0;
     }
     case WM_KEYDOWN:

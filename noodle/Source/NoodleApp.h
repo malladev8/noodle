@@ -3,6 +3,7 @@
 #include "NoodleAllocator.h"
 
 class Scene;
+class WindowResizeEvent;
 
 class NoodleApp
 {
@@ -13,7 +14,10 @@ public:
 	virtual void Init();
 	virtual void Run(float deltaSeconds);
 
+	void OnWindowResize(const WindowResizeEvent& event);
+
 protected:
 	std::unique_ptr<Scene> m_Scene;
 private:
+	uint32 m_WindowResizeEventHandle = 0;
 };
