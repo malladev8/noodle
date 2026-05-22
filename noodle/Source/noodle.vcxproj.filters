@@ -16,6 +16,9 @@
     <Filter Include="Event">
       <UniqueIdentifier>{ec8e9cba-8cea-4406-97ff-265f18825760}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{bf9a92e0-341b-4f61-a7d5-d06eb8ef6228}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\NoodleLogger.cpp">
@@ -107,6 +110,12 @@
     </ClInclude>
     <ClInclude Include="Event\EventManager.h">
       <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource\ResourceTypes.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Components\SpriteInterface.h">
+      <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

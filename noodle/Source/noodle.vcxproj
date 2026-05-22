@@ -168,6 +168,7 @@
     <ClInclude Include="Actor\ActorFactory.h" />
     <ClInclude Include="Actor\Components\ActorComponent.h" />
     <ClInclude Include="Actor\Components\ComponentIds.h" />
+    <ClInclude Include="Actor\Components\SpriteInterface.h" />
     <ClInclude Include="Actor\Components\Transform.h" />
     <ClInclude Include="Actor\Components\TransformInterface.h" />
     <ClInclude Include="Actor\Scene.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="NoodleInput.h" />
     <ClInclude Include="NoodleEntry.h" />
     <ClInclude Include="NoodlePch.h" />
+    <ClInclude Include="Resource\ResourceTypes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

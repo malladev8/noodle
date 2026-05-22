@@ -1,6 +1,10 @@
 {
 	"Name": "TestActor",
-	"Components":
+	"Components": 
 	[
+		{
+			"Type": "Sprite",
+			"Asset": "Texture/craftpix/Autumn_Forest_2D_Platformer_Tileset_Environment - Tree 01"
+		}
 	]
 }

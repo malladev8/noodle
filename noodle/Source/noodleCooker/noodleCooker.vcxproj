@@ -149,9 +149,11 @@
   <ItemGroup>
     <ClCompile Include="CookerEntry.cpp" />
     <ClCompile Include="JSONCooker.cpp" />
+    <ClCompile Include="TextureCooker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JSONCooker.h" />
+    <ClInclude Include="TextureCooker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
