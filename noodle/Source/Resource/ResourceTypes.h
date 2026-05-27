@@ -16,7 +16,7 @@ struct Mesh
 	std::vector<uint32> indices;
 };
 
-enum class eTextureFormat  :uint32
+enum class eTextureFormat : uint32
 {
 	R8_UNORM = 0,
 	RG8_UNORM,

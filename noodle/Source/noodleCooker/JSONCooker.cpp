@@ -12,6 +12,7 @@
 #include <unordered_set>
 
 static std::unordered_set<std::string> sCookedActors;
+static std::unordered_set<std::string> sCookedTextures;
 
 static void sWritePath(const std::string& path, std::ofstream& out)
 {
@@ -225,25 +226,28 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
 
                 sWritePath(assetOutputPath, out);
 
-                std::filesystem::path fsOutputPath = assetOutputPath;
-                std::filesystem::create_directories(fsOutputPath.parent_path());
-                std::ofstream textureOut(assetOutputPath, std::ios::binary);
-                if (!textureOut.is_open())
+                if (!sCookedTextures.contains(assetName))
                 {
-                    printf("Failed to open binary output file %s\n", assetOutputPath.data());
-                    return false;
-                }
+                    std::filesystem::path fsOutputPath = assetOutputPath;
+                    std::filesystem::create_directories(fsOutputPath.parent_path());
+                    std::ofstream textureOut(assetOutputPath, std::ios::binary);
+                    if (!textureOut.is_open())
+                    {
+                        printf("Failed to open binary output file %s\n", assetOutputPath.data());
+                        return false;
+                    }
 
-                std::string assetInputPath = applicationRoot;
-                assetInputPath += "Assets/" + assetName + ".png";
-                TextureCooker textureCooker;
-                if (!textureCooker.CookTexture(assetInputPath.c_str(), textureOut))
-                {
+                    std::string assetInputPath = applicationRoot;
+                    assetInputPath += "Assets/" + assetName + ".png";
+                    TextureCooker textureCooker;
+                    if (!textureCooker.CookTexture(assetInputPath.c_str(), textureOut))
+                    {
+                        textureOut.close();
+                        return false;
+                    }
                     textureOut.close();
-                    return false;
+                    sCookedTextures.insert(assetName);
                 }
-
-                textureOut.close();
                 printf("Successfully parsed Sprite component.\n");
             }
         }
@@ -351,6 +355,7 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     {
         success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out);
         sCookedActors.clear();
+        sCookedTextures.clear();
         break;
     }
     default:

@@ -2,6 +2,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ThirdParty/stb/stb_image.h"
+#include "../Resource/ResourceTypes.h"
 
 bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out)
 {
@@ -17,8 +18,14 @@ bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out)
         return false;
     }
 
-    out.write(reinterpret_cast<const char*>(&width), sizeof(width));
-    out.write(reinterpret_cast<const char*>(&height), sizeof(height));
+    // TODO: Actually read in format from somewhere
+    eTextureFormat texformat = eTextureFormat::RGBA8_UNORM_SRGB;
+    out.write(reinterpret_cast<const char*>(&texformat), sizeof(eTextureFormat));
+
+    uint32 uwidth = (uint32)width;
+    uint32 uheight = (uint32)height;
+    out.write(reinterpret_cast<const char*>(&uwidth), sizeof(uwidth));
+    out.write(reinterpret_cast<const char*>(&uheight), sizeof(uheight));
 
     uint32 pixelCount = width * height * req_comp;
     out.write(reinterpret_cast<const char*>(&pixelCount), sizeof(pixelCount));

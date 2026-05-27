@@ -1,4 +1,5 @@
 #pragma once
+#include "../../Core/NoodleCore.h"
 #include "TransformInterface.h"
 #include "../../Math/NoodleMath.h"
 

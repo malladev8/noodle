@@ -150,6 +150,7 @@
     <ClCompile Include="Actor\Actor.cpp" />
     <ClCompile Include="Actor\ActorFactory.cpp" />
     <ClCompile Include="Actor\Components\ActorComponent.cpp" />
+    <ClCompile Include="Actor\Components\Sprite.cpp" />
     <ClCompile Include="Actor\Components\Transform.cpp" />
     <ClCompile Include="Actor\Scene.cpp" />
     <ClCompile Include="Actor\SceneFactory.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Actor\ActorFactory.h" />
     <ClInclude Include="Actor\Components\ActorComponent.h" />
     <ClInclude Include="Actor\Components\ComponentIds.h" />
+    <ClInclude Include="Actor\Components\Sprite.h" />
     <ClInclude Include="Actor\Components\SpriteInterface.h" />
     <ClInclude Include="Actor\Components\Transform.h" />
     <ClInclude Include="Actor\Components\TransformInterface.h" />

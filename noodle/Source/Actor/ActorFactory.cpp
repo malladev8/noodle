@@ -3,6 +3,7 @@
 #include "../Math/NoodleMath.h"
 
 #include "Components/Transform.h"
+#include "Components/Sprite.h"
 
 #include <fstream>
 
@@ -11,10 +12,16 @@ static ActorComponent* sCreateTransformComponent()
 	return N_NEW Transform;
 }
 
+static ActorComponent* sCreateSpriteComponent()
+{
+	return N_NEW Sprite;
+}
+
 ActorFactory::ActorFactory()
 	: m_LastActorId(0)
 {
 	m_ActorComponentCreators[eComponentId::COMPONENT_TRANSFORM] = sCreateTransformComponent;
+	m_ActorComponentCreators[eComponentId::COMPONENT_SPRITE] = sCreateSpriteComponent;
 }
 
 Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream)

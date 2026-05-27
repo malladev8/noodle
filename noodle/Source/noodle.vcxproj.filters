@@ -52,6 +52,9 @@
     <ClCompile Include="Event\EventManager.cpp">
       <Filter>Event</Filter>
     </ClCompile>
+    <ClCompile Include="Actor\Components\Sprite.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\NoodleConfig.h">
@@ -115,6 +118,9 @@
       <Filter>Resource</Filter>
     </ClInclude>
     <ClInclude Include="Actor\Components\SpriteInterface.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor\Components\Sprite.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
