@@ -10,6 +10,6 @@ class Sprite : public SpriteInterface
 public:
 protected:
 private:
-	Texture m_Texture;
+	std::shared_ptr<Texture> m_Texture;
 	virtual bool Init(std::ifstream& bin);
 };

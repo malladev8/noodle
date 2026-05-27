@@ -2,9 +2,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ThirdParty/stb/stb_image.h"
-#include "../Resource/ResourceTypes.h"
 
-bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out)
+bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out, AssetId assetId)
 {
     int width = -1;
     int height = -1;
@@ -17,6 +16,8 @@ bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out)
         printf("Failed to load texture from: %s\n", assetPath);
         return false;
     }
+
+    out.write(reinterpret_cast<const char*>(&assetId), sizeof(AssetId));
 
     // TODO: Actually read in format from somewhere
     eTextureFormat texformat = eTextureFormat::RGBA8_UNORM_SRGB;

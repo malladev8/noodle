@@ -8,7 +8,7 @@ set COOKER=%APP_ROOT%..\noodle\Lib\x64\Debug\noodleCooker.exe
 
 for /R %SCENE_DIR% %%f in (*.json) do (
 	echo Cooking %%f
-	"%COOKER%" %ASSET_TYPE% %APP_ROOT% %%~nf
+	"%COOKER%" %ASSET_TYPE% %APP_ROOT% Scene\%%~nf
 )
 
 echo Done.

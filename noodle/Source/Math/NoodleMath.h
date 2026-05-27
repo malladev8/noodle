@@ -1,5 +1,6 @@
 #pragma once
 #include "../Core/NoodleCore.h"
+#include <cmath>
 
 // Noodle uses a left handed coordinate system where: X is forward, Y is right, Z is up
 

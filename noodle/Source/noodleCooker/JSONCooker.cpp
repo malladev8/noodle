@@ -3,16 +3,37 @@
 #include "../Math/NoodleMath.h"
 #include "../Actor/Components/ComponentIds.h"
 #include "TextureCooker.h"
+#include "../Resource/ResourceTypes.h"
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <cstdio>
 #include <filesystem>
-#include <unordered_set>
+#include <unordered_map>
 
-static std::unordered_set<std::string> sCookedActors;
-static std::unordered_set<std::string> sCookedTextures;
+static const char* BINARY_EXTENSION = ".bin";
+
+struct AssetMetadata
+{
+    AssetId assedId = 0;
+    std::string sourcePath = "";
+    std::string cookedPath = "";
+};
+
+static std::unordered_map <AssetId, AssetMetadata> sCookedAssets;
+static void sClearCookedCache()
+{
+    sCookedAssets.clear();
+}
+
+static AssetId sGenerateAssetId(const std::string& path)
+{
+    std::filesystem::path normalized = path;
+    normalized = normalized.lexically_normal();
+    normalized.make_preferred();
+    return std::hash<std::filesystem::path>{}(normalized.c_str());
+}
 
 static void sWritePath(const std::string& path, std::ofstream& out)
 {
@@ -119,34 +140,16 @@ static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
     }
 }
 
-static std::string sGetTypeDirectory(eJsonType type)
+static std::string sGenerateInputFilePath(const char* applicationRoot, const char* assetName, const char* exentsion)
 {
-    switch (type)
-    {
-    case eJsonType::ACTOR:
-    {
-        return "Actor/";
-    }
-    case eJsonType::SCENE:
-    {
-        return "Scene/";
-    }
-    default:
-        break;
-    }
-    return "";
+    std::string assetDirectory("Assets\\");
+    return applicationRoot + assetDirectory + assetName + exentsion;
 }
 
-static std::string sGenerateInputFilePath(const char* applicationRoot, const char* assetName, eJsonType type)
+static std::string sGenerateOutputFilePath(const char* applicationRoot, const char* assetName)
 {
-    std::string assetDirectory("Assets/");
-    return applicationRoot + assetDirectory + sGetTypeDirectory(type) + assetName + ".json";
-}
-
-static std::string sGenerateOutputFilePath(const char* applicationRoot, const char* assetName, eJsonType type)
-{
-    std::string assetDirectory("Cooked/");
-    return applicationRoot + assetDirectory + sGetTypeDirectory(type) + assetName + ".bin";
+    std::string assetDirectory("Cooked\\");
+    return applicationRoot + assetDirectory + assetName + BINARY_EXTENSION;
 }
 
 static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::Document& jsonDoc, std::ofstream& out)
@@ -171,8 +174,10 @@ static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::D
     return true;
 }
 
-static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out, AssetId assetId)
 {
+    out.write(reinterpret_cast<const char*>(&assetId), sizeof(AssetId));
+
     if (jsonDoc.HasMember("Components"))
     {
         const rapidjson::Value& components = jsonDoc["Components"];
@@ -221,12 +226,13 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 }
 
                 std::string assetName = component["Asset"].GetString();
-                std::string assetOutputPath = applicationRoot;
-                assetOutputPath += "Cooked/" + assetName + ".bin";
+                std::string assetOutputPath = sGenerateOutputFilePath(applicationRoot, assetName.data());
 
                 sWritePath(assetOutputPath, out);
 
-                if (!sCookedTextures.contains(assetName))
+                AssetId assetId = sGenerateAssetId(assetName);
+
+                if (!sCookedAssets.contains(assetId))
                 {
                     std::filesystem::path fsOutputPath = assetOutputPath;
                     std::filesystem::create_directories(fsOutputPath.parent_path());
@@ -237,16 +243,20 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                         return false;
                     }
 
-                    std::string assetInputPath = applicationRoot;
-                    assetInputPath += "Assets/" + assetName + ".png";
+                    std::string assetInputPath = sGenerateInputFilePath(applicationRoot, assetName.data(), ".png");
                     TextureCooker textureCooker;
-                    if (!textureCooker.CookTexture(assetInputPath.c_str(), textureOut))
+                    if (!textureCooker.CookTexture(assetInputPath.c_str(), textureOut, assetId))
                     {
                         textureOut.close();
                         return false;
                     }
                     textureOut.close();
-                    sCookedTextures.insert(assetName);
+
+                    AssetMetadata metadata;
+                    metadata.assedId = assetId;
+                    metadata.sourcePath = assetInputPath;
+                    metadata.cookedPath = assetOutputPath;
+                    sCookedAssets.insert({ assetId, metadata });
                 }
                 printf("Successfully parsed Sprite component.\n");
             }
@@ -255,8 +265,10 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
 	return true;
 }
 
-static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out, AssetId assetId)
 {
+    out.write(reinterpret_cast<const char*>(&assetId), sizeof(AssetId));
+
     if (jsonDoc.HasMember("Actors"))
     {
         const rapidjson::Value& actors = jsonDoc["Actors"];
@@ -281,22 +293,17 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
 
             std::string prefabName = actor["Prefab"].GetString();
             std::string actorInstanceName = prefabName + "_" + std::to_string(actorIndex);
-            std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data(), eJsonType::ACTOR);
+            std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data());
             
             // Actor Prefab Path
             sWritePath(actorOutputPath, out);
 
             // Cook Actor Prefab
-            // Only need to cook actor prefab once per scene
-            if (!sCookedActors.contains(prefabName))
+            if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
             {
-                if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
-                {
-                    return false;
-                }
-                printf("Successfully cooked %s Actor Prefab.\n", prefabName.data());
-                sCookedActors.insert(prefabName);
+                return false;
             }
+            printf("Successfully cooked %s Actor Prefab.\n", prefabName.data());
 
             // Actor Scene Transform
             if (!sCookTransform(actor, jsonDoc, out))
@@ -313,7 +320,13 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
 
 bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char* assetName)
 {
-    std::string inputPath = sGenerateInputFilePath(applicationRoot, assetName, type);
+    AssetId assetId = sGenerateAssetId(assetName);
+    if (sCookedAssets.contains(assetId))
+    {
+        return true;
+    }
+
+    std::string inputPath = sGenerateInputFilePath(applicationRoot, assetName, ".json");
     std::string jsonStr;
     if (!sLoadFileToString(inputPath, jsonStr))
     {
@@ -331,7 +344,7 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
         return false;
     }
 
-    std::string outputPath = sGenerateOutputFilePath(applicationRoot, assetName, type);
+    std::string outputPath = sGenerateOutputFilePath(applicationRoot, assetName);
     std::filesystem::path fsOutputPath = outputPath;
     std::filesystem::create_directories(fsOutputPath.parent_path());
     std::ofstream out(outputPath, std::ios::binary);
@@ -348,14 +361,13 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     {
     case eJsonType::ACTOR: 
     {
-        success = sConvertActorJsonToBinary(applicationRoot, jsonDoc, out);
+        success = sConvertActorJsonToBinary(applicationRoot, jsonDoc, out, assetId);
         break;
     }
     case eJsonType::SCENE:
     {
-        success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out);
-        sCookedActors.clear();
-        sCookedTextures.clear();
+        success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out, assetId);
+        sClearCookedCache();
         break;
     }
     default:
@@ -363,5 +375,12 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     }
 
     out.close();
+
+    AssetMetadata metadata;
+    metadata.assedId = assetId;
+    metadata.sourcePath = inputPath;
+    metadata.cookedPath = outputPath;
+    sCookedAssets.insert({ assetId, metadata });
+
     return success;
 }

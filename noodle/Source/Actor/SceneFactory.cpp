@@ -2,6 +2,7 @@
 #include "SceneFactory.h"
 #include "Scene.h"
 #include "ActorFactory.h"
+#include "../Resource/ResourceTypes.h"
 
 #include <fstream>
 
@@ -19,6 +20,10 @@ Scene* SceneFactory::CreateScene(const char* binPath)
 	}
 
 	Scene* scene = N_NEW Scene();
+
+	// Scene Asset Id
+	AssetId sceneId = 0;
+	bin.read(reinterpret_cast<char*>(&sceneId), sizeof(AssetId));
 
 	// Create Actors
 	uint32 numActors = 0;

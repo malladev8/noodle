@@ -3,6 +3,8 @@
 #include "../Math/NoodleMath.h"
 #include <vector>
 
+using AssetId = uint64;
+
 struct Vertex
 {
 	vec3 position;

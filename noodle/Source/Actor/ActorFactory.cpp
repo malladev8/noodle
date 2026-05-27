@@ -42,6 +42,9 @@ Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream
 		return actor;
 	}
 
+	AssetId actorPrefabId = 0;
+	bin.read(reinterpret_cast<char*>(&actorPrefabId), sizeof(AssetId));
+
 	// If initialized from a scene, create transform component from scene transform data
 	if (sceneStream != nullptr)
 	{
