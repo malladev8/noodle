@@ -6,7 +6,13 @@
 
 Engine::Engine()
 	: m_EventManager(EventManager("GlobalEventManager")),
-	  m_ResourceManager(ResourceManager())
+	  m_ResourceManager(ResourceManager()),
+	  m_EngineContext(
+		  {
+			  m_EventManager, 
+			  m_ResourceManager
+		  }
+	  )
 {
 }
 

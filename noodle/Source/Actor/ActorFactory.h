@@ -6,6 +6,8 @@
 typedef ActorComponent* (*ActorComponentCreator)(void);
 typedef std::unordered_map<eComponentId, ActorComponentCreator> ActorComponentCreatorMap;
 
+struct EngineContext;
+
 class ActorFactory
 {
 public:
@@ -14,7 +16,7 @@ public:
 
 protected:
 	ActorComponentCreatorMap m_ActorComponentCreators;
-	virtual ActorComponent* CreateComponent(std::ifstream& bin);
+	virtual ActorComponent* CreateComponent(std::ifstream& bin, EngineContext& engineContext);
 
 private:
 	ActorId m_LastActorId;

@@ -107,7 +107,7 @@ LRESULT CALLBACK Win32WndProc(
         uint32 width = static_cast<uint32>(LOWORD(lParam));
         uint32 height = static_cast<uint32>(HIWORD(lParam));
         WindowResizeEvent event(width, height);
-        Engine::Get().GetEventManager().QueueEvent(event);
+        Engine::Get().GetContext().eventManager.QueueEvent(event);
         return 0;
     }
     case WM_KEYDOWN:
@@ -259,12 +259,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     CreateDebugConsole();
 #endif
     Engine& engine = Engine::Get();
-    EngineContext context
-    {
-        engine.GetEventManager(),
-        engine.GetResourceManager()
-    };
-    engine.Run(std::make_unique<RedAngelApp>(context));
+    engine.Run(std::make_unique<RedAngelApp>(engine.GetContext()));
     return 0;
 }
 #endif

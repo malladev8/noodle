@@ -31,11 +31,7 @@ Scene* SceneFactory::CreateScene(const char* binPath)
 	ActorFactory actorFactory;
 	for (uint32 i = 0; i < numActors; ++i)
 	{
-		uint8 actorPathLength;
-		bin.read(reinterpret_cast<char*>(&actorPathLength), sizeof(uint8));
-		std::string actorPrefabPath;
-		actorPrefabPath.resize(actorPathLength);
-		bin.read(reinterpret_cast<char*>(actorPrefabPath.data()), actorPathLength);
+		std::string actorPrefabPath = path::ReadFilePath(bin);
 		Actor* actor = actorFactory.CreateActor(actorPrefabPath.data(), &bin);
 		scene->AddActor(actor);
 	}

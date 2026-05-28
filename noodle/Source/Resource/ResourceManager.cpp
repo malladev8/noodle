@@ -11,7 +11,7 @@ std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
 	{
 		// Create Texture
 		Texture* tex = N_NEW Texture();
-		bin.read(reinterpret_cast<char*>(&tex->resource), sizeof(eTextureFormat));
+		bin.read(reinterpret_cast<char*>(&tex->format), sizeof(eTextureFormat));
 		bin.read(reinterpret_cast<char*>(&tex->width), sizeof(uint32));
 		bin.read(reinterpret_cast<char*>(&tex->height), sizeof(uint32));
 		
@@ -20,7 +20,7 @@ std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
 		
 		std::vector<unsigned char> pixels;
 		pixels.resize(pixelCount);
-		bin.read(reinterpret_cast<char*>(&pixels), pixelCount);
+		bin.read(reinterpret_cast<char*>(pixels.data()), pixelCount);
 
 		// TODO: Initialize GPU resource and cache in Texture::resource
 

@@ -12,5 +12,5 @@ protected:
 private:
 	mat4x4 m_Transform;
 
-	virtual bool Init(std::ifstream& bin) override;
+	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

@@ -2,6 +2,7 @@
 #include "Core/NoodleCore.h"
 #include "Event/EventManager.h"
 #include "Resource/ResourceManager.h"
+#include "EngineContext.h"
 
 class NoodleApp;
 
@@ -22,8 +23,7 @@ public:
 	static Engine& Get();
 	void Run(std::unique_ptr<NoodleApp> app);
 
-	EventManager& GetEventManager() { return m_EventManager; }
-	ResourceManager& GetResourceManager() { return m_ResourceManager; }
+	EngineContext& GetContext() { return m_EngineContext; }
 
 protected:
 
@@ -31,6 +31,8 @@ private:
 	EventManager m_EventManager;
 	// Renderer will live here eventually
 	ResourceManager m_ResourceManager;
+
+	EngineContext m_EngineContext;
 
 	std::unique_ptr<NoodleApp> m_App = nullptr;
 

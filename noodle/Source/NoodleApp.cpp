@@ -4,7 +4,6 @@
 #include "EngineContext.h"
 #include "Event/EventManager.h"
 #include "Event/WindowResizeEvent.h"
-#include "NoodleEngine.h"
 
 static const size_t APP_SIZE = 1_GB;
 

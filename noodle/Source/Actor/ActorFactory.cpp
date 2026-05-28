@@ -1,9 +1,9 @@
 #include "NoodlePch.h"
 #include "ActorFactory.h"
-#include "Math/NoodleMath.h"
-
-#include "Components/Transform.h"
 #include "Components/Sprite.h"
+#include "Components/Transform.h"
+#include "Math/NoodleMath.h"
+#include "NoodleEngine.h"
 
 #include <fstream>
 
@@ -45,10 +45,12 @@ Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream
 	AssetId actorPrefabId = 0;
 	bin.read(reinterpret_cast<char*>(&actorPrefabId), sizeof(AssetId));
 
+	EngineContext& context = Engine::Get().GetContext();
+
 	// If initialized from a scene, create transform component from scene transform data
 	if (sceneStream != nullptr)
 	{
-		ActorComponent* component = CreateComponent(*sceneStream);
+		ActorComponent* component = CreateComponent(*sceneStream, context);
 		actor->AddComponent(component);
 		component->SetOwner(actor);
 	}
@@ -59,7 +61,7 @@ Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream
 
 	for (uint8 i = 0; i < numComponents; ++i)
 	{
-		ActorComponent* component = CreateComponent(bin);
+		ActorComponent* component = CreateComponent(bin, context);
 		actor->AddComponent(component);
 		component->SetOwner(actor);
 	}
@@ -69,11 +71,11 @@ Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream
 	return actor;
 }
 
-ActorComponent* ActorFactory::CreateComponent(std::ifstream& bin)
+ActorComponent* ActorFactory::CreateComponent(std::ifstream& bin, EngineContext& engineContext)
 {
 	eComponentId componentId;
 	bin.read(reinterpret_cast<char*>(&componentId), sizeof(eComponentId));
 	ActorComponent* component = m_ActorComponentCreators[componentId]();
-	component->Init(bin);
+	component->Init(bin, engineContext);
 	return component;
 }

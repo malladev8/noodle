@@ -3,6 +3,7 @@
 #include "ComponentIds.h"
 
 class Actor;
+struct EngineContext;
 
 class ActorComponent
 {
@@ -19,6 +20,6 @@ protected:
 	Actor* m_Owner = nullptr;
 
 private:
-	virtual bool Init(std::ifstream& bin) = 0;
+	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) = 0;
 	void SetOwner(Actor* owner) { m_Owner = owner; }
 };

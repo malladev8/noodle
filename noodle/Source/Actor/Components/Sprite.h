@@ -11,5 +11,5 @@ public:
 protected:
 private:
 	std::shared_ptr<Texture> m_Texture = nullptr;
-	virtual bool Init(std::ifstream& bin);
+	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };
