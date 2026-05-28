@@ -1,4 +1,4 @@
-#include "../../NoodlePch.h"
+#include "NoodlePch.h"
 #include "Sprite.h"
 #include "EngineContext.h"
 #include "Resource/ResourceManager.h"
