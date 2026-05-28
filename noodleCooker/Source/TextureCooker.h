@@ -1,6 +1,6 @@
 #pragma once
-#include "../Core/NoodleCore.h"
-#include "../Resource/ResourceTypes.h"
+#include "Core/NoodleCore.h"
+#include "Resource/ResourceTypes.h"
 
 #include <fstream>
 

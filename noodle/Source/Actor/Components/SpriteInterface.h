@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Core/NoodleCore.h"
+#include "Core/NoodleCore.h"
 #include "ActorComponent.h"
 
 class SpriteInterface : public ActorComponent

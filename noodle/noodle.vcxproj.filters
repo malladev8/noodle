@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{554275e0-274a-454a-a4ff-01918ceb550c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{c9f76ccd-a1ec-44b2-8075-2498bb76d3fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor">
+      <UniqueIdentifier>{69ec4099-ac43-4356-ac46-bc3342db86b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actor\Components">
+      <UniqueIdentifier>{9e2c4701-3f57-4770-97bc-d2208fefeeb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Event">
+      <UniqueIdentifier>{ec8e9cba-8cea-4406-97ff-265f18825760}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{bf9a92e0-341b-4f61-a7d5-d06eb8ef6228}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\NoodleAllocator.cpp" />
+    <ClCompile Include="Source\NoodleApp.cpp" />
+    <ClCompile Include="Source\NoodleClock.cpp" />
+    <ClCompile Include="Source\NoodleInput.cpp" />
+    <ClCompile Include="Source\NoodlePch.cpp" />
+    <ClCompile Include="Source\Resource\ResourceManager.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Event\EventManager.cpp">
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\NoodleLogger.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utilities.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Actor.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\ActorFactory.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Scene.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\SceneFactory.cpp">
+      <Filter>Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Components\ActorComponent.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Components\Sprite.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Components\Transform.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NoodleEngine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\NoodleAllocator.h" />
+    <ClInclude Include="Source\NoodleApp.h" />
+    <ClInclude Include="Source\NoodleClock.h" />
+    <ClInclude Include="Source\NoodleInput.h" />
+    <ClInclude Include="Source\NoodlePch.h" />
+    <ClInclude Include="Source\Resource\ResourceManager.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Resource\ResourceTypes.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\NoodleMath.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Event\Event.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Event\EventManager.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Event\WindowResizeEvent.h">
+      <Filter>Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\NoodleConfig.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\NoodleCore.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\NoodleLogger.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\NoodlePlatform.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\NoodleTypes.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Utilities.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Actor.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\ActorFactory.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Scene.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\SceneFactory.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\ActorComponent.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\ComponentIds.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\Sprite.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\SpriteInterface.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\Transform.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\TransformInterface.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\NoodleEngine.h" />
+    <ClInclude Include="Source\EngineContext.h" />
+  </ItemGroup>
+</Project>

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Core/NoodleCore.h"
+#include "Core/NoodleCore.h"
 #include "Event.h"
 
 class WindowResizeEvent : public Event

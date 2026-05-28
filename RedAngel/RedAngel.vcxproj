@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4c3a513c-b0f2-4c89-a427-6bc8f4608a03}</ProjectGuid>
-    <RootNamespace>noodle</RootNamespace>
+    <ProjectGuid>{aeb98bf4-8db8-4326-b5f5-5c7c4b9cca09}</ProjectGuid>
+    <RootNamespace>RedAngel</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,21 +70,21 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Game\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>Game\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>Game\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>Game\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,12 +93,15 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -109,12 +112,15 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -123,12 +129,15 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -139,58 +148,27 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Manifest>
+      <EnableSegmentHeap>true</EnableSegmentHeap>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Actor\Actor.cpp" />
-    <ClCompile Include="Actor\ActorFactory.cpp" />
-    <ClCompile Include="Actor\Components\ActorComponent.cpp" />
-    <ClCompile Include="Actor\Components\Sprite.cpp" />
-    <ClCompile Include="Actor\Components\Transform.cpp" />
-    <ClCompile Include="Actor\Scene.cpp" />
-    <ClCompile Include="Actor\SceneFactory.cpp" />
-    <ClCompile Include="Core\NoodleLogger.cpp" />
-    <ClCompile Include="Event\EventManager.cpp" />
-    <ClCompile Include="NoodleAllocator.cpp" />
-    <ClCompile Include="NoodleApp.cpp" />
-    <ClCompile Include="NoodleClock.cpp" />
-    <ClCompile Include="NoodleInput.cpp" />
-    <ClCompile Include="NoodlePch.cpp" />
-    <ClCompile Include="NoodleEntry.cpp" />
-    <ClCompile Include="WinEntry.cpp" />
+    <ProjectReference Include="..\noodle\noodle.vcxproj">
+      <Project>{4c3a513c-b0f2-4c89-a427-6bc8f4608a03}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Actor\Actor.h" />
-    <ClInclude Include="Actor\ActorFactory.h" />
-    <ClInclude Include="Actor\Components\ActorComponent.h" />
-    <ClInclude Include="Actor\Components\ComponentIds.h" />
-    <ClInclude Include="Actor\Components\Sprite.h" />
-    <ClInclude Include="Actor\Components\SpriteInterface.h" />
-    <ClInclude Include="Actor\Components\Transform.h" />
-    <ClInclude Include="Actor\Components\TransformInterface.h" />
-    <ClInclude Include="Actor\Scene.h" />
-    <ClInclude Include="Actor\SceneFactory.h" />
-    <ClInclude Include="Core\NoodleConfig.h" />
-    <ClInclude Include="Core\NoodleCore.h" />
-    <ClInclude Include="Core\NoodleLogger.h" />
-    <ClInclude Include="Core\NoodlePlatform.h" />
-    <ClInclude Include="Core\NoodleTypes.h" />
-    <ClInclude Include="Event\Event.h" />
-    <ClInclude Include="Event\EventManager.h" />
-    <ClInclude Include="Event\WindowResizeEvent.h" />
-    <ClInclude Include="Math\NoodleMath.h" />
-    <ClInclude Include="NoodleAllocator.h" />
-    <ClInclude Include="NoodleApp.h" />
-    <ClInclude Include="NoodleClock.h" />
-    <ClInclude Include="NoodleInput.h" />
-    <ClInclude Include="NoodleEntry.h" />
-    <ClInclude Include="NoodlePch.h" />
-    <ClInclude Include="Resource\ResourceTypes.h" />
+    <ClCompile Include="Source\RedAngelApp.cpp" />
+    <ClCompile Include="Source\WinEntry.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\RedAngelApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

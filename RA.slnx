@@ -3,6 +3,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="noodle.vcxproj" Id="4c3a513c-b0f2-4c89-a427-6bc8f4608a03" />
+  <Project Path="noodle/noodle.vcxproj" Id="4c3a513c-b0f2-4c89-a427-6bc8f4608a03" />
   <Project Path="noodleCooker/noodleCooker.vcxproj" Id="151c5857-54c7-469a-a7fa-efa70c2744f1" />
+  <Project Path="RedAngel/RedAngel.vcxproj" Id="aeb98bf4-8db8-4326-b5f5-5c7c4b9cca09" />
 </Solution>

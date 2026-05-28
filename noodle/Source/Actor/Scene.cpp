@@ -1,4 +1,4 @@
-#include "../NoodlePch.h"
+#include "NoodlePch.h"
 #include "Scene.h"
 
 void Scene::Update(float deltaSeconds)

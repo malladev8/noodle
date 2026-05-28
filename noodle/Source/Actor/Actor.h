@@ -1,5 +1,5 @@
 #pragma once
-#include "../Core/NoodleCore.h"
+#include "Core/NoodleCore.h"
 #include "Components/ActorComponent.h"
 #include <unordered_map>
 #include <vector>

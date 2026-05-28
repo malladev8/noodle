@@ -1,5 +1,5 @@
 #pragma once
-#include "../Core/NoodleCore.h"
+#include "Core/NoodleCore.h"
 #include <functional>
 #include <unordered_map>
 #include <typeindex>
@@ -45,9 +45,6 @@ public:
 	}
 
 	void Update(float deltaSeconds);
-
-	// Returns the Global Event Manager
-	static EventManager* GetGlobalEventManager();
 
 protected:
 	using InternalFn = std::function<void(const void*)>;

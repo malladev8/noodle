@@ -1,8 +1,8 @@
-#include "../NoodlePch.h"
+#include "NoodlePch.h"
 #include "SceneFactory.h"
 #include "Scene.h"
 #include "ActorFactory.h"
-#include "../Resource/ResourceTypes.h"
+#include "Resource/ResourceTypes.h"
 
 #include <fstream>
 

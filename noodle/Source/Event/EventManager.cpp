@@ -1,8 +1,6 @@
-#include "../NoodlePch.h"
+#include "NoodlePch.h"
 #include "EventManager.h"
 #include "Event.h"
-
-static std::unique_ptr<EventManager> sGlobalEventManager = nullptr;
 
 EventManager::EventManager(const char* name)
 	: m_Name(name), m_NextEventId(0)
@@ -30,13 +28,4 @@ void EventManager::Update(float deltaSeconds)
 		m_EventQueue.front()->Dispatch(*this);
 		m_EventQueue.pop();
 	}
-}
-
-EventManager* EventManager::GetGlobalEventManager()
-{
-	if (sGlobalEventManager == nullptr)
-	{
-		sGlobalEventManager = std::unique_ptr<EventManager>(N_NEW EventManager("GlobalEventManager"));
-	}
-	return sGlobalEventManager.get();
 }

@@ -4,20 +4,24 @@
 
 class Scene;
 class WindowResizeEvent;
+struct EngineContext;
 
 class NoodleApp
 {
 public:
-	NoodleApp();
+	NoodleApp(EngineContext& engineContext);
 	virtual ~NoodleApp();
 
 	virtual void Init();
 	virtual void Run(float deltaSeconds);
+	virtual void Shutdown();
 
-	void OnWindowResize(const WindowResizeEvent& event);
+	virtual void OnWindowResize(const WindowResizeEvent& event);
 
 protected:
 	std::unique_ptr<Scene> m_Scene;
-private:
+	EngineContext& m_EngineContext;
 	uint32 m_WindowResizeEventHandle = 0;
+
+private:
 };

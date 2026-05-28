@@ -1,6 +1,6 @@
-#include "../NoodlePch.h"
+#include "NoodlePch.h"
 #include "ActorFactory.h"
-#include "../Math/NoodleMath.h"
+#include "Math/NoodleMath.h"
 
 #include "Components/Transform.h"
 #include "Components/Sprite.h"

@@ -1,7 +1,7 @@
 #pragma once
-#include "../../Core/NoodleCore.h"
+#include "Core/NoodleCore.h"
 #include "TransformInterface.h"
-#include "../../Math/NoodleMath.h"
+#include "Math/NoodleMath.h"
 
 class Transform : public TransformInterface
 {

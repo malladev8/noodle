@@ -1,9 +1,9 @@
 #include "JSONCooker.h"
-#include "../ThirdParty/rapidjson-master/include/rapidjson/document.h"
-#include "../Math/NoodleMath.h"
-#include "../Actor/Components/ComponentIds.h"
 #include "TextureCooker.h"
-#include "../Resource/ResourceTypes.h"
+#include "ThirdParty/rapidjson-master/include/rapidjson/document.h"
+#include "Math/NoodleMath.h"
+#include "Actor/Components/ComponentIds.h"
+#include "Resource/ResourceTypes.h"
 
 #include <fstream>
 #include <sstream>
@@ -33,13 +33,6 @@ static AssetId sGenerateAssetId(const std::string& path)
     normalized = normalized.lexically_normal();
     normalized.make_preferred();
     return std::hash<std::filesystem::path>{}(normalized.c_str());
-}
-
-static void sWritePath(const std::string& path, std::ofstream& out)
-{
-    uint8 pathLength = (uint8)path.length();
-    out.write(reinterpret_cast<const char*>(&pathLength), sizeof(uint8));
-    out.write(path.data(), pathLength);
 }
 
 static bool sLoadFileToString(const std::string& path, std::string& out)
@@ -228,7 +221,8 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 std::string assetName = component["Asset"].GetString();
                 std::string assetOutputPath = sGenerateOutputFilePath(applicationRoot, assetName.data());
 
-                sWritePath(assetOutputPath, out);
+                // TODO: Need to link cooker project against engine to clean up linker errors to Path::WritePath()
+                path::WritePath(assetOutputPath, out);
 
                 AssetId assetId = sGenerateAssetId(assetName);
 
@@ -296,7 +290,7 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
             std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data());
             
             // Actor Prefab Path
-            sWritePath(actorOutputPath, out);
+            path::WritePath(actorOutputPath, out);
 
             // Cook Actor Prefab
             if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))

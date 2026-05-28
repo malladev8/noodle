@@ -1,17 +1,26 @@
 #include "NoodlePch.h"
-#include "NoodleEntry.h"
+#include "NoodleEngine.h"
 #include "NoodleApp.h"
 #include "NoodleInput.h"
 #include "NoodleClock.h"
-#include "Event/EventManager.h"
 
-int NoodleMain()
+Engine::Engine()
+	: m_EventManager(EventManager("GlobalEventManager")),
+	  m_ResourceManager(ResourceManager())
+{
+}
+
+Engine& Engine::Get()
+{
+	static Engine sEngineInstance;
+	return sEngineInstance;
+}
+
+void Engine::Run(std::unique_ptr<NoodleApp> app)
 {
 	// Initialization
 	Clock clock;
 	clock.Reset();
-
-	EventManager* globalEventManager = EventManager::GetGlobalEventManager();
 
 	NoodleWindowDesc windowDesc
 	{
@@ -22,9 +31,9 @@ int NoodleMain()
 	
 	PlatformInitLogger();
 	PlatformCreateWindow(windowDesc);
-	NoodleApp* app = N_NEW(NoodleApp);
-	app->Init();
 	
+	m_App = std::move(app);
+	m_App->Init();
 
 	// Game Loop
 	while (!PlatformShouldExit())
@@ -35,12 +44,11 @@ int NoodleMain()
 		Input::BeginFrame();
 		PlatformDispatchMessages();
 		Input::UpdateButtonStates();
-		globalEventManager->Update(deltaSeconds);
-		app->Run(deltaSeconds);
+		m_EventManager.Update(deltaSeconds);
+		m_App->Run(deltaSeconds);
 	}
 	
 	// Shutdown
-	delete app;
+	m_App->Shutdown();
 	PlatformShutdown();
-	return 0;
 }

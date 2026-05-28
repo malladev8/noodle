@@ -1,8 +1,10 @@
 #include "NoodlePch.h"
-#include "NoodleEntry.h"
+#include "NoodleEngine.h"
 #include "NoodleInput.h"
 #include "Event/EventManager.h"
 #include "Event/WindowResizeEvent.h"
+#include "RedAngelApp.h"
+#include "EngineContext.h"
 
 #if defined(WINDOWS)
 static HWND sHwnd = nullptr;
@@ -105,7 +107,7 @@ LRESULT CALLBACK Win32WndProc(
         uint32 width = static_cast<uint32>(LOWORD(lParam));
         uint32 height = static_cast<uint32>(HIWORD(lParam));
         WindowResizeEvent event(width, height);
-        EventManager::GetGlobalEventManager()->QueueEvent(event);
+        Engine::Get().GetEventManager().QueueEvent(event);
         return 0;
     }
     case WM_KEYDOWN:
@@ -207,7 +209,7 @@ bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc)
     sHwnd = CreateWindowEx(
         0,
         wc.lpszClassName,
-        L"Noodle",
+        L"Red Angel",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -256,6 +258,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 #if defined(DEBUG)
     CreateDebugConsole();
 #endif
-    return NoodleMain();
+    Engine& engine = Engine::Get();
+    EngineContext context
+    {
+        engine.GetEventManager(),
+        engine.GetResourceManager()
+    };
+    engine.Run(std::make_unique<RedAngelApp>(context));
+    return 0;
 }
 #endif

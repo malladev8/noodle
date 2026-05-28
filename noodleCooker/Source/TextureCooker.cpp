@@ -1,7 +1,7 @@
 #include "TextureCooker.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../ThirdParty/stb/stb_image.h"
+#include "ThirdParty/stb/stb_image.h"
 
 bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out, AssetId assetId)
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Core/NoodleCore.h"
+#include "Core/NoodleCore.h"
 
 enum class eComponentId : uint32
 {

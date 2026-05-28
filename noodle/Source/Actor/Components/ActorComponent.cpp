@@ -1,2 +1,2 @@
-#include"../../NoodlePch.h"
+#include "NoodlePch.h"
 #include "ActorComponent.h"

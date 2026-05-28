@@ -1,4 +1,4 @@
-#include "../NoodlePch.h"
+#include "NoodlePch.h"
 #include "Actor.h"
 
 Actor::Actor(ActorId actorId)

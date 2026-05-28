@@ -1,6 +1,6 @@
 #pragma once
-#include "../Core/NoodleCore.h"
-#include "../Math/NoodleMath.h"
+#include "Core/NoodleCore.h"
+#include "Math/NoodleMath.h"
 #include <vector>
 
 using AssetId = uint64;
@@ -36,4 +36,12 @@ struct Texture
 	uint32 width = 0;
 	uint32 height = 0;
 	eTextureFormat format = eTextureFormat::UNKNOWN;
+
+	~Texture()
+	{
+		if (resource)
+		{
+			// TODO: Clean up gpu resource
+		}
+	}
 };

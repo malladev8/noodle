@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -18,35 +18,85 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Actor\Actor.cpp" />
+    <ClCompile Include="Source\Actor\ActorFactory.cpp" />
+    <ClCompile Include="Source\Actor\Components\ActorComponent.cpp" />
+    <ClCompile Include="Source\Actor\Components\Sprite.cpp" />
+    <ClCompile Include="Source\Actor\Components\Transform.cpp" />
+    <ClCompile Include="Source\Actor\Scene.cpp" />
+    <ClCompile Include="Source\Actor\SceneFactory.cpp" />
+    <ClCompile Include="Source\Core\NoodleLogger.cpp" />
+    <ClCompile Include="Source\Core\Utilities.cpp" />
+    <ClCompile Include="Source\Event\EventManager.cpp" />
+    <ClCompile Include="Source\NoodleAllocator.cpp" />
+    <ClCompile Include="Source\NoodleApp.cpp" />
+    <ClCompile Include="Source\NoodleClock.cpp" />
+    <ClCompile Include="Source\NoodleEngine.cpp" />
+    <ClCompile Include="Source\NoodleInput.cpp" />
+    <ClCompile Include="Source\NoodlePch.cpp" />
+    <ClCompile Include="Source\Resource\ResourceManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Actor\Actor.h" />
+    <ClInclude Include="Source\Actor\ActorFactory.h" />
+    <ClInclude Include="Source\Actor\Components\ActorComponent.h" />
+    <ClInclude Include="Source\Actor\Components\ComponentIds.h" />
+    <ClInclude Include="Source\Actor\Components\Sprite.h" />
+    <ClInclude Include="Source\Actor\Components\SpriteInterface.h" />
+    <ClInclude Include="Source\Actor\Components\Transform.h" />
+    <ClInclude Include="Source\Actor\Components\TransformInterface.h" />
+    <ClInclude Include="Source\Actor\Scene.h" />
+    <ClInclude Include="Source\Actor\SceneFactory.h" />
+    <ClInclude Include="Source\Core\NoodleConfig.h" />
+    <ClInclude Include="Source\Core\NoodleCore.h" />
+    <ClInclude Include="Source\Core\NoodleLogger.h" />
+    <ClInclude Include="Source\Core\NoodlePlatform.h" />
+    <ClInclude Include="Source\Core\NoodleTypes.h" />
+    <ClInclude Include="Source\Core\Utilities.h" />
+    <ClInclude Include="Source\EngineContext.h" />
+    <ClInclude Include="Source\Event\Event.h" />
+    <ClInclude Include="Source\Event\EventManager.h" />
+    <ClInclude Include="Source\Event\WindowResizeEvent.h" />
+    <ClInclude Include="Source\Math\NoodleMath.h" />
+    <ClInclude Include="Source\NoodleAllocator.h" />
+    <ClInclude Include="Source\NoodleApp.h" />
+    <ClInclude Include="Source\NoodleClock.h" />
+    <ClInclude Include="Source\NoodleEngine.h" />
+    <ClInclude Include="Source\NoodleInput.h" />
+    <ClInclude Include="Source\NoodlePch.h" />
+    <ClInclude Include="Source\Resource\ResourceManager.h" />
+    <ClInclude Include="Source\Resource\ResourceTypes.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{151c5857-54c7-469a-a7fa-efa70c2744f1}</ProjectGuid>
-    <RootNamespace>noodleCooker</RootNamespace>
+    <ProjectGuid>{4c3a513c-b0f2-4c89-a427-6bc8f4608a03}</ProjectGuid>
+    <RootNamespace>noodle</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -71,24 +121,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\ThirdParty\rapidjson-master\include\rapidjson;</IncludePath>
+    <OutDir>Lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\ThirdParty\rapidjson-master\include\rapidjson;</IncludePath>
+    <OutDir>Lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\ThirdParty\rapidjson-master\include\rapidjson;</IncludePath>
+    <OutDir>Lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)..\Lib\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>..\Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\ThirdParty\rapidjson-master\include\rapidjson;</IncludePath>
+    <OutDir>Lib\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>Temp\$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,10 +143,12 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -112,10 +160,12 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,10 +175,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,21 +192,14 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)\noodle\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>user32.lib;gdi32.lib;dxgi.lib;d3d12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="CookerEntry.cpp" />
-    <ClCompile Include="JSONCooker.cpp" />
-    <ClCompile Include="TextureCooker.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="JSONCooker.h" />
-    <ClInclude Include="TextureCooker.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
