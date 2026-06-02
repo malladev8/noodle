@@ -51,8 +51,8 @@ public:
 	bool WasKeyPressed(eKey key) const;
 	bool WasKeyReleased(eKey key) const;
 	
-	void GetCursorCoordinates(int32& x, int32& y) const;
-	void GetCursorDelta(float32& deltaX, float32& deltaY) const;
+	void GetCursorCoordinates(int32& outCursorX, int32& outCursorY) const;
+	void GetCursorDelta(int32& outCursorDeltaX, int32& outCursorDeltaY) const;
 
 	// Handle input messages for each supported platform
 #if defined(WINDOWS)

@@ -37,13 +37,16 @@ bool InputManager::WasKeyReleased(eKey key) const
 	return m_InputState.keyStates[(uint32)key] == eKeyState::RELEASED;
 }
 
-
-void InputManager::GetCursorCoordinates(int32& x, int32& y) const
+void InputManager::GetCursorCoordinates(int32& outCursorX, int32& outCursorY) const
 {
+    outCursorX = m_InputState.cursorX;
+    outCursorY = m_InputState.cursorY;
 }
 
-void InputManager::GetCursorDelta(float32& deltaX, float32& deltaY) const
+void InputManager::GetCursorDelta(int32& outCursorDeltaX, int32& outCursorDeltaY) const
 {
+    outCursorDeltaX = m_InputState.cursorDeltaX;
+    outCursorDeltaY = m_InputState.cursorDeltaY;
 }
 
 void InputManager::OnKeyDown(eKey key)
