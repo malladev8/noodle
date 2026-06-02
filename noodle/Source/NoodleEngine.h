@@ -2,6 +2,7 @@
 #include "Core/NoodleCore.h"
 #include "Event/EventManager.h"
 #include "Resource/ResourceManager.h"
+#include "NoodleInput.h"
 #include "EngineContext.h"
 
 class NoodleApp;
@@ -31,6 +32,7 @@ private:
 	EventManager m_EventManager;
 	// Renderer will live here eventually
 	ResourceManager m_ResourceManager;
+	InputManager m_InputManager;
 
 	EngineContext m_EngineContext;
 

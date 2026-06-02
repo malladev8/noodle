@@ -1,16 +1,17 @@
 #include "NoodlePch.h"
 #include "NoodleEngine.h"
 #include "NoodleApp.h"
-#include "NoodleInput.h"
 #include "NoodleClock.h"
 
 Engine::Engine()
 	: m_EventManager(EventManager("GlobalEventManager")),
 	  m_ResourceManager(ResourceManager()),
+	  m_InputManager(InputManager()),
 	  m_EngineContext(
 		  {
 			  m_EventManager, 
-			  m_ResourceManager
+			  m_ResourceManager,
+			  m_InputManager
 		  }
 	  )
 {
@@ -47,11 +48,11 @@ void Engine::Run(std::unique_ptr<NoodleApp> app)
 		clock.Tick();
 		float deltaSeconds = clock.GetDeltaSeconds();
 
-		Input::BeginFrame();
+		m_InputManager.BeginFrame();
 		PlatformDispatchMessages();
-		Input::UpdateButtonStates();
 		m_EventManager.Update(deltaSeconds);
 		m_App->Run(deltaSeconds);
+		// Render Here
 	}
 	
 	// Shutdown
