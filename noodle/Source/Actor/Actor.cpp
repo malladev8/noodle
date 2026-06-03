@@ -32,6 +32,15 @@ void Actor::Update(float deltaSeconds)
 	}
 }
 
+void Actor::Render(IRenderer& IRenderer)
+{
+	size_t numComponents = m_Components.size();
+	for (size_t i = 0; i < numComponents; ++i)
+	{
+		m_Components[i]->Render(IRenderer);
+	}
+}
+
 void Actor::AddComponent(ActorComponent* component)
 {
 	N_ASSERT(component != nullptr, "Cannot add null component");

@@ -5,6 +5,7 @@
 #include "Event/WindowResizeEvent.h"
 #include "RedAngelApp.h"
 #include "EngineContext.h"
+#include "Rendering/D3D12/D3D12Renderer.h"
 
 #if defined(WINDOWS)
 static HWND sHwnd = nullptr;
@@ -81,7 +82,7 @@ void CreateDebugConsole()
 }
 #endif
 
-bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc)
+bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void* outHwnd)
 {
     HINSTANCE instance = GetModuleHandle(nullptr);
 
@@ -107,6 +108,7 @@ bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc)
         nullptr);
 
     ShowWindow(sHwnd, SW_SHOW);
+    outHwnd = sHwnd;
 
     return sHwnd != nullptr;
 }
@@ -145,7 +147,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     CreateDebugConsole();
 #endif
     Engine& engine = Engine::Get();
-    engine.Run(std::make_unique<RedAngelApp>(engine.GetContext()));
+    engine.Run(std::make_unique<RedAngelApp>(engine.GetContext()), std::make_unique<D3D12Renderer>());
     return 0;
 }
 #endif

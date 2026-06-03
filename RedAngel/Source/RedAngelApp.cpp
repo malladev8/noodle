@@ -7,9 +7,9 @@ RedAngelApp::RedAngelApp(EngineContext& engineContext) : NoodleApp(engineContext
 {
 }
 
-void RedAngelApp::Init()
+void RedAngelApp::Initialize()
 {
-	NoodleApp::Init();
+	NoodleApp::Initialize();
 
 	// Testing scene creation
 	SceneFactory sceneFactory;
@@ -17,10 +17,9 @@ void RedAngelApp::Init()
 	m_Scene = std::unique_ptr<Scene>(scene);
 }
 
-void RedAngelApp::Run(float deltaSeconds)
+void RedAngelApp::Update(float deltaSeconds)
 {
-	NoodleApp::Run(deltaSeconds);
-	m_Scene->Update(deltaSeconds);
+	NoodleApp::Update(deltaSeconds);
 }
 
 void RedAngelApp::Shutdown()

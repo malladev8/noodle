@@ -6,10 +6,11 @@
 #include "EngineContext.h"
 
 class NoodleApp;
+class IRenderer;
 
 // Platform functions should be implemented by platform entry point.
 // See WinEntry.cpp for examples
-bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc);
+bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void* outHwnd);
 void PlatformInitLogger();
 void PlatformDispatchMessages();
 bool PlatformShouldExit();
@@ -22,7 +23,7 @@ public:
 	Engine& operator=(const Engine&) = delete;
 
 	static Engine& Get();
-	void Run(std::unique_ptr<NoodleApp> app);
+	void Run(std::unique_ptr<NoodleApp> app, std::unique_ptr<IRenderer> renderer);
 
 	EngineContext& GetContext() { return m_EngineContext; }
 
@@ -30,7 +31,7 @@ protected:
 
 private:
 	EventManager m_EventManager;
-	// Renderer will live here eventually
+	std::unique_ptr<IRenderer> m_Renderer = nullptr;
 	ResourceManager m_ResourceManager;
 	InputManager m_InputManager;
 
@@ -39,4 +40,7 @@ private:
 	std::unique_ptr<NoodleApp> m_App = nullptr;
 
 	Engine();
+	void BeginFrame();
+	void Update(float32 deltaSeconds);
+	void Render();
 };

@@ -3,6 +3,7 @@
 #include "ComponentIds.h"
 
 class Actor;
+class IRenderer;
 struct EngineContext;
 
 class ActorComponent
@@ -14,6 +15,7 @@ public:
 
 	virtual void PostInit() {}
 	virtual void Update(float deltaSeconds) {}
+	virtual void Render(IRenderer& IRenderer) {}
 	virtual eComponentId GetComponentId() const = 0;
 
 protected:

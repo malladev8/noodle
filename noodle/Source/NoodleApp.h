@@ -4,6 +4,7 @@
 
 class Scene;
 class WindowResizeEvent;
+class IRenderer;
 struct EngineContext;
 
 class NoodleApp
@@ -12,8 +13,9 @@ public:
 	NoodleApp(EngineContext& engineContext);
 	virtual ~NoodleApp();
 
-	virtual void Init();
-	virtual void Run(float deltaSeconds);
+	virtual void Initialize();
+	virtual void Update(float deltaSeconds);
+	virtual void Render(IRenderer& IRenderer);
 	virtual void Shutdown();
 
 	virtual void OnWindowResize(const WindowResizeEvent& event);

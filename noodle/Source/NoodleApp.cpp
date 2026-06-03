@@ -4,6 +4,7 @@
 #include "EngineContext.h"
 #include "Event/EventManager.h"
 #include "Event/WindowResizeEvent.h"
+#include "Rendering/IRenderer.h"
 
 static const size_t APP_SIZE = 1_GB;
 
@@ -16,7 +17,7 @@ NoodleApp::~NoodleApp()
 {
 }
 
-void NoodleApp::Init()
+void NoodleApp::Initialize()
 {
 	// Testing event manager
 	m_WindowResizeEventHandle = m_EngineContext.eventManager.Subscribe<WindowResizeEvent>(
@@ -26,8 +27,14 @@ void NoodleApp::Init()
 		});
 }
 
-void NoodleApp::Run(float deltaSeconds)
+void NoodleApp::Update(float deltaSeconds)
 {
+	m_Scene->Update(deltaSeconds);
+}
+
+void NoodleApp::Render(IRenderer& IRenderer)
+{
+	m_Scene->Render(IRenderer);
 }
 
 void NoodleApp::Shutdown()

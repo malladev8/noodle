@@ -19,6 +19,7 @@ public:
 	void PostInit();
 	void Destroy();
 	void Update(float deltaSeconds);
+	void Render(class IRenderer& IRenderer);
 
 	ActorId GetId() const { return m_ActorId; }
 	

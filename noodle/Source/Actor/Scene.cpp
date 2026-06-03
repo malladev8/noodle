@@ -9,6 +9,14 @@ void Scene::Update(float deltaSeconds)
 	}
 }
 
+void Scene::Render(IRenderer& IRenderer)
+{
+	for (auto& actor : m_Actors)
+	{
+		actor->Render(IRenderer);
+	}
+}
+
 void Scene::AddActor(Actor* actor)
 {
 	N_ASSERT(actor != nullptr, "Cannot add null actor to scene.");

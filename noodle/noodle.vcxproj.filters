@@ -19,6 +19,12 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{bf9a92e0-341b-4f61-a7d5-d06eb8ef6228}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{d464b67e-8030-41cc-a207-2ce8d6c4b635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\D3D12">
+      <UniqueIdentifier>{00e9b281-e652-4988-8218-5db59dec9303}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\NoodleAllocator.cpp" />
@@ -60,6 +66,9 @@
       <Filter>Actor\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\NoodleEngine.cpp" />
+    <ClCompile Include="Source\Rendering\D3D12\D3D12Renderer.cpp">
+      <Filter>Rendering\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -135,5 +144,14 @@
     </ClInclude>
     <ClInclude Include="Source\NoodleEngine.h" />
     <ClInclude Include="Source\EngineContext.h" />
+    <ClInclude Include="Source\Rendering\IRenderer.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Rendering\RenderCommands.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Rendering\D3D12\D3D12Renderer.h">
+      <Filter>Rendering\D3D12</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
