@@ -26,7 +26,7 @@ public:
 	template<class ComponentType>
 	ComponentType* GetComponent()
 	{
-		auto it = m_ComponentLookup.find(ComponentType::GetComponentId());
+		auto it = m_ComponentLookup.find(ComponentType::COMPONENT_ID);
 		if (it != m_ComponentLookup.end())
 		{
 			return static_cast<ComponentType*>(it->second);

@@ -1,10 +1,29 @@
 #include "NoodlePch.h"
 #include "Sprite.h"
+
+#include "Actor/Actor.h"
 #include "EngineContext.h"
 #include "Resource/ResourceManager.h"
+#include "Rendering/RenderCommands.h"
+#include "Rendering/IRenderer.h"
+#include "Transform.h"
 #include <fstream>
 
 const eComponentId SpriteInterface::COMPONENT_ID = eComponentId::COMPONENT_SPRITE;
+
+void Sprite::Render(IRenderer& renderer)
+{
+	SpriteRenderCommand cmd;
+	cmd.texture = m_Texture;//std::make_shared<Texture>(m_Texture.get());
+	
+	N_ASSERT(m_Owner != nullptr, "Sprite component owning actor is null.");
+	const Transform* transform = m_Owner->GetComponent<Transform>();
+	N_ASSERT(transform != nullptr, "No transform component found for owning actor.");
+	
+	// TODO: Fill out SpriteRenderCommand data with transform data
+
+	renderer.SubmitSprite(cmd);
+}
 
 bool Sprite::Init(std::ifstream& bin, EngineContext& engineContext)
 {
