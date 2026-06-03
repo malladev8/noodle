@@ -66,6 +66,7 @@
     <ClInclude Include="Source\NoodleEngine.h" />
     <ClInclude Include="Source\NoodleInput.h" />
     <ClInclude Include="Source\NoodlePch.h" />
+    <ClInclude Include="Source\Rendering\D3D12\D3D12Common.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12Renderer.h" />
     <ClInclude Include="Source\Rendering\RenderCommands.h" />
     <ClInclude Include="Source\Rendering\IRenderer.h" />

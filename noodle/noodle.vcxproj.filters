@@ -153,5 +153,8 @@
     <ClInclude Include="Source\Rendering\D3D12\D3D12Renderer.h">
       <Filter>Rendering\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Rendering\D3D12\D3D12Common.h">
+      <Filter>Rendering\D3D12</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,12 +1,13 @@
 #include "NoodlePch.h"
 #include "D3D12Renderer.h"
+#include "D3D12Common.h"
 #include "NoodleEngine.h"
 #include "Event/WindowResizeEvent.h"
 
 #if defined(WINDOWS)
 void D3D12Renderer::Initialize(void* hwnd)
 {
-	// Init First
+	// Initialize
 
 	// Subsribe to WindowResizeEvent
 	m_WindowResizeEventHandle = Engine::Get().GetContext().eventManager.Subscribe<WindowResizeEvent>(
@@ -20,6 +21,8 @@ void D3D12Renderer::Shutdown()
 {
 	// Unsubscribe from WindowResizeEvent
 	Engine::Get().GetContext().eventManager.Unsubscribe(m_WindowResizeEventHandle);
+
+	// Shutdown
 }
 
 void D3D12Renderer::BeginFrame()
