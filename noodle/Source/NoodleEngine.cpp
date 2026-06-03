@@ -54,14 +54,14 @@ void Engine::Run(std::unique_ptr<NoodleApp> app,
 	Clock clock;
 	clock.Reset();
 
+	PlatformInitLogger();
+
 	NoodleWindowDesc windowDesc
 	{
 		1280,
 		720,
 		"Noodle"
 	};
-	
-	PlatformInitLogger();
 
 	void* hwnd = nullptr;
 	PlatformCreateWindow(windowDesc, hwnd);
