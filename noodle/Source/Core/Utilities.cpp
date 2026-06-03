@@ -18,3 +18,17 @@ void path::WritePath(const std::string& path, std::ofstream& out)
 	out.write(reinterpret_cast<const char*>(&pathLength), sizeof(uint8));
 	out.write(path.data(), pathLength);
 }
+
+#if defined(WINDOWS)
+std::string str::WideToUtf8(const std::wstring& wide)
+{
+	if (wide.empty())
+	{
+		return {};
+	}
+	int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, wide.data(), (int)wide.size(), nullptr, 0, nullptr, nullptr);
+	std::string result(sizeNeeded, 0);
+	WideCharToMultiByte(CP_UTF8, 0, wide.data(), (int)wide.size(), result.data(), sizeNeeded, nullptr, nullptr);
+	return result;
+}
+#endif
