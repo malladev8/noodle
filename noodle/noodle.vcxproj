@@ -29,6 +29,7 @@
     <ClCompile Include="Source\Core\NoodleLogger.cpp" />
     <ClCompile Include="Source\Core\Utilities.cpp" />
     <ClCompile Include="Source\Event\EventManager.cpp" />
+    <ClCompile Include="Source\Math\NoodleMath.cpp" />
     <ClCompile Include="Source\NoodleAllocator.cpp" />
     <ClCompile Include="Source\NoodleApp.cpp" />
     <ClCompile Include="Source\NoodleClock.cpp" />

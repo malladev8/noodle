@@ -158,12 +158,14 @@ static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::D
         return false;
     }
 
-    mat4x4 translation = BuildTranslation(posVec.x, posVec.y, posVec.z);
-    mat4x4 rotation = BuildRotation(DegToRad(rotVec.x), DegToRad(rotVec.y), DegToRad(rotVec.z));
-    mat4x4 scale = BuildScale(scaleVec.x, scaleVec.y, scaleVec.z);
-    mat4x4 transform = translation * rotation * scale;
+    out.write(reinterpret_cast<const char*>(&posVec), sizeof(vec3));
+    out.write(reinterpret_cast<const char*>(&scaleVec), sizeof(vec3));
 
-    out.write(reinterpret_cast<const char*>(&transform), sizeof(mat4x4));
+    rotVec.x = DegToRad(rotVec.x);
+    rotVec.y = DegToRad(rotVec.y);
+    rotVec.z = DegToRad(rotVec.z);
+    quaternion rotation = quaternion::FromEuler(rotVec.x, rotVec.y, rotVec.z);
+    out.write(reinterpret_cast<const char*>(&rotation), sizeof(quaternion));
     return true;
 }
 

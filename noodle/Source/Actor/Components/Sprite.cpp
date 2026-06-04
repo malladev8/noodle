@@ -14,13 +14,22 @@ const eComponentId SpriteInterface::COMPONENT_ID = eComponentId::COMPONENT_SPRIT
 void Sprite::Render(IRenderer& renderer)
 {
 	SpriteRenderCommand cmd;
-	cmd.texture = m_Texture;//std::make_shared<Texture>(m_Texture.get());
+	cmd.texture = m_Texture;
 	
 	N_ASSERT(m_Owner != nullptr, "Sprite component owning actor is null.");
 	const Transform* transform = m_Owner->GetComponent<Transform>();
 	N_ASSERT(transform != nullptr, "No transform component found for owning actor.");
 	
-	// TODO: Fill out SpriteRenderCommand data with transform data
+	cmd.position = transform->GetPosition();
+
+	// TODO: Scale can be a little confusing - consider clarifying / reorganizing for 2D
+	// Right now the only scale being tracked is in 3D space
+	// Sprites can only scale in 2D, and forward (x-axis) scale is meaningless
+	// For 2D scaling x becoms right, and y becomes up
+	cmd.scale.x = transform->GetScale().y;
+	cmd.scale.y = transform->GetScale().z;
+
+	cmd.rotation = m_RotationRadians;
 
 	renderer.SubmitSprite(cmd);
 }

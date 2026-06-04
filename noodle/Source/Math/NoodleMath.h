@@ -2,7 +2,21 @@
 #include "Core/NoodleCore.h"
 #include <cmath>
 
-// Noodle uses a left handed coordinate system where: X is forward, Y is right, Z is up
+// Noodle Math Conventions:
+//
+// Left-handed coordinate system
+// +X forward
+// +Y right
+// +Z up
+//
+// Column-vector math:
+// v' = M * v
+//
+// Row-major matrix storage:
+// m[row][column]
+//
+// Transform composition:
+// World = T * R * S
 
 constexpr float32 EPSILON = 1e-6f;
 constexpr float32 EPSILON_SQ = EPSILON * EPSILON;
@@ -76,34 +90,20 @@ struct vec3
 			*this *= (1.0f / length);
 		}
 	}
+
+	static float32 Dot(const vec3& v0, const vec3& v1);
+	static vec3 Cross(const vec3& v0, const vec3& v1);
+	static vec3 Normalize(const vec3& v);
+
+	static vec3 Forward() { return { 1.0f, 0.0f, 0.0f }; }
+	static vec3 Right() { return { 0.0f, 1.0f, 0.0f }; }
+	static vec3 Up() { return { 0.0f, 0.0f, 1.0f }; }
 };
 
 inline vec3 operator+(const vec3& a, const vec3& b) { return { a.x + b.x, a.y + b.y, a.z + b.z }; }
 inline vec3 operator-(const vec3& a, const vec3& b) { return { a.x - b.x, a.y - b.y, a.z - b.z }; }
 inline vec3 operator*(const vec3& v, float s) { return { v.x * s, v.y * s, v.z * s }; }
 inline vec3 operator*(float s, const vec3& v) { return v * s; }
-
-inline float32 Dot(const vec3& v0, const vec3& v1) { return (v0.x * v1.x) + (v0.y * v1.y) + (v0.z * v1.z); }
-
-inline vec3 Cross(const vec3& v0, const vec3& v1)
-{
-	return
-	{
-		(v0.y * v1.z) - (v0.z * v1.y),
-		(v0.z * v1.x) - (v0.x * v1.z),
-		(v0.x * v1.y) - (v0.y * v1.x)
-	};
-}
-
-inline vec3 Normalize(const vec3& v)
-{
-	float length = v.Length();
-	if (length > EPSILON)
-	{
-		return v * (1.0f / length);
-	}
-	return v;
-}
 
 struct vec4
 {
@@ -131,6 +131,97 @@ inline vec4 operator+(const vec4& a, const vec4& b) { return { a.x + b.x, a.y + 
 inline vec4 operator-(const vec4& a, const vec4& b) { return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w }; }
 inline vec4 operator*(const vec4& v, float s) { return { v.x * s, v.y * s, v.z * s, v.w * s }; }
 inline vec4 operator*(float s, const vec4& v) { return v * s; }
+
+struct quaternion
+{
+	float32 x, y, z, w;
+
+	quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) {}
+	quaternion(float32 x, float32 y, float32 z, float32 w) : x(x), y(y), z(z), w(w) {}
+
+	static quaternion Identity()
+	{
+		return { 0.0f, 0.0f, 0.0f, 1.0f };
+	}
+
+	static quaternion FromAxisAngle(const vec3& axis, float32 radians)
+	{
+		vec3 normalizedAxis = vec3::Normalize(axis);
+		float halfAngle = radians * 0.5f;
+		float sinHalf = std::sin(halfAngle);
+		float cosHalf = std::cos(halfAngle);
+		return quaternion(normalizedAxis.x * sinHalf, normalizedAxis.y * sinHalf, normalizedAxis.z * sinHalf, cosHalf);
+	}
+
+	static quaternion FromEuler(float32 rollRadians, float32 pitchRadians, float32 yawRadians)
+	{
+		float cy = std::cos(yawRadians * 0.5f);
+		float sy = std::sin(yawRadians * 0.5f);
+
+		float cp = std::cos(pitchRadians * 0.5f);
+		float sp = std::sin(pitchRadians * 0.5f);
+
+		float cr = std::cos(rollRadians * 0.5f);
+		float sr = std::sin(rollRadians * 0.5f);
+
+		quaternion q;
+		q.x = sr * cp * cy - cr * sp * sy;
+		q.y = cr * sp * cy + sr * cp * sy;
+		q.z = cr * cp * sy - sr * sp * cy;
+		q.w = cr * cp * cy + sr * sp * sy;
+		q.Normalize();
+		return q;
+	}
+
+	void Normalize()
+	{
+		float32 length = std::sqrtf(x * x + y * y + z * z + w * w);
+		if (length <= EPSILON)
+		{
+			*this = Identity();
+			return;
+		}
+		float32 invLength = 1.0f / length;
+		x *= invLength;
+		y *= invLength;
+		z *= invLength;
+		w *= invLength;
+	}
+
+	static quaternion Normalize(const quaternion& q)
+	{
+		float32 length = std::sqrtf(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+		if (length <= EPSILON)
+		{
+			return quaternion::Identity();
+		}
+		float32 invLength = 1.0f / length;
+		return { q.x * invLength, q.y * invLength, q.z * invLength, q.w * invLength };
+	}
+
+	quaternion& operator*=(const quaternion& rhs) 
+	{
+		x = w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y;
+		y = w * rhs.y - x * rhs.z + y * rhs.w + z * rhs.x;
+		z = w * rhs.z + x * rhs.y - y * rhs.x + z * rhs.w;
+		w = w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z;
+	}
+};
+
+inline quaternion operator*(const quaternion& lhs, const quaternion& rhs)
+{
+	return
+	{
+		// x
+		lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y,
+		// y
+		lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x,
+		// z
+		lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w,
+		// w
+		lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z
+	};
+}
 
 // Matrices use column vectors with row-major storage
 struct mat3x3
@@ -291,6 +382,20 @@ struct mat4x4
 		*this = r;
 		return *this;
 	}
+
+	// Transform Builders
+	static mat4x4 BuildTranslation(float32 x, float32 y, float32 z);
+	static mat4x4 BuildTranslation(const vec3& v);
+	static mat4x4 BuildScale(float32 x, float32 y, float32 z);
+	static mat4x4 BuildScale(const vec3& v);
+	static mat4x4 BuildScale(float32 scale);
+	static mat4x4 BuildRotationX(float32 radians);
+	static mat4x4 BuildRotationY(float32 radians);
+	static mat4x4 BuildRotationZ(float32 radians);
+	static mat4x4 BuildRotation(float32 rollRadians, float32 pitchRadians, float32 yawRadians);
+	static mat4x4 BuildRotation(const quaternion& q);
+	static mat4x4 BuildLookAt(const vec3& eye, const vec3& target, const vec3& up);
+	static mat4x4 BuildPerspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ);
 };
 
 inline mat4x4 operator*(const mat4x4& a, const mat4x4& b)
@@ -307,129 +412,6 @@ inline mat4x4 operator*(const mat4x4& a, const mat4x4& b)
 		}
 	}
 	return r;
-}
-
-// Transform Builders
-inline mat4x4 BuildTranslation(float32 x, float32 y, float32 z)
-{
-	mat4x4 m;
-	m.m[0][3] = x;
-	m.m[1][3] = y;
-	m.m[2][3] = z;
-	return m;
-}
-
-inline mat4x4 BuildScale(float32 x, float32 y, float32 z)
-{
-	mat4x4 m;
-	m.m[0][0] = x;
-	m.m[1][1] = y;
-	m.m[2][2] = z;
-	m.m[3][3] = 1.0f;
-	return m;
-}
-
-inline mat4x4 BuildScale(float32 scale)
-{
-	return BuildScale(scale, scale, scale);
-}
-
-inline mat4x4 BuildRotationX(float32 radians)
-{
-	float c = cosf(radians);
-	float s = sinf(radians);
-
-	mat4x4 m;
-
-	m.m[1][1] = c;
-	m.m[1][2] = -1.0f * s;
-	m.m[2][1] = s;
-	m.m[2][2] = c;
-
-	return m;
-}
-
-inline mat4x4 BuildRotationY(float32 radians)
-{
-	float c = cosf(radians);
-	float s = sinf(radians);
-
-	mat4x4 m;
-
-	m.m[0][0] = c;
-	m.m[0][2] = s;
-	m.m[2][0] = -1.0f * s;
-	m.m[2][2] = c;
-
-	return m;
-}
-
-inline mat4x4 BuildRotationZ(float32 radians)
-{
-	float c = cosf(radians);
-	float s = sinf(radians);
-
-	mat4x4 m;
-
-	m.m[0][0] = c;
-	m.m[0][1] = -1.0f * s;
-	m.m[1][0] = s;
-	m.m[1][1] = c;
-
-	return m;
-}
-
-inline mat4x4 BuildRotation(float32 rollRadians, float32 pitchRadians, float32 yawRadians)
-{
-	mat4x4 rz = BuildRotationZ(yawRadians);
-	mat4x4 ry = BuildRotationY(pitchRadians);
-	mat4x4 rx = BuildRotationX(rollRadians);
-	return rz * ry * rx;
-}
-
-inline mat4x4 BuildLookAt(const vec3& eye, const vec3& target, const vec3& up)
-{
-	vec3 forward = Normalize(target - eye);
-	vec3 right = Normalize(Cross(up, forward));
-	vec3 newUp = Cross(forward, right);
-
-	// X axis (forward)
-	mat4x4 m;
-	m.m[0][0] = forward.x;
-	m.m[0][1] = forward.y;
-	m.m[0][2] = forward.z;
-	m.m[0][3] = -1.0f * Dot(forward, eye);
-
-	// Y axis (right)
-	m.m[1][0] = right.x;
-	m.m[1][1] = right.y;
-	m.m[1][2] = right.z;
-	m.m[1][3] = -1.0f * Dot(right, eye);
-
-	// Z axis (up)
-	m.m[2][0] = newUp.x;
-	m.m[2][1] = newUp.y;
-	m.m[2][2] = newUp.z;
-	m.m[2][3] = -1.0f * Dot(newUp, eye);
-
-	m.m[3][3] = 1.0f;
-
-	return m;
-}
-
-inline mat4x4 BuildPerspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ)
-{
-	float f = 1.0f / tanf(fov * 0.5f);
-
-	mat4x4 m;
-
-	m.m[0][0] = f / aspect;
-	m.m[1][1] = f;
-	m.m[2][2] = farZ / (farZ - nearZ);
-	m.m[2][3] = (-1.0f * nearZ * farZ) / (farZ - nearZ);
-	m.m[3][2] = 1.0f;
-
-	return m;
 }
 
 // Matrix / Vector Transforms
@@ -460,15 +442,15 @@ inline vec3 TransformVector(const mat4x4& m, const vec3& v)
 // Directions
 inline vec3 GetForward(const mat4x4& m)
 {
-	return Normalize({ m.m[0][0], m.m[1][0], m.m[2][0] });
+	return vec3::Normalize({ m.m[0][0], m.m[1][0], m.m[2][0] });
 }
 
 inline vec3 GetRight(const mat4x4& m)
 {
-	return Normalize({ m.m[0][1], m.m[1][1], m.m[2][1] });
+	return vec3::Normalize({ m.m[0][1], m.m[1][1], m.m[2][1] });
 }
 
 inline vec3 GetUp(const mat4x4& m)
 {
-	return Normalize({ m.m[0][2], m.m[1][2], m.m[2][2] });
+	return vec3::Normalize({ m.m[0][2], m.m[1][2], m.m[2][2] });
 }
