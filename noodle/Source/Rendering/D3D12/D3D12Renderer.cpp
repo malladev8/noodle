@@ -223,9 +223,8 @@ void D3D12Renderer::Present()
 	// Signal fence
 	++m_CurrentFenceValue;
 	hr = m_CommandQueue->Signal(m_Fence.Get(), m_CurrentFenceValue);
-	m_FenceValue[m_CurrentFrameIndex] = m_CurrentFenceValue;
 	N_ASSERT(!FAILED(hr), "Failed Fence Signal.");
-
+	m_FenceValue[m_CurrentFrameIndex] = m_CurrentFenceValue;
 	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 }
 
@@ -294,6 +293,7 @@ void D3D12Renderer::CreateRenderTargetViews()
 		rtvHandle.ptr += m_RtvDescriptorSize;
 	}
 }
+
 void D3D12Renderer::UpdateViewport(uint32 width, uint32 height)
 {
 	m_Viewport.TopLeftX = 0.0f;
