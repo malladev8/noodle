@@ -19,17 +19,7 @@ void Sprite::Render(IRenderer& renderer)
 	N_ASSERT(m_Owner != nullptr, "Sprite component owning actor is null.");
 	const Transform* transform = m_Owner->GetComponent<Transform>();
 	N_ASSERT(transform != nullptr, "No transform component found for owning actor.");
-	
-	cmd.position = transform->GetPosition();
-
-	// TODO: Scale can be a little confusing - consider clarifying / reorganizing for 2D
-	// Right now the only scale being tracked is in 3D space
-	// Sprites can only scale in 2D, and forward (x-axis) scale is meaningless
-	// For 2D scaling x becoms right, and y becomes up
-	cmd.scale.x = transform->GetScale().y;
-	cmd.scale.y = transform->GetScale().z;
-
-	cmd.rotation = m_RotationRadians;
+	cmd.world = transform->GetWorldMatrix();
 
 	renderer.SubmitSprite(cmd);
 }

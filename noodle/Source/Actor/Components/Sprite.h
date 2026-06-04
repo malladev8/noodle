@@ -12,6 +12,5 @@ public:
 protected:
 private:
 	std::shared_ptr<Texture> m_Texture = nullptr;
-	float32 m_RotationRadians = 0.0f;
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };
