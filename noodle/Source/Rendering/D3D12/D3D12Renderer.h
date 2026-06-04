@@ -28,7 +28,7 @@ private:
 	D3D12_RECT m_ScissorRect;
 
 	ComPtr<ID3D12Device> m_Device;
-	ComPtr<IDXGISwapChain1> m_SwapChain;
+	ComPtr<IDXGISwapChain3> m_SwapChain;
 	ComPtr<ID3D12CommandQueue> m_CommandQueue;
 	ComPtr<ID3D12GraphicsCommandList> m_CommandList;
 	ComPtr<ID3D12Fence> m_Fence;
@@ -39,8 +39,11 @@ private:
 	ComPtr<ID3D12CommandAllocator> m_CommandAllocators[BufferCount];
 
 	HANDLE m_FenceEvent;
-	uint64 m_FenceValue;
+	uint64 m_FenceValue[BufferCount];
+	uint64 m_CurrentFenceValue;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_RtvHandles[BufferCount];
 	uint32 m_RtvDescriptorSize;
+	uint32 m_CurrentFrameIndex;
 	uint32 m_WindowResizeEventHandle;
 
 	void Resize(const class WindowResizeEvent& event);

@@ -15,8 +15,11 @@ D3D12Renderer::D3D12Renderer()
 	  m_FenceEvent(nullptr),
 	  m_Factory(nullptr),
 	  m_Adapter(nullptr),
-	  m_FenceValue(0),
+	  m_FenceValue({}),
+	  m_CurrentFenceValue(0),
+	  m_RtvHandles({}),
 	  m_RtvDescriptorSize(0),
+	  m_CurrentFrameIndex(0),
 	  m_WindowResizeEventHandle(0)
 {
 }
@@ -87,12 +90,15 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapChainDesc.SampleDesc.Count = 1;
-	hr = m_Factory->CreateSwapChainForHwnd(m_CommandQueue.Get(), static_cast<HWND>(hwnd), &swapChainDesc, nullptr, nullptr, &m_SwapChain);
+	ComPtr<IDXGISwapChain1> swapChain1;
+	hr = m_Factory->CreateSwapChainForHwnd(m_CommandQueue.Get(), static_cast<HWND>(hwnd), &swapChainDesc, nullptr, nullptr, &swapChain1);
 	if (FAILED(hr))
 	{
 		N_LOG("Failed to create D3D12 Swap Chain. HR: %i", hr);
 		return;
 	}
+	swapChain1.As(&m_SwapChain);
+	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 
 	// Create RTV (render target view) Descriptor Heap
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
@@ -120,6 +126,7 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 
 		// Create RTV
 		m_Device->CreateRenderTargetView(m_RenderTargets[i].Get(), nullptr /*D3D12_RENDER_TARGET_VIEW_DESC*/, rtvHandle);
+		m_RtvHandles[i] = rtvHandle;
 		rtvHandle.ptr += m_RtvDescriptorSize;
 
 		// Create Command Allocator
@@ -144,7 +151,7 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 	m_CommandList->Close();
 
 	// Create Fence
-	hr = m_Device->CreateFence(m_FenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence));
+	hr = m_Device->CreateFence(m_CurrentFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence));
 	if (FAILED(hr))
 	{
 		N_LOG("Failed to create D3D12 Fence. HR: %i", hr);
@@ -161,6 +168,8 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 	m_Viewport.MaxDepth = 1.0f;
 
 	m_ScissorRect = { 0, 0, (long)windowDesc.width, (long)windowDesc.height };
+
+	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 
 	// Subsribe to WindowResizeEvent
 	m_WindowResizeEventHandle = Engine::Get().GetContext().eventManager.Subscribe<WindowResizeEvent>(
@@ -180,18 +189,67 @@ void D3D12Renderer::Shutdown()
 
 void D3D12Renderer::BeginFrame()
 {
+	// Prepare the command list for recording
+	// Wait for GPU to finish this frame’s resources
+	if (m_Fence->GetCompletedValue() < m_FenceValue[m_CurrentFrameIndex])
+	{
+		m_Fence->SetEventOnCompletion(m_FenceValue[m_CurrentFrameIndex], m_FenceEvent);
+		WaitForSingleObject(m_FenceEvent, INFINITE);
+	}
+
+	// Reset allocator for this frame
+	HRESULT hr = m_CommandAllocators[m_CurrentFrameIndex]->Reset();
+	N_ASSERT(!FAILED(hr), "Failed Command Allocator Reset.");
+
+	// Reset command list
+	hr = m_CommandList->Reset(m_CommandAllocators[m_CurrentFrameIndex].Get(), nullptr); // no PSO yet
+	N_ASSERT(!FAILED(hr), "Failed Command List Reset.");
+
+	// Transition backbuffer: PRESENT → RENDER_TARGET
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_RenderTargets[m_CurrentFrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	m_CommandList->ResourceBarrier(1, &barrier);
+
+	// Get RTV handle for this frame
+	D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_RtvHandles[m_CurrentFrameIndex];
+	m_CommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
+
+	// Clear
+	const float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	m_CommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 }
 
 void D3D12Renderer::RenderFrame()
 {
+	// TODO:
+	// DrawSprite()
+	// DrawWhatever()...
 }
 
 void D3D12Renderer::EndFrame()
 {
+	// Finalize the command list and transition back
+	// Transition: RENDER_TARGET → PRESENT
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_RenderTargets[m_CurrentFrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	m_CommandList->ResourceBarrier(1, &barrier);
+	HRESULT hr = m_CommandList->Close();
+	N_ASSERT(!FAILED(hr), "Failed Command List Close.");
 }
 
 void D3D12Renderer::Present()
 {
+	// Execute command list and present
+	ID3D12CommandList* commandLists[] = { m_CommandList.Get() };
+	m_CommandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	HRESULT hr = m_SwapChain->Present(1, 0);
+	N_ASSERT(!FAILED(hr), "Failed Present.");
+
+	// Signal fence
+	++m_CurrentFenceValue;
+	hr = m_CommandQueue->Signal(m_Fence.Get(), m_CurrentFenceValue);
+	m_FenceValue[m_CurrentFrameIndex] = m_CurrentFenceValue;
+	N_ASSERT(!FAILED(hr), "Failed Fence Signal.");
+
+	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 }
 
 void D3D12Renderer::SubmitSprite(const SpriteRenderCommand& cmd)
