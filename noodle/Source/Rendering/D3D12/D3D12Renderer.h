@@ -48,5 +48,8 @@ private:
 
 	void Resize(const class WindowResizeEvent& event);
 	void EnableDebugLayer();
+	void WaitForGpu();
+	void CreateRenderTargetViews();
+	void UpdateViewport(uint32 width, uint32 height);
 };
 #endif

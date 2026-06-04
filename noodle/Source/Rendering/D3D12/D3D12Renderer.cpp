@@ -111,25 +111,13 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 		return;
 	}
 	m_RtvDescriptorSize = m_Device->GetDescriptorHandleIncrementSize(rtvHeapDesc.Type);
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_RtvHeap->GetCPUDescriptorHandleForHeapStart();
 
-	// Create RTVs (render target views) and Command Allocators for each back buffer
+	// Create RTVs (render target views)
+	CreateRenderTargetViews();
+
+	// Create Command Allocators
 	for (uint32 i = 0; i < BufferCount; ++i)
 	{
-		// Get back buffer resources from swap chain and store as render targets
-		hr = m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&m_RenderTargets[i]));
-		if (FAILED(hr))
-		{
-			N_LOG("Failed to get D3D12 Buffer_%i from swap chain. HR: %i", i, hr);
-			return;
-		}
-
-		// Create RTV
-		m_Device->CreateRenderTargetView(m_RenderTargets[i].Get(), nullptr /*D3D12_RENDER_TARGET_VIEW_DESC*/, rtvHandle);
-		m_RtvHandles[i] = rtvHandle;
-		rtvHandle.ptr += m_RtvDescriptorSize;
-
-		// Create Command Allocator
 		hr = m_Device->CreateCommandAllocator(queueDesc.Type, IID_PPV_ARGS(&m_CommandAllocators[i]));
 		if (FAILED(hr))
 		{
@@ -160,14 +148,7 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 	m_FenceEvent = CreateEvent(nullptr, false, false, nullptr);
 
 	// Create Viewport and Scissor
-	m_Viewport.TopLeftX = 0.0f;
-	m_Viewport.TopLeftY = 0.0f;
-	m_Viewport.Width = (float32)windowDesc.width;
-	m_Viewport.Height = (float32)windowDesc.height;
-	m_Viewport.MinDepth = 0.0f;
-	m_Viewport.MaxDepth = 1.0f;
-
-	m_ScissorRect = { 0, 0, (long)windowDesc.width, (long)windowDesc.height };
+	UpdateViewport(windowDesc.width, windowDesc.height);
 
 	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 
@@ -191,11 +172,7 @@ void D3D12Renderer::BeginFrame()
 {
 	// Prepare the command list for recording
 	// Wait for GPU to finish this frame’s resources
-	if (m_Fence->GetCompletedValue() < m_FenceValue[m_CurrentFrameIndex])
-	{
-		m_Fence->SetEventOnCompletion(m_FenceValue[m_CurrentFrameIndex], m_FenceEvent);
-		WaitForSingleObject(m_FenceEvent, INFINITE);
-	}
+	WaitForGpu();
 
 	// Reset allocator for this frame
 	HRESULT hr = m_CommandAllocators[m_CurrentFrameIndex]->Reset();
@@ -258,7 +235,26 @@ void D3D12Renderer::SubmitSprite(const SpriteRenderCommand& cmd)
 
 void D3D12Renderer::Resize(const WindowResizeEvent& event)
 {
-	// TODO: Handle resize
+	uint32 width = event.GetWidth();
+	uint32 height = event.GetHeight();
+
+	if (width == 0 || height == 0)
+	{
+		return;
+	}
+
+	WaitForGpu();
+
+	for (uint32 i = 0; i < BufferCount; ++i)
+	{
+		m_RenderTargets[i].Reset();
+	}
+
+	HRESULT hr = m_SwapChain->ResizeBuffers(BufferCount, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	N_ASSERT(!FAILED(hr), "Failed to resize swap chain buffers.");
+	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
+	CreateRenderTargetViews();
+	UpdateViewport(width, height);
 }
 
 void D3D12Renderer::EnableDebugLayer()
@@ -266,5 +262,47 @@ void D3D12Renderer::EnableDebugLayer()
 	ComPtr<ID3D12Debug> debugController = nullptr;
 	D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
 	debugController->EnableDebugLayer();
+}
+
+void D3D12Renderer::WaitForGpu()
+{
+	if (m_Fence->GetCompletedValue() < m_FenceValue[m_CurrentFrameIndex])
+	{
+		m_Fence->SetEventOnCompletion(m_FenceValue[m_CurrentFrameIndex], m_FenceEvent);
+		WaitForSingleObject(m_FenceEvent, INFINITE);
+	}
+}
+
+void D3D12Renderer::CreateRenderTargetViews()
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = m_RtvHeap->GetCPUDescriptorHandleForHeapStart();
+
+	// Create RTVs (render target views)
+	for (uint32 i = 0; i < BufferCount; ++i)
+	{
+		// Get back buffer resources from swap chain and store as render targets
+		HRESULT hr = m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&m_RenderTargets[i]));
+		if (FAILED(hr))
+		{
+			N_LOG("Failed to get D3D12 Buffer_%i from swap chain. HR: %i", i, hr);
+			return;
+		}
+
+		// Create RTV
+		m_Device->CreateRenderTargetView(m_RenderTargets[i].Get(), nullptr /*D3D12_RENDER_TARGET_VIEW_DESC*/, rtvHandle);
+		m_RtvHandles[i] = rtvHandle;
+		rtvHandle.ptr += m_RtvDescriptorSize;
+	}
+}
+void D3D12Renderer::UpdateViewport(uint32 width, uint32 height)
+{
+	m_Viewport.TopLeftX = 0.0f;
+	m_Viewport.TopLeftY = 0.0f;
+	m_Viewport.Width = (float32)width;
+	m_Viewport.Height = (float32)height;
+	m_Viewport.MinDepth = 0.0f;
+	m_Viewport.MaxDepth = 1.0f;
+
+	m_ScissorRect = { 0, 0, (long)width, (long)height };
 }
 #endif
