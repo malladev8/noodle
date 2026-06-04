@@ -82,7 +82,7 @@ void CreateDebugConsole()
 }
 #endif
 
-bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void* outHwnd)
+bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void*& outHwnd)
 {
     HINSTANCE instance = GetModuleHandle(nullptr);
 

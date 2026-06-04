@@ -6,7 +6,7 @@ class IRenderer
 public:
 	virtual ~IRenderer() = default;
 
-	virtual void Initialize(void* hwnd) = 0;
+	virtual void Initialize(void* hwnd, NoodleWindowDesc& windowDesc) = 0;
 	virtual void Shutdown() = 0;
 
 	virtual void BeginFrame() = 0;

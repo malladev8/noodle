@@ -10,7 +10,7 @@ class IRenderer;
 
 // Platform functions should be implemented by platform entry point.
 // See WinEntry.cpp for examples
-bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void* outHwnd);
+bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void*& outHwnd);
 void PlatformInitLogger();
 void PlatformDispatchMessages();
 bool PlatformShouldExit();
