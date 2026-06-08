@@ -15,12 +15,18 @@ D3D12Renderer::D3D12Renderer()
 	  m_FenceEvent(nullptr),
 	  m_Factory(nullptr),
 	  m_Adapter(nullptr),
+	  m_RtvHeap(nullptr),
+	  m_SrvHeap(nullptr),
+	  m_RenderTargets({}),
+	  m_CommandAllocators({}),
 	  m_FenceValue({}),
 	  m_CurrentFenceValue(0),
 	  m_RtvHandles({}),
 	  m_RtvDescriptorSize(0),
 	  m_CurrentFrameIndex(0),
-	  m_WindowResizeEventHandle(0)
+	  m_WindowResizeEventHandle(0),
+	  m_SrvDescriptorSize(0),
+	  m_CurrentSrvIndex(0)
 {
 }
 
@@ -152,6 +158,19 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 
 	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 
+	// Create SRV (shader resource view) heap
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+	heapDesc.NumDescriptors = 1024;
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	hr = m_Device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_SrvHeap));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create D3D12 SRV Descriptor Heap. HR: %i", hr);
+		return;
+	}
+	m_SrvDescriptorSize = m_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	
 	// Subsribe to WindowResizeEvent
 	m_WindowResizeEventHandle = Engine::Get().GetContext().eventManager.Subscribe<WindowResizeEvent>(
 		[this](const WindowResizeEvent& event)
@@ -232,6 +251,80 @@ void D3D12Renderer::SubmitSprite(const SpriteRenderCommand& cmd)
 {
 }
 
+void D3D12Renderer::CreateTextureResources(Texture& texture, const std::vector<uint8>& pixels)
+{
+	std::unique_ptr<D3D12TextureResource> d3d12Texture = std::make_unique<D3D12TextureResource>();
+
+	// Create default heap texture
+	D3D12_RESOURCE_DESC textureDesc = {};
+	textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	textureDesc.Width = texture.width;
+	textureDesc.Height = texture.height;
+	textureDesc.DepthOrArraySize = 1;
+	textureDesc.MipLevels = 1;
+	textureDesc.Format = GetDxgiFormat(texture.format);
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	CD3DX12_HEAP_PROPERTIES defaultHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+	// Using D3D12_RESOURCE_STATE_COPY_DEST because we're uploading onto it.
+	HRESULT hr = m_Device->CreateCommittedResource(&defaultHeap, D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&d3d12Texture->textureResource));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create Texture resource. HR: %i", hr);
+	}
+
+	// Create upload heap
+	uint64 uploadBufferSize = 0;
+	m_Device->GetCopyableFootprints(&textureDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadBufferSize);
+
+	CD3DX12_HEAP_PROPERTIES uploadHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+	CD3DX12_RESOURCE_DESC uploadDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+	m_Device->CreateCommittedResource(&uploadHeap, D3D12_HEAP_FLAG_NONE, &uploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&d3d12Texture->uploadResource));
+
+	// TODO: Eventually we'll want to clean up the upload heap after the GPU finishes the copy. Fine to keep upload resource alive forever for now though.
+
+	// Prepare subresource data
+	D3D12_SUBRESOURCE_DATA subresourceData = {};
+	subresourceData.pData = pixels.data();
+	subresourceData.RowPitch = texture.width * 4; // TODO: Implement helper to return bytes per pixel. For now, RGBA8 = 4 bytes per pixel
+	subresourceData.SlicePitch = subresourceData.RowPitch * texture.height;
+
+	// Upload texture data
+	// Helper from d3dx12.h
+	// Internally: maps upload heap, copies CPU data, records copy commands
+	UpdateSubresources(m_CommandList.Get(), d3d12Texture->textureResource.Get(), d3d12Texture->uploadResource.Get(), 0, 0, 1, &subresourceData);
+
+	// Transition texture resource state COPY_DEST -> PIXEL_SHADER_RESOURCE
+	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12Texture->textureResource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	m_CommandList->ResourceBarrier(1, &barrier);
+
+	// Create SRV
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
+	cpuHandle.Offset(m_CurrentSrvIndex, m_SrvDescriptorSize);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_SrvHeap->GetGPUDescriptorHandleForHeapStart());
+	gpuHandle.Offset(m_CurrentSrvIndex, m_SrvDescriptorSize);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = GetDxgiFormat(texture.format);
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	m_Device->CreateShaderResourceView(d3d12Texture->textureResource.Get(), &srvDesc, cpuHandle);
+	d3d12Texture->srvCpuHandle = cpuHandle;
+	d3d12Texture->srvGpuHandle = gpuHandle;
+
+	// Advance heap allocation
+	++m_CurrentSrvIndex;
+
+	// Store D3D12 backend resource
+	texture.resource = std::move(d3d12Texture);
+}
+
 void D3D12Renderer::Resize(const WindowResizeEvent& event)
 {
 	uint32 width = event.GetWidth();
@@ -304,5 +397,28 @@ void D3D12Renderer::UpdateViewport(uint32 width, uint32 height)
 	m_Viewport.MaxDepth = 1.0f;
 
 	m_ScissorRect = { 0, 0, (long)width, (long)height };
+}
+
+DXGI_FORMAT D3D12Renderer::GetDxgiFormat(eTextureFormat format)
+{
+	switch (format)
+	{
+	case eTextureFormat::R8_UNORM:
+		return DXGI_FORMAT_R8_UNORM;
+	case eTextureFormat::RG8_UNORM:
+		return DXGI_FORMAT_R8G8_UNORM;
+	case eTextureFormat::RGBA8_UNORM:
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
+	case eTextureFormat::RGBA8_UNORM_SRGB:
+		return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	case eTextureFormat::BGRA8_UNORM:
+		return DXGI_FORMAT_B8G8R8A8_UNORM;
+	case eTextureFormat::D24_UNORM_S8_UINT:
+		return DXGI_FORMAT_D24_UNORM_S8_UINT;
+	case eTextureFormat::D32_FLOAT:
+		return DXGI_FORMAT_D32_FLOAT;
+	default:
+		return DXGI_FORMAT_UNKNOWN;
+	}
 }
 #endif

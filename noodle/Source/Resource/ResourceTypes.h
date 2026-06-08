@@ -2,6 +2,7 @@
 #include "Core/NoodleCore.h"
 #include "Math/NoodleMath.h"
 #include <vector>
+#include <memory>
 
 using AssetId = uint64;
 
@@ -10,6 +11,14 @@ struct Vertex
 	vec3 position;
 	vec3 normal;
 	vec2 uv;
+};
+
+struct ColorVertex
+{
+	vec3 position;
+	vec3 normal;
+	vec2 uv;
+	vec4 color;
 };
 
 struct Mesh
@@ -30,18 +39,15 @@ enum class eTextureFormat : uint32
 	UNKNOWN
 };
 
+struct ITextureResource
+{
+	virtual ~ITextureResource() = default;
+};
+
 struct Texture
 {
-	void* resource = nullptr;
+	std::unique_ptr<ITextureResource> resource;
 	uint32 width = 0;
 	uint32 height = 0;
 	eTextureFormat format = eTextureFormat::UNKNOWN;
-
-	~Texture()
-	{
-		if (resource)
-		{
-			// TODO: Clean up gpu resource
-		}
-	}
 };

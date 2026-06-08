@@ -68,6 +68,7 @@ void Engine::Run(std::unique_ptr<NoodleApp> app,
 	
 	m_Renderer = std::move(renderer);
 	m_Renderer->Initialize(hwnd, windowDesc);
+	m_EngineContext.renderer = m_Renderer.get();
 
 	m_App = std::move(app);
 	m_App->Initialize();

@@ -3,7 +3,7 @@
 
 #if defined(WINDOWS)
 #include "Rendering/IRenderer.h"
-#include "D3D12Common.h"
+#include "D3D12ResourceTypes.h"
 
 constexpr uint32 BufferCount = 2;
 
@@ -20,6 +20,8 @@ public:
 	virtual void Present() override;
 
 	virtual void SubmitSprite(const struct SpriteRenderCommand& cmd) override;
+
+	virtual void CreateTextureResources(struct Texture& texture, const std::vector<uint8>& pixels) override;
 
 protected:
 
@@ -38,6 +40,8 @@ private:
 	ComPtr<ID3D12Resource> m_RenderTargets[BufferCount];
 	ComPtr<ID3D12CommandAllocator> m_CommandAllocators[BufferCount];
 
+	ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
+
 	HANDLE m_FenceEvent;
 	uint64 m_FenceValue[BufferCount];
 	uint64 m_CurrentFenceValue;
@@ -46,10 +50,14 @@ private:
 	uint32 m_CurrentFrameIndex;
 	uint32 m_WindowResizeEventHandle;
 
+	uint32 m_SrvDescriptorSize;
+	uint32 m_CurrentSrvIndex = 0;
+
 	void Resize(const class WindowResizeEvent& event);
 	void EnableDebugLayer();
 	void WaitForGpu();
 	void CreateRenderTargetViews();
 	void UpdateViewport(uint32 width, uint32 height);
+	DXGI_FORMAT GetDxgiFormat(eTextureFormat format);
 };
 #endif

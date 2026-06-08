@@ -1,5 +1,7 @@
 #include "NoodlePch.h"
 #include "ResourceManager.h"
+#include "NoodleEngine.h"
+#include "Rendering/IRenderer.h"
 #include <fstream>
 
 std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
@@ -10,7 +12,7 @@ std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
 	if (!m_TextureCache.contains(assetId) || m_TextureCache[assetId].expired())
 	{
 		// Create Texture
-		Texture* tex = N_NEW Texture();
+		std::shared_ptr<Texture> tex = std::make_shared<Texture>();
 		bin.read(reinterpret_cast<char*>(&tex->format), sizeof(eTextureFormat));
 		bin.read(reinterpret_cast<char*>(&tex->width), sizeof(uint32));
 		bin.read(reinterpret_cast<char*>(&tex->height), sizeof(uint32));
@@ -18,15 +20,14 @@ std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
 		uint32 pixelCount = 0;
 		bin.read(reinterpret_cast<char*>(&pixelCount), sizeof(uint32));
 		
-		std::vector<unsigned char> pixels;
+		std::vector<uint8> pixels;
 		pixels.resize(pixelCount);
 		bin.read(reinterpret_cast<char*>(pixels.data()), pixelCount);
 
-		// TODO: Initialize GPU resource and cache in Texture::resource
+		Engine::Get().GetContext().renderer->CreateTextureResources(*tex, pixels);
 
-		std::shared_ptr<Texture> texStrongRef = std::make_shared<Texture>(tex);
-		m_TextureCache.insert({ assetId, texStrongRef });
-		return texStrongRef;
+		m_TextureCache.insert({ assetId, tex });
+		return tex;
 	}
 	else
 	{

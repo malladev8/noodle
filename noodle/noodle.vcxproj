@@ -69,6 +69,7 @@
     <ClInclude Include="Source\NoodlePch.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12Common.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12Renderer.h" />
+    <ClInclude Include="Source\Rendering\D3D12\D3D12ResourceTypes.h" />
     <ClInclude Include="Source\Rendering\RenderCommands.h" />
     <ClInclude Include="Source\Rendering\IRenderer.h" />
     <ClInclude Include="Source\Resource\ResourceManager.h" />
