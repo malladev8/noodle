@@ -11,6 +11,6 @@ public:
 	virtual void Render(class IRenderer& renderer) override;
 protected:
 private:
-	std::shared_ptr<Texture> m_Texture = nullptr;
+	std::shared_ptr<Material> m_Material = nullptr;
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

@@ -4,9 +4,11 @@
     <ClCompile Include="Source\CookerEntry.cpp" />
     <ClCompile Include="Source\JSONCooker.cpp" />
     <ClCompile Include="Source\TextureCooker.cpp" />
+    <ClCompile Include="Source\ShaderCooker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\JSONCooker.h" />
     <ClInclude Include="Source\TextureCooker.h" />
+    <ClInclude Include="Source\ShaderCooker.h" />
   </ItemGroup>
 </Project>

@@ -153,10 +153,12 @@
   <ItemGroup>
     <ClCompile Include="Source\CookerEntry.cpp" />
     <ClCompile Include="Source\JSONCooker.cpp" />
+    <ClCompile Include="Source\ShaderCooker.cpp" />
     <ClCompile Include="Source\TextureCooker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\JSONCooker.h" />
+    <ClInclude Include="Source\ShaderCooker.h" />
     <ClInclude Include="Source\TextureCooker.h" />
   </ItemGroup>
   <ItemGroup>

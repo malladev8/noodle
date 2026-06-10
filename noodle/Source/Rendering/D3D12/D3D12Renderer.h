@@ -22,6 +22,7 @@ public:
 	virtual void SubmitSprite(const struct SpriteRenderCommand& cmd) override;
 
 	virtual void CreateTextureResources(struct Texture& texture, const std::vector<uint8>& pixels) override;
+	virtual void CreateShaderResources(std::shared_ptr<struct Shader>& outShader, const struct CookedShaderData& shaderData) override;
 
 protected:
 

@@ -18,6 +18,8 @@ public:
 	virtual void SubmitSprite(const struct SpriteRenderCommand& cmd) = 0;
 
 	virtual void CreateTextureResources(struct Texture& texture, const std::vector<uint8>& pixels) = 0;
+	// TODO: CreateShaderResources will need to be different for types of renderers / shaders i.e. D3D12SpriteRenderer::CreateSpriteShaderResources
+	virtual void CreateShaderResources(std::shared_ptr<struct Shader>& outShader, const struct CookedShaderData& shaderData) = 0;
 
 protected:
 private:

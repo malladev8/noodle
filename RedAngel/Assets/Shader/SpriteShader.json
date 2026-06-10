@@ -1,0 +1,15 @@
+{
+  "Name": "SpriteShader",
+  "VS":
+  {
+    "Source": "Shader/SpriteVS",
+    "Entry": "VSMain",
+    "Profile":  "vs_6_0"
+  },
+  "PS":
+  {
+    "Source": "Shader/SpritePS",
+    "Entry": "PSMain",
+    "Profile": "ps_6_0"
+  }
+}

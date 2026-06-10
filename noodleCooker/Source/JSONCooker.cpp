@@ -1,4 +1,5 @@
 #include "JSONCooker.h"
+#include "ShaderCooker.h"
 #include "TextureCooker.h"
 #include "ThirdParty/rapidjson-master/include/rapidjson/document.h"
 #include "Math/NoodleMath.h"
@@ -169,10 +170,59 @@ static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::D
     return true;
 }
 
-static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out, AssetId assetId)
+static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
-    out.write(reinterpret_cast<const char*>(&assetId), sizeof(AssetId));
+    if (jsonDoc.HasMember("Actors"))
+    {
+        const rapidjson::Value& actors = jsonDoc["Actors"];
 
+        if (!actors.IsArray())
+        {
+            printf("Error: Actors is not an array.\n");
+            return false;
+        }
+
+        uint32 numActors = (uint32)actors.Size();
+        printf("Scene has %i components.\n", numActors);
+        out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint32));
+
+        uint32 actorIndex = 0;
+        for (const rapidjson::Value& actor : actors.GetArray())
+        {
+            if (!actor.HasMember("Prefab"))
+            {
+                printf("Actor missing Prefab member.\n");
+            }
+
+            std::string prefabName = actor["Prefab"].GetString();
+            std::string actorInstanceName = prefabName + "_" + std::to_string(actorIndex);
+            std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data());
+
+            // Actor Prefab Path
+            path::WritePath(actorOutputPath, out);
+
+            // Cook Actor Prefab
+            if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
+            {
+                return false;
+            }
+            printf("Successfully cooked %s Actor Prefab.\n", prefabName.data());
+
+            // Actor Scene Transform
+            if (!sCookTransform(actor, jsonDoc, out))
+            {
+                printf("Failed to parse Transform component for %s\n", actorInstanceName.data());
+                return false;
+            }
+            printf("Successfully parsed Transform component for %s.\n", actorInstanceName.data());
+            ++actorIndex;
+        }
+    }
+    return true;
+}
+
+static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+{
     if (jsonDoc.HasMember("Components"))
     {
         const rapidjson::Value& components = jsonDoc["Components"];
@@ -214,46 +264,25 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 eComponentId spriteId = eComponentId::COMPONENT_SPRITE;
                 out.write(reinterpret_cast<const char*>(&spriteId), sizeof(eComponentId));
 
-                if (!component.HasMember("Asset"))
+                const char* material = "Material";
+                if (!component.HasMember(material))
                 {
-                    printf("Sprite Component missing Asset member.\n");
+                    printf("Sprite Component missing Material member.\n");
                     return false;
                 }
 
-                std::string assetName = component["Asset"].GetString();
-                std::string assetOutputPath = sGenerateOutputFilePath(applicationRoot, assetName.data());
+                std::string materialName = component[material].GetString();
+                std::string materialOutputPath = sGenerateOutputFilePath(applicationRoot, materialName.data());
 
-                // TODO: Need to link cooker project against engine to clean up linker errors to Path::WritePath()
-                path::WritePath(assetOutputPath, out);
+                // Write material path
+                path::WritePath(materialOutputPath, out);
 
-                AssetId assetId = sGenerateAssetId(assetName);
-
-                if (!sCookedAssets.contains(assetId))
+                // Cook Material
+                if (!ConvertJsonToBinary(eJsonType::MATERIAL, applicationRoot, materialName.data()))
                 {
-                    std::filesystem::path fsOutputPath = assetOutputPath;
-                    std::filesystem::create_directories(fsOutputPath.parent_path());
-                    std::ofstream textureOut(assetOutputPath, std::ios::binary);
-                    if (!textureOut.is_open())
-                    {
-                        printf("Failed to open binary output file %s\n", assetOutputPath.data());
-                        return false;
-                    }
-
-                    std::string assetInputPath = sGenerateInputFilePath(applicationRoot, assetName.data(), ".png");
-                    TextureCooker textureCooker;
-                    if (!textureCooker.CookTexture(assetInputPath.c_str(), textureOut, assetId))
-                    {
-                        textureOut.close();
-                        return false;
-                    }
-                    textureOut.close();
-
-                    AssetMetadata metadata;
-                    metadata.assedId = assetId;
-                    metadata.sourcePath = assetInputPath;
-                    metadata.cookedPath = assetOutputPath;
-                    sCookedAssets.insert({ assetId, metadata });
+                    return false;
                 }
+                printf("Successfully cooked %s Material.\n", materialName.data());
                 printf("Successfully parsed Sprite component.\n");
             }
         }
@@ -261,56 +290,164 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
 	return true;
 }
 
-static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out, AssetId assetId)
+bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
-    out.write(reinterpret_cast<const char*>(&assetId), sizeof(AssetId));
-
-    if (jsonDoc.HasMember("Actors"))
+    // Cook Shaders
+    const char* shader = "Shader";
+    if (!jsonDoc.HasMember(shader))
     {
-        const rapidjson::Value& actors = jsonDoc["Actors"];
+        printf("Material missing Shader member.\n");
+        return false;
+    }
 
-        if (!actors.IsArray())
+    std::string shaderName = jsonDoc[shader].GetString();
+    std::string shaderOutputPath = sGenerateOutputFilePath(applicationRoot, shaderName.data());
+
+    path::WritePath(shaderOutputPath, out);
+
+    if (!ConvertJsonToBinary(eJsonType::SHADER, applicationRoot, shaderName.data()))
+    {
+        return false;
+    }
+    printf("Successfully cooked %s Shader.\n", shaderName.data());
+
+    // Cook Textures
+    const char* diffuseTexture = "DiffuseTexture";
+    if (!jsonDoc.HasMember(diffuseTexture))
+    {
+        printf("Material missing DiffuseTexture member.\n");
+        return false;
+    }
+    
+    std::string textureName = jsonDoc[diffuseTexture].GetString();
+    std::string textureOutputPath = sGenerateOutputFilePath(applicationRoot, textureName.data());
+    
+    path::WritePath(textureOutputPath, out);
+    
+    AssetId textureAssetId = sGenerateAssetId(textureName);
+    
+    if (!sCookedAssets.contains(textureAssetId))
+    {
+        std::filesystem::path fsOutputPath = textureOutputPath;
+        std::filesystem::create_directories(fsOutputPath.parent_path());
+        std::ofstream textureOut(textureOutputPath, std::ios::binary);
+        if (!textureOut.is_open())
         {
-            printf("Error: Actors is not an array.\n");
+            printf("Failed to open binary output file %s\n", textureOutputPath.data());
             return false;
         }
-
-        uint32 numActors = (uint32)actors.Size();
-        printf("Scene has %i components.\n", numActors);
-        out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint32));
-
-        uint32 actorIndex = 0;
-        for (const rapidjson::Value& actor : actors.GetArray())
+    
+        std::string textureInputPath = sGenerateInputFilePath(applicationRoot, textureName.data(), ".png");
+        TextureCooker textureCooker;
+        if (!textureCooker.CookTexture(textureInputPath.c_str(), textureOut, textureAssetId))
         {
-            if (!actor.HasMember("Prefab"))
-            {
-                printf("Actor missing Prefab member.\n");
-            }
-
-            std::string prefabName = actor["Prefab"].GetString();
-            std::string actorInstanceName = prefabName + "_" + std::to_string(actorIndex);
-            std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data());
-            
-            // Actor Prefab Path
-            path::WritePath(actorOutputPath, out);
-
-            // Cook Actor Prefab
-            if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
-            {
-                return false;
-            }
-            printf("Successfully cooked %s Actor Prefab.\n", prefabName.data());
-
-            // Actor Scene Transform
-            if (!sCookTransform(actor, jsonDoc, out))
-            {
-                printf("Failed to parse Transform component for %s\n", actorInstanceName.data());
-                return false;
-            }
-            printf("Successfully parsed Transform component for %s.\n", actorInstanceName.data());
-            ++actorIndex;
+            textureOut.close();
+            return false;
         }
+        textureOut.close();
+    
+        AssetMetadata metadata;
+        metadata.assedId = textureAssetId;
+        metadata.sourcePath = textureInputPath;
+        metadata.cookedPath = textureOutputPath;
+        sCookedAssets.insert({ textureAssetId, metadata });
     }
+
+    return true;
+}
+
+bool static sCookShader(const std::string& shaderType, const char* applicationRoot, rapidjson::Document& jsonDoc, std::string& outOutputFilePath)
+{
+    ShaderCooker shaderCooker;
+
+    if (!jsonDoc.HasMember("VS"))
+    {
+        printf("Shader missing VS member.\n");
+        return false;
+    }
+    const rapidjson::Value& vs = jsonDoc["VS"];
+
+    if (vs.HasMember("Source"))
+    {
+        printf("VS missing Source member.\n");
+        return false;
+    }
+    const rapidjson::Value& vsSource = vs["Source"];
+
+    if (vs.HasMember("Entry"))
+    {
+        printf("VS missing Entry member.\n");
+        return false;
+    }
+    const rapidjson::Value& vsEntry = vs["Entry"];
+
+    if (vs.HasMember("Profile"))
+    {
+        printf("VS missing Profile member.\n");
+        return false;
+    }
+    const rapidjson::Value& vsProfile = vs["Profile"];
+
+    std::string vsSourceName = vsSource.GetString();
+    std::string vsInputPath = sGenerateInputFilePath(applicationRoot, vsSourceName.data(), ".hlsl");
+    outOutputFilePath = sGenerateOutputFilePath(applicationRoot, vsSourceName.data());
+    std::filesystem::path fsVsOutputPath = outOutputFilePath;
+    std::filesystem::create_directories(fsVsOutputPath.parent_path());
+    shaderCooker.CookShaderByteCode(vsInputPath, vsEntry.GetString(), vsProfile.GetString(), outOutputFilePath);
+
+    return true;
+}
+
+bool static sConvertShaderJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+{
+    // Cook Shader Byte Code
+    std::string vsOutputPath;
+    if (!sCookShader("VS", applicationRoot, jsonDoc, vsOutputPath))
+    {
+        printf("Failed to Cook VS.\n");
+        return false;
+    }
+
+    std::string psOutputPath;
+    if (!sCookShader("PS", applicationRoot, jsonDoc, psOutputPath))
+    {
+        printf("Failed to Cook PS.\n");
+        return false;
+    }
+
+    // Gather shader data
+    std::ifstream vsFile(vsOutputPath, std::ios::binary | std::ios::ate);
+    if (!vsFile.is_open())
+    {
+        printf("Failed to open VS byte code %s.\n", vsOutputPath.c_str());
+        return false;
+    }
+    size_t vsSize = static_cast<size_t>(vsFile.tellg());
+    std::vector<uint8> vsData(vsSize);
+    vsFile.seekg(0);
+    vsFile.read(reinterpret_cast<char*>(vsData.data()), vsSize);
+    vsFile.close();
+    std::remove(vsOutputPath.c_str());
+
+    std::ifstream psFile(psOutputPath, std::ios::binary | std::ios::ate);
+    if (!psFile.is_open())
+    {
+        printf("Failed to open PS byte code %s.\n", psOutputPath.c_str());
+        return false;
+    }
+    size_t psSize = static_cast<size_t>(psFile.tellg());
+    std::vector<uint8> psData(psSize);
+    psFile.seekg(0);
+    psFile.read(reinterpret_cast<char*>(psData.data()), psSize);
+    psFile.close();
+    std::remove(psOutputPath.c_str());
+
+    // Write Shader Data to bin
+    out.write(reinterpret_cast<const char*>(&vsSize), sizeof(vsSize));
+    out.write(reinterpret_cast<const char*>(&psSize), sizeof(psSize));
+    out.write(reinterpret_cast<const char*>(&vsData), vsSize);
+    out.write(reinterpret_cast<const char*>(&psData), psSize);
+   
     return true;
 }
 
@@ -353,17 +490,32 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
 
     bool success = false;
 
+    if (type < eJsonType::COUNT)
+    {
+        out.write(reinterpret_cast<const char*>(&assetId), sizeof(AssetId));
+    }
+
     switch (type)
     {
-    case eJsonType::ACTOR: 
-    {
-        success = sConvertActorJsonToBinary(applicationRoot, jsonDoc, out, assetId);
-        break;
-    }
     case eJsonType::SCENE:
     {
-        success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out, assetId);
+        success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out);
         sClearCookedCache();
+        break;
+    }
+    case eJsonType::ACTOR:
+    {
+        success = sConvertActorJsonToBinary(applicationRoot, jsonDoc, out);
+        break;
+    }
+    case eJsonType::MATERIAL:
+    {
+        success = sConvertMaterialJsonToBinary(applicationRoot, jsonDoc, out);
+        break;
+    }
+    case eJsonType::SHADER:
+    {
+        success = sConvertShaderJsonToBinary(applicationRoot, jsonDoc, out);
         break;
     }
     default:

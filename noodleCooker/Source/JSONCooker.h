@@ -3,8 +3,10 @@
 
 enum class eJsonType
 {
-	ACTOR = 0,
-	SCENE,
+	SCENE = 0,
+	ACTOR,
+	MATERIAL,
+	SHADER,
 	COUNT
 };
 

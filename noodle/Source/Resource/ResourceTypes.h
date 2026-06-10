@@ -46,8 +46,25 @@ struct ITextureResource
 
 struct Texture
 {
-	std::unique_ptr<ITextureResource> resource;
+	std::unique_ptr<ITextureResource> resource = nullptr;
 	uint32 width = 0;
 	uint32 height = 0;
 	eTextureFormat format = eTextureFormat::UNKNOWN;
+};
+
+struct Shader
+{
+	virtual ~Shader() = default;
+};
+
+struct CookedShaderData
+{
+	std::vector<uint8> vsBytes;
+	std::vector<uint8> psBytes;
+};
+
+struct Material
+{
+	std::shared_ptr<Shader> shader = nullptr;
+	std::shared_ptr<Texture> diffuseTexture = nullptr;
 };

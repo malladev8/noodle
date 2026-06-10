@@ -14,7 +14,7 @@ const eComponentId SpriteInterface::COMPONENT_ID = eComponentId::COMPONENT_SPRIT
 void Sprite::Render(IRenderer& renderer)
 {
 	SpriteRenderCommand cmd;
-	cmd.texture = m_Texture;
+	cmd.material = m_Material;
 	
 	N_ASSERT(m_Owner != nullptr, "Sprite component owning actor is null.");
 	const Transform* transform = m_Owner->GetComponent<Transform>();
@@ -26,15 +26,15 @@ void Sprite::Render(IRenderer& renderer)
 
 bool Sprite::Init(std::ifstream& bin, EngineContext& engineContext)
 {
-	std::string texturePath = path::ReadFilePath(bin);
+	std::string materialPath = path::ReadFilePath(bin);
 
-	std::ifstream textureBin(texturePath, std::ios::binary);
-	if (!bin.is_open())
+	std::ifstream materialBin(materialPath, std::ios::binary);
+	if (!materialBin.is_open())
 	{
-		N_LOG("Failed to open Texture binary file %s", texturePath);
+		N_LOG("Failed to open Material binary file %s", materialPath);
 		return false;
 	}
 
-	m_Texture = engineContext.resourceManager.LoadTexture(textureBin);
+	m_Material = engineContext.resourceManager.LoadMaterial(materialBin);
 	return true;
 }
