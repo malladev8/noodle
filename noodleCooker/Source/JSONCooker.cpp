@@ -136,13 +136,13 @@ static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
 
 static std::string sGenerateInputFilePath(const char* applicationRoot, const char* assetName, const char* exentsion)
 {
-    std::string assetDirectory("Assets\\");
+    std::string assetDirectory("Assets/");
     return applicationRoot + assetDirectory + assetName + exentsion;
 }
 
 static std::string sGenerateOutputFilePath(const char* applicationRoot, const char* assetName)
 {
-    std::string assetDirectory("Cooked\\");
+    std::string assetDirectory("Cooked/");
     return applicationRoot + assetDirectory + assetName + BINARY_EXTENSION;
 }
 
@@ -360,40 +360,40 @@ bool static sCookShader(const std::string& shaderType, const char* applicationRo
 {
     ShaderCooker shaderCooker;
 
-    if (!jsonDoc.HasMember("VS"))
+    if (!jsonDoc.HasMember(shaderType.c_str()))
     {
-        printf("Shader missing VS member.\n");
+        printf("Shader missing %s member.\n", shaderType.c_str());
         return false;
     }
-    const rapidjson::Value& vs = jsonDoc["VS"];
+    const rapidjson::Value& shader = jsonDoc[shaderType.c_str()];
 
-    if (vs.HasMember("Source"))
+    if (!shader.HasMember("Source"))
     {
-        printf("VS missing Source member.\n");
+        printf("%s missing Source member.\n", shaderType.c_str());
         return false;
     }
-    const rapidjson::Value& vsSource = vs["Source"];
+    const rapidjson::Value& vsSource = shader["Source"];
 
-    if (vs.HasMember("Entry"))
+    if (!shader.HasMember("Entry"))
     {
-        printf("VS missing Entry member.\n");
+        printf("%s missing Entry member.\n", shaderType.c_str());
         return false;
     }
-    const rapidjson::Value& vsEntry = vs["Entry"];
+    const rapidjson::Value& vsEntry = shader["Entry"];
 
-    if (vs.HasMember("Profile"))
+    if (!shader.HasMember("Profile"))
     {
         printf("VS missing Profile member.\n");
         return false;
     }
-    const rapidjson::Value& vsProfile = vs["Profile"];
+    const rapidjson::Value& vsProfile = shader["Profile"];
 
-    std::string vsSourceName = vsSource.GetString();
-    std::string vsInputPath = sGenerateInputFilePath(applicationRoot, vsSourceName.data(), ".hlsl");
-    outOutputFilePath = sGenerateOutputFilePath(applicationRoot, vsSourceName.data());
-    std::filesystem::path fsVsOutputPath = outOutputFilePath;
-    std::filesystem::create_directories(fsVsOutputPath.parent_path());
-    shaderCooker.CookShaderByteCode(vsInputPath, vsEntry.GetString(), vsProfile.GetString(), outOutputFilePath);
+    std::string sourceName = vsSource.GetString();
+    std::string inputPath = sGenerateInputFilePath(applicationRoot, sourceName.data(), ".hlsl");
+    outOutputFilePath = sGenerateOutputFilePath(applicationRoot, sourceName.data());
+    std::filesystem::path fsOutputPath = outOutputFilePath;
+    std::filesystem::create_directories(fsOutputPath.parent_path());
+    shaderCooker.CookShaderByteCode(inputPath, vsEntry.GetString(), vsProfile.GetString(), outOutputFilePath);
 
     return true;
 }

@@ -20,11 +20,12 @@ int main(int argc, char** argv)
     // Example args
     //const char* jsonType = "scene";
     //const char* applicationRoot = "B:/ScarlettDev/RA/RedAngel/";
-    //const char* assetName = "TestScene";
+    //const char* assetName = "Scene/TestScene";
 
     const char* jsonType = argv[1];
     const char* applicationRoot = argv[2];
     const char* assetName = argv[3];
+
 
     if (!sJsonTypeLookup.contains(jsonType))
     {
