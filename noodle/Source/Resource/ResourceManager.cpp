@@ -46,13 +46,13 @@ std::shared_ptr<Shader> ResourceManager::LoadShader(std::ifstream& bin)
 		CookedShaderData shaderData;
 		uint32 vsSize = 0;
 		uint32 psSize = 0;
-		bin.read(reinterpret_cast<char*>(&vsSize), sizeof(vsSize));
-		bin.read(reinterpret_cast<char*>(&psSize), sizeof(psSize));
+		N_ASSERT(bin.read(reinterpret_cast<char*>(&vsSize), sizeof(vsSize)), "Failed to read shader size.");
+		N_ASSERT(bin.read(reinterpret_cast<char*>(&psSize), sizeof(psSize)), "Failed to read shader size.");
 
 		shaderData.vsBytes.resize(vsSize);
 		shaderData.psBytes.resize(psSize);
-		bin.read(reinterpret_cast<char*>(shaderData.vsBytes.data()), vsSize);
-		bin.read(reinterpret_cast<char*>(shaderData.psBytes.data()), psSize);
+		N_ASSERT(bin.read(reinterpret_cast<char*>(shaderData.vsBytes.data()), vsSize), "Failed to read shader bytecode.");
+		N_ASSERT(bin.read(reinterpret_cast<char*>(shaderData.psBytes.data()), psSize), "Failed to read shader bytecode.");
 
 		std::shared_ptr<Shader> shader = nullptr;
 		Engine::Get().GetContext().renderer->CreateShaderResources(shader, shaderData);
