@@ -422,7 +422,7 @@ bool static sConvertShaderJsonToBinary(const char* applicationRoot, rapidjson::D
         printf("Failed to open VS byte code %s.\n", vsOutputPath.c_str());
         return false;
     }
-    size_t vsSize = static_cast<size_t>(vsFile.tellg());
+    uint32 vsSize = static_cast<uint32>(vsFile.tellg());
     std::vector<uint8> vsData(vsSize);
     vsFile.seekg(0);
     vsFile.read(reinterpret_cast<char*>(vsData.data()), vsSize);
@@ -435,7 +435,7 @@ bool static sConvertShaderJsonToBinary(const char* applicationRoot, rapidjson::D
         printf("Failed to open PS byte code %s.\n", psOutputPath.c_str());
         return false;
     }
-    size_t psSize = static_cast<size_t>(psFile.tellg());
+    uint32 psSize = static_cast<uint32>(psFile.tellg());
     std::vector<uint8> psData(psSize);
     psFile.seekg(0);
     psFile.read(reinterpret_cast<char*>(psData.data()), psSize);
@@ -445,8 +445,8 @@ bool static sConvertShaderJsonToBinary(const char* applicationRoot, rapidjson::D
     // Write Shader Data to bin
     out.write(reinterpret_cast<const char*>(&vsSize), sizeof(vsSize));
     out.write(reinterpret_cast<const char*>(&psSize), sizeof(psSize));
-    out.write(reinterpret_cast<const char*>(&vsData), vsSize);
-    out.write(reinterpret_cast<const char*>(&psData), psSize);
+    out.write(reinterpret_cast<const char*>(vsData.data()), vsSize);
+    out.write(reinterpret_cast<const char*>(psData.data()), psSize);
    
     return true;
 }

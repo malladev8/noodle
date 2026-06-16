@@ -44,8 +44,8 @@ std::shared_ptr<Shader> ResourceManager::LoadShader(std::ifstream& bin)
 	if (!m_ShaderCache.contains(assetId) || m_ShaderCache[assetId].expired())
 	{
 		CookedShaderData shaderData;
-		size_t vsSize = 0;
-		size_t psSize = 0;
+		uint32 vsSize = 0;
+		uint32 psSize = 0;
 		bin.read(reinterpret_cast<char*>(&vsSize), sizeof(vsSize));
 		bin.read(reinterpret_cast<char*>(&psSize), sizeof(psSize));
 

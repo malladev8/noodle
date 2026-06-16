@@ -405,7 +405,7 @@ void D3D12Renderer::CreateShaderResources(std::shared_ptr<struct Shader>& outSha
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1; // Does this need to change to match our number of back buffers?
+	psoDesc.NumRenderTargets = BufferCount; // Does this need to change to match our number of back buffers?
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 
