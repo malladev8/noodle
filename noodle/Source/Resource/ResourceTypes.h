@@ -13,6 +13,12 @@ struct Vertex
 	vec2 uv;
 };
 
+struct SpriteVertex
+{
+	vec3 position;
+	vec2 uv;
+};
+
 struct ColorVertex
 {
 	vec3 position;

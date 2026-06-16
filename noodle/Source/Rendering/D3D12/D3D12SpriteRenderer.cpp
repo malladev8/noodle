@@ -1,10 +1,89 @@
 #include "NoodlePch.h"
 #include "D3D12SpriteRenderer.h"
 #include "D3D12Renderer.h"
+#include "D3D12ResourceTypes.h"
+
+static const SpriteVertex sQuadVerts[]
+{
+	{{ 0.0f, -0.5f, -0.5f}, {0,1}}, // bottom left
+	{{ 0.0f,  0.5f, -0.5f}, {1,1}}, // bottom right
+	{{ 0.0f, -0.5f,  0.5f}, {1,0}}, // top right
+	{{ 0.0f,  0.5f,  0.5f}, {0,0}}  // top left
+};
+
+static const uint32 sQuadIndices[]
+{
+	0, 1, 2, // bl, br, tr
+	2, 3, 0  // tr, tl, bl 
+};
 
 bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)
 {
 	m_Renderer = &renderer;
+	ID3D12Device* device = renderer.GetDevice();
+
+	// Create quad vertex buffer
+	// Common property helper structure for an upload heap
+	D3D12_HEAP_PROPERTIES heapProps = {};
+	heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+	// Define vertex buffer resource description
+	D3D12_RESOURCE_DESC vertexBufferDesc = {};
+	vertexBufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	vertexBufferDesc.Width = sizeof(sQuadVerts);
+	vertexBufferDesc.Height = 1;
+	vertexBufferDesc.DepthOrArraySize = 1;
+	vertexBufferDesc.MipLevels = 1;
+	vertexBufferDesc.Format = DXGI_FORMAT_UNKNOWN;
+	vertexBufferDesc.SampleDesc.Count = 1;
+	vertexBufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	// Create Vertex Buffer Resource
+	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &vertexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_QuadVertexBuffer));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create sprite quad vertex buffer resource. hr: %i", hr);
+		return false;
+	}
+
+	// Define index buffer resource description
+	D3D12_RESOURCE_DESC indexBufferDesc = vertexBufferDesc; // Copy structure layout
+	indexBufferDesc.Width = sizeof(sQuadIndices);
+
+	// Create Index Buffer Resource
+	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &indexBufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_QuadIndexBuffer));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create sprite quad index buffer resource. hr: %i", hr);
+		return false;
+	}
+
+	// Copy memory from CPU to GPU
+	void* pVertexDataBegin = nullptr;
+	D3D12_RANGE readRange = { 0, 0 }; // We do not intend to read this resource from the CPU
+
+	// Map and copy vertex data
+	m_QuadVertexBuffer->Map(0, &readRange, &pVertexDataBegin);
+	memcpy(pVertexDataBegin, sQuadVerts, sizeof(sQuadVerts));
+	m_QuadVertexBuffer->Unmap(0, nullptr);
+
+	void* pIndexDataBegin = nullptr;
+	// Map and copy index data
+	m_QuadIndexBuffer->Map(0, &readRange, &pIndexDataBegin);
+	memcpy(pIndexDataBegin, sQuadIndices, sizeof(sQuadIndices));
+	m_QuadIndexBuffer->Unmap(0, nullptr);
+
+	// Configure buffer views
+	// Initialize the Vertex Buffer View (VBV)
+	m_QuadVertexBufferView.BufferLocation = m_QuadVertexBuffer->GetGPUVirtualAddress();
+	m_QuadVertexBufferView.StrideInBytes = sizeof(SpriteVertex);
+	m_QuadVertexBufferView.SizeInBytes = sizeof(sQuadVerts);
+
+	// Initialize the Index Buffer View (IBV)
+	m_QuadIndexBufferView.BufferLocation = m_QuadIndexBuffer->GetGPUVirtualAddress();
+	m_QuadIndexBufferView.Format = DXGI_FORMAT_R32_UINT; // Match uint32_t indices array
+	m_QuadIndexBufferView.SizeInBytes = sizeof(sQuadIndices);
+
 	return true;
 }
 
