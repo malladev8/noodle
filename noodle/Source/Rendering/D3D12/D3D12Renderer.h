@@ -6,6 +6,7 @@
 #include "D3D12ResourceTypes.h"
 
 constexpr uint32 BufferCount = 2;
+class D3D12SpriteRenderer;
 
 class D3D12Renderer : public IRenderer
 {
@@ -23,6 +24,9 @@ public:
 
 	virtual void CreateTextureResources(struct Texture& texture, const std::vector<uint8>& pixels) override;
 	virtual void CreateShaderResources(std::shared_ptr<struct Shader>& outShader, const struct CookedShaderData& shaderData) override;
+
+	ID3D12Device* GetDevice() { return m_Device.Get(); }
+	ID3D12GraphicsCommandList* GetCommandList() { return m_CommandList.Get(); }
 
 protected:
 
@@ -42,6 +46,8 @@ private:
 	ComPtr<ID3D12CommandAllocator> m_CommandAllocators[BufferCount];
 
 	ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
+
+	std::unique_ptr<D3D12SpriteRenderer> m_SpriteRenderer;
 
 	HANDLE m_FenceEvent;
 	uint64 m_FenceValue[BufferCount];

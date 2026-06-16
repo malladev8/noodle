@@ -72,6 +72,9 @@
     <ClCompile Include="Source\Math\NoodleMath.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Rendering\D3D12\D3D12SpriteRenderer.cpp">
+      <Filter>Rendering\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -160,6 +163,9 @@
       <Filter>Rendering\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="Source\Rendering\D3D12\D3D12ResourceTypes.h">
+      <Filter>Rendering\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Rendering\D3D12\D3D12SpriteRenderer.h">
       <Filter>Rendering\D3D12</Filter>
     </ClInclude>
   </ItemGroup>

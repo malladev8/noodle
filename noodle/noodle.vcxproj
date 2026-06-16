@@ -37,6 +37,7 @@
     <ClCompile Include="Source\NoodleInput.cpp" />
     <ClCompile Include="Source\NoodlePch.cpp" />
     <ClCompile Include="Source\Rendering\D3D12\D3D12Renderer.cpp" />
+    <ClCompile Include="Source\Rendering\D3D12\D3D12SpriteRenderer.cpp" />
     <ClCompile Include="Source\Resource\ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +71,7 @@
     <ClInclude Include="Source\Rendering\D3D12\D3D12Common.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12Renderer.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12ResourceTypes.h" />
+    <ClInclude Include="Source\Rendering\D3D12\D3D12SpriteRenderer.h" />
     <ClInclude Include="Source\Rendering\RenderCommands.h" />
     <ClInclude Include="Source\Rendering\IRenderer.h" />
     <ClInclude Include="Source\Resource\ResourceManager.h" />
