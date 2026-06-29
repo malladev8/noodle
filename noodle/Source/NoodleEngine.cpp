@@ -2,6 +2,7 @@
 #include "NoodleEngine.h"
 #include "NoodleApp.h"
 #include "NoodleClock.h"
+#include "NoodleWindow.h"
 #include "Rendering/IRenderer.h"
 
 Engine::Engine()
@@ -15,6 +16,7 @@ Engine::Engine()
 			  m_Renderer.get(),
 			  m_ResourceManager,
 			  m_InputManager,
+			  m_Window,
 		  }
 	  )
 {
@@ -40,11 +42,7 @@ void Engine::Update(float32 deltaSeconds)
 
 void Engine::Render()
 {
-	m_Renderer->BeginFrame();
-	m_App->SubmitRenderCommands(*m_Renderer.get());
-	m_Renderer->RenderFrame();
-	m_Renderer->EndFrame();
-	m_Renderer->Present();
+	m_App->Render(*m_Renderer.get());
 }
 
 void Engine::Run(std::unique_ptr<NoodleApp> app,
@@ -56,18 +54,17 @@ void Engine::Run(std::unique_ptr<NoodleApp> app,
 
 	PlatformInitLogger();
 
-	NoodleWindowDesc windowDesc
-	{
-		1280,
-		720,
-		"Noodle"
-	};
+	WindowDesc windowDesc;
+	windowDesc.width = 1280;
+	windowDesc.height = 720;
+	windowDesc.title = "MainWindow";
+	m_Window.Initialize(windowDesc, m_EngineContext);
 
 	void* hwnd = nullptr;
-	PlatformCreateWindow(windowDesc, hwnd);
+	PlatformCreateWindow(m_Window, hwnd);
 	
 	m_Renderer = std::move(renderer);
-	m_Renderer->Initialize(hwnd, windowDesc);
+	m_Renderer->Initialize(hwnd, m_Window);
 	m_EngineContext.renderer = m_Renderer.get();
 
 	m_App = std::move(app);
@@ -86,5 +83,6 @@ void Engine::Run(std::unique_ptr<NoodleApp> app,
 	// Shutdown
 	m_App->Shutdown();
 	m_Renderer->Shutdown();
+	m_Window.Shutdown(m_EngineContext);
 	PlatformShutdown();
 }

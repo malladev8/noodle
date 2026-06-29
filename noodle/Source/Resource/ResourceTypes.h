@@ -80,3 +80,17 @@ enum class eProjectionType
 	ORTHOGRAPHIC,
 	PERSPECTIVE // Perspective is not currently supported.
 };
+
+struct CameraData
+{
+	mat4x4 view;
+	mat4x4 projection;
+	vec4 clearColor;
+};
+
+struct FrameConstants
+{
+	mat4x4 view;
+	mat4x4 projection;
+	mat4x4 viewProjection;
+};

@@ -1,16 +1,17 @@
 #pragma once
 #include "Core/NoodleCore.h"
-#include "Event/EventManager.h"
-#include "Resource/ResourceManager.h"
-#include "NoodleInput.h"
 #include "EngineContext.h"
+#include "Event/EventManager.h"
+#include "NoodleInput.h"
+#include "NoodleWindow.h"
+#include "Resource/ResourceManager.h"
 
 class NoodleApp;
 class IRenderer;
 
 // Platform functions should be implemented by platform entry point.
 // See WinEntry.cpp for examples
-bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void*& outHwnd);
+bool PlatformCreateWindow(const Window& windowDesc, void*& outHwnd);
 void PlatformInitLogger();
 void PlatformDispatchMessages();
 bool PlatformShouldExit();
@@ -31,6 +32,7 @@ protected:
 
 private:
 	EventManager m_EventManager;
+	Window m_Window;
 	std::unique_ptr<IRenderer> m_Renderer = nullptr;
 	ResourceManager m_ResourceManager;
 	InputManager m_InputManager;

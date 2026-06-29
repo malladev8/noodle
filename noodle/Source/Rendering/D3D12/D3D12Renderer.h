@@ -12,10 +12,10 @@ class D3D12Renderer : public IRenderer
 {
 public:
 	D3D12Renderer();
-	virtual void Initialize(void* hwnd, NoodleWindowDesc& windowDesc) override;
+	virtual void Initialize(void* hwnd, class Window& windowDesc) override;
 	virtual void Shutdown() override;
 
-	virtual void BeginFrame() override;
+	virtual void BeginFrame(const struct CameraData& camData) override;
 	virtual void RenderFrame() override;
 	virtual void EndFrame() override;
 	virtual void Present() override;
@@ -44,8 +44,10 @@ private:
 	ComPtr<ID3D12DescriptorHeap> m_RtvHeap;
 	ComPtr<ID3D12Resource> m_RenderTargets[BufferCount];
 	ComPtr<ID3D12CommandAllocator> m_CommandAllocators[BufferCount];
-
 	ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
+	ComPtr<ID3D12Resource> m_FrameConstantBuffer;
+	uint8* m_MappedFrameCB;
+	D3D12_GPU_VIRTUAL_ADDRESS m_FrameCBGpuAddress;;
 
 	std::unique_ptr<D3D12SpriteRenderer> m_SpriteRenderer;
 

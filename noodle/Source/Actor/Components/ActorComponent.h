@@ -15,7 +15,7 @@ public:
 
 	virtual void PostInit() {}
 	virtual void Update(float deltaSeconds) {}
-	virtual void SubmitRenderCommands(IRenderer& IRenderer) {}
+	virtual void SubmitRenderCommands(IRenderer& IRenderer) const {}
 	virtual eComponentId GetComponentId() const = 0;
 
 protected:

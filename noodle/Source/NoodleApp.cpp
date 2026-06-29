@@ -19,12 +19,6 @@ NoodleApp::~NoodleApp()
 
 void NoodleApp::Initialize()
 {
-	// Testing event manager
-	m_WindowResizeEventHandle = m_EngineContext.eventManager.Subscribe<WindowResizeEvent>(
-		[this](const WindowResizeEvent& event)
-		{
-			OnWindowResize(event);
-		});
 }
 
 void NoodleApp::Update(float deltaSeconds)
@@ -32,17 +26,12 @@ void NoodleApp::Update(float deltaSeconds)
 	m_Scene->Update(deltaSeconds);
 }
 
-void NoodleApp::SubmitRenderCommands(IRenderer& IRenderer)
+void NoodleApp::Render(IRenderer& IRenderer)
 {
 	m_Scene->SubmitRenderCommands(IRenderer);
+	m_Scene->Render(IRenderer, m_EngineContext.window);
 }
 
 void NoodleApp::Shutdown()
 {
-	m_EngineContext.eventManager.Unsubscribe(m_WindowResizeEventHandle);
-}
-
-void NoodleApp::OnWindowResize(const WindowResizeEvent& event)
-{
-	N_LOG("Received Window Resize Event w:%i h:%i", event.GetWidth(), event.GetHeight());
 }

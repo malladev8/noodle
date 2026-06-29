@@ -7,10 +7,10 @@ class IRenderer
 public:
 	virtual ~IRenderer() = default;
 
-	virtual void Initialize(void* hwnd, NoodleWindowDesc& windowDesc) = 0;
+	virtual void Initialize(void* hwnd, class Window& windowDesc) = 0;
 	virtual void Shutdown() = 0;
 
-	virtual void BeginFrame() = 0;
+	virtual void BeginFrame(const struct CameraData& camData) = 0;
 	virtual void RenderFrame() = 0;
 	virtual void EndFrame() = 0;
 	virtual void Present() = 0;

@@ -1,6 +1,7 @@
 #include "NoodlePch.h"
 #include "NoodleEngine.h"
 #include "NoodleInput.h"
+#include "NoodleWindow.h"
 #include "Event/EventManager.h"
 #include "Event/WindowResizeEvent.h"
 #include "RedAngelApp.h"
@@ -82,7 +83,7 @@ void CreateDebugConsole()
 }
 #endif
 
-bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void*& outHwnd)
+bool PlatformCreateWindow(const Window& windowDesc, void*& outHwnd)
 {
     HINSTANCE instance = GetModuleHandle(nullptr);
 
@@ -100,8 +101,8 @@ bool PlatformCreateWindow(const NoodleWindowDesc& windowDesc, void*& outHwnd)
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        windowDesc.width,
-        windowDesc.height,
+        windowDesc.GetWidth(),
+        windowDesc.GetHeight(),
         nullptr,
         nullptr,
         instance,

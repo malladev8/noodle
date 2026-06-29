@@ -13,3 +13,8 @@ namespace str
 	std::string WideToUtf8(const std::wstring& wide);
 #endif
 }
+
+namespace align
+{
+	uint32 Align256(uint32 size);
+}

@@ -15,15 +15,12 @@ public:
 
 	virtual void Initialize();
 	virtual void Update(float deltaSeconds);
-	virtual void SubmitRenderCommands(IRenderer& IRenderer);
+	virtual void Render(IRenderer& IRenderer);
 	virtual void Shutdown();
-
-	virtual void OnWindowResize(const WindowResizeEvent& event);
 
 protected:
 	std::unique_ptr<Scene> m_Scene;
 	EngineContext& m_EngineContext;
-	uint32 m_WindowResizeEventHandle = 0;
 
 private:
 };

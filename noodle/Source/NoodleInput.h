@@ -43,7 +43,6 @@ struct InputState
 
 class InputManager
 {
-	friend class Engine;
 public:
 	void BeginFrame();
 

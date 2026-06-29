@@ -78,6 +78,7 @@
     <ClCompile Include="Source\Actor\Components\Camera.cpp">
       <Filter>Actor\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\NoodleWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -177,5 +178,6 @@
     <ClInclude Include="Source\Actor\Components\Camera.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\NoodleWindow.h" />
   </ItemGroup>
 </Project>

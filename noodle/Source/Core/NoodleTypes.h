@@ -28,10 +28,3 @@ constexpr size_t operator"" _GB(unsigned long long x)
 {
     return x * 1024ull * 1024ull * 1024ull;
 }
-
-struct NoodleWindowDesc
-{
-    uint32 width;
-    uint32 height;
-    const char* title;
-};

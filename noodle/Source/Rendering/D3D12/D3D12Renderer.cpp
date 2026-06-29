@@ -1,6 +1,7 @@
 #include "NoodlePch.h"
 #include "D3D12Renderer.h"
 #include "NoodleEngine.h"
+#include "NoodleWindow.h"
 #include "Event/WindowResizeEvent.h"
 #include "D3D12SpriteRenderer.h"
 
@@ -18,6 +19,9 @@ D3D12Renderer::D3D12Renderer()
 	  m_Adapter(nullptr),
 	  m_RtvHeap(nullptr),
 	  m_SrvHeap(nullptr),
+	  m_FrameConstantBuffer(nullptr),
+	  m_MappedFrameCB(nullptr),
+	  m_FrameCBGpuAddress(0),
 	  m_SpriteRenderer(nullptr),
 	  m_RenderTargets({}),
 	  m_CommandAllocators({}),
@@ -32,7 +36,7 @@ D3D12Renderer::D3D12Renderer()
 {
 }
 
-void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
+void D3D12Renderer::Initialize(void* hwnd, Window& windowDesc)
 {
 	// Initialize DXGI Factory
 	UINT dxgiFactoryFlags = 0;
@@ -92,8 +96,8 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 	// Create Swap Chain
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 	swapChainDesc.BufferCount = BufferCount;
-	swapChainDesc.Width = windowDesc.width;
-	swapChainDesc.Height = windowDesc.height;
+	swapChainDesc.Width = windowDesc.GetWidth();
+	swapChainDesc.Height = windowDesc.GetHeight();
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -156,7 +160,7 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 	m_FenceEvent = CreateEvent(nullptr, false, false, nullptr);
 
 	// Create Viewport and Scissor
-	UpdateViewport(windowDesc.width, windowDesc.height);
+	UpdateViewport(windowDesc.GetWidth(), windowDesc.GetHeight());
 
 	m_CurrentFrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 
@@ -176,6 +180,32 @@ void D3D12Renderer::Initialize(void* hwnd, NoodleWindowDesc& windowDesc)
 	// Initialize Sub Renderers
 	m_SpriteRenderer = std::make_unique<D3D12SpriteRenderer>();
 	m_SpriteRenderer->Initialize(*this);
+
+	// Initialize Frame Constant Buffer
+	uint32 cbSize = align::Align256(sizeof(FrameConstants)); // D3D12 requires all constant buffers to be 256 byte-aligned
+
+	D3D12_HEAP_PROPERTIES heapProps = {};
+	heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+	D3D12_RESOURCE_DESC desc = {};
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	desc.Width = cbSize;
+	desc.Height = 1;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.SampleDesc.Count = 1;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	hr = m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_FrameConstantBuffer));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create committed resource for Frame Constant Buffer. HR: %i", hr);
+		return;
+	}
+
+	D3D12_RANGE readRange = { 0, 0 };
+	// Common in D3D12 to leave upload CBs mapped forever like this
+	m_FrameConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_MappedFrameCB));
 	
 	// Subsribe to WindowResizeEvent
 	m_WindowResizeEventHandle = Engine::Get().GetContext().eventManager.Subscribe<WindowResizeEvent>(
@@ -193,7 +223,7 @@ void D3D12Renderer::Shutdown()
 	// Shutdown
 }
 
-void D3D12Renderer::BeginFrame()
+void D3D12Renderer::BeginFrame(const CameraData& camData)
 {
 	// Prepare the command list for recording
 	// Wait for GPU to finish this frame’s resources
@@ -215,8 +245,15 @@ void D3D12Renderer::BeginFrame()
 	D3D12_CPU_DESCRIPTOR_HANDLE rtv = m_RtvHandles[m_CurrentFrameIndex];
 	m_CommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
 
+	// Update Frame Constant Buffer
+	FrameConstants frameConstants;
+	frameConstants.view = camData.view;
+	frameConstants.projection = camData.projection;
+	frameConstants.viewProjection = frameConstants.projection * frameConstants.view;
+	memcpy(m_MappedFrameCB, &frameConstants, sizeof(frameConstants));
+
 	// Clear
-	const float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	const float clearColor[] = { camData.clearColor.r, camData.clearColor.g, camData.clearColor.b, camData.clearColor.a };
 	m_CommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 }
 

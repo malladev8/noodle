@@ -7,6 +7,7 @@ class Camera : public CameraInterface
 {
 public:
 	virtual void Update(float deltaSeconds) override;
+	virtual struct CameraData BuildCameraData(float32 aspectRatio) const override;
 
 protected:
 private:

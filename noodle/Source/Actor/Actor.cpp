@@ -32,7 +32,7 @@ void Actor::Update(float deltaSeconds)
 	}
 }
 
-void Actor::SubmitRenderCommands(IRenderer& IRenderer)
+void Actor::SubmitRenderCommands(IRenderer& IRenderer) const
 {
 	size_t numComponents = m_Components.size();
 	for (size_t i = 0; i < numComponents; ++i)

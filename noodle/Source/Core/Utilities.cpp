@@ -32,3 +32,8 @@ std::string str::WideToUtf8(const std::wstring& wide)
 	return result;
 }
 #endif
+
+uint32 align::Align256(uint32 size)
+{
+	return (size + 255) & ~255;
+}
