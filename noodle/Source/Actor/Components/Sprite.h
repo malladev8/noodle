@@ -8,7 +8,7 @@ class Sprite : public SpriteInterface
 	friend class ActorFactory;
 
 public:
-	virtual void Render(class IRenderer& renderer) override;
+	virtual void SubmitRenderCommands(class IRenderer& renderer) override;
 protected:
 private:
 	std::shared_ptr<Material> m_Material = nullptr;

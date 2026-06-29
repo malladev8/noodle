@@ -41,7 +41,7 @@ void Engine::Update(float32 deltaSeconds)
 void Engine::Render()
 {
 	m_Renderer->BeginFrame();
-	m_App->Render(*m_Renderer.get());
+	m_App->SubmitRenderCommands(*m_Renderer.get());
 	m_Renderer->RenderFrame();
 	m_Renderer->EndFrame();
 	m_Renderer->Present();

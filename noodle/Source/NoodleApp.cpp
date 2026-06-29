@@ -32,9 +32,9 @@ void NoodleApp::Update(float deltaSeconds)
 	m_Scene->Update(deltaSeconds);
 }
 
-void NoodleApp::Render(IRenderer& IRenderer)
+void NoodleApp::SubmitRenderCommands(IRenderer& IRenderer)
 {
-	m_Scene->Render(IRenderer);
+	m_Scene->SubmitRenderCommands(IRenderer);
 }
 
 void NoodleApp::Shutdown()

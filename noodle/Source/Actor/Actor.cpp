@@ -32,12 +32,12 @@ void Actor::Update(float deltaSeconds)
 	}
 }
 
-void Actor::Render(IRenderer& IRenderer)
+void Actor::SubmitRenderCommands(IRenderer& IRenderer)
 {
 	size_t numComponents = m_Components.size();
 	for (size_t i = 0; i < numComponents; ++i)
 	{
-		m_Components[i]->Render(IRenderer);
+		m_Components[i]->SubmitRenderCommands(IRenderer);
 	}
 }
 

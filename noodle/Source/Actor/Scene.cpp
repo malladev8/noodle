@@ -9,14 +9,14 @@ void Scene::Update(float deltaSeconds)
 	}
 }
 
-void Scene::Render(IRenderer& IRenderer)
+void Scene::SubmitRenderCommands(IRenderer& IRenderer)
 {
 	// TODO: Separate Actors with renderable components into separate array
 	// Currently we loop through every actor and all of their components again each frame
 	// even if there's nothing to render.
 	for (auto& actor : m_Actors)
 	{
-		actor->Render(IRenderer);
+		actor->SubmitRenderCommands(IRenderer);
 	}
 }
 

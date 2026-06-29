@@ -11,7 +11,7 @@
 
 const eComponentId SpriteInterface::COMPONENT_ID = eComponentId::COMPONENT_SPRITE;
 
-void Sprite::Render(IRenderer& renderer)
+void Sprite::SubmitRenderCommands(IRenderer& renderer)
 {
 	SpriteRenderCommand cmd;
 	cmd.material = m_Material;
