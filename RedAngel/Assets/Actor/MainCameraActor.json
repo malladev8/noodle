@@ -1,0 +1,14 @@
+{
+	"Name": "MainCamera",
+	"Components": 
+	[
+		{
+			"Type": "Camera",
+			"Projection": "Orthographic",
+			"NearPlane": -100.0,
+			"FarPlane": 100.0,
+			"OrthoHeight": 10.0,
+			"ClearColor": [ 0.1, 0.1, 0.2, 1.0 ]
+		}
+	]
+}

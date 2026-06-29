@@ -1,6 +1,8 @@
 #pragma once
 #include "Core/NoodleCore.h"
 #include "D3D12Common.h"
+#include "Rendering/RenderCommands.h"
+#include <queue>
 
 class D3D12SpriteRenderer
 {
@@ -19,4 +21,6 @@ private:
 
 	D3D12_VERTEX_BUFFER_VIEW m_QuadVertexBufferView = {};
 	D3D12_INDEX_BUFFER_VIEW m_QuadIndexBufferView = {};
+
+	std::queue<SpriteRenderCommand>m_SpriteCommands;
 };

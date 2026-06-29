@@ -74,3 +74,9 @@ struct Material
 	std::shared_ptr<Shader> shader = nullptr;
 	std::shared_ptr<Texture> diffuseTexture = nullptr;
 };
+
+enum class eProjectionType
+{
+	ORTHOGRAPHIC,
+	PERSPECTIVE // Perspective is not currently supported.
+};

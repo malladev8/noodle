@@ -7,14 +7,14 @@ static const SpriteVertex sQuadVerts[]
 {
 	{{ 0.0f, -0.5f, -0.5f}, {0,1}}, // bottom left
 	{{ 0.0f,  0.5f, -0.5f}, {1,1}}, // bottom right
-	{{ 0.0f, -0.5f,  0.5f}, {1,0}}, // top right
-	{{ 0.0f,  0.5f,  0.5f}, {0,0}}  // top left
+	{{ 0.0f, -0.5f,  0.5f}, {1,0}}, // top left
+	{{ 0.0f,  0.5f,  0.5f}, {0,0}}  // top right
 };
 
 static const uint32 sQuadIndices[]
 {
-	0, 1, 2, // bl, br, tr
-	2, 3, 0  // tr, tl, bl 
+	0, 1, 2, // bl, br, tl
+	2, 1, 3  // tl, br, tr
 };
 
 bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)
@@ -89,6 +89,7 @@ bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)
 
 void D3D12SpriteRenderer::SubmitSprite(const SpriteRenderCommand& cmd)
 {
+	m_SpriteCommands.push(cmd);
 }
 
 void D3D12SpriteRenderer::CreateShaderResources(std::shared_ptr<struct Shader>& outShader, const CookedShaderData& shaderData)
@@ -201,4 +202,15 @@ void D3D12SpriteRenderer::CreateShaderResources(std::shared_ptr<struct Shader>& 
 void D3D12SpriteRenderer::Flush()
 {
 	// Convert queued render commands into GPU draw calls
+	// For each sprite :
+	// 
+	// bind PSO
+	// 	bind root signature
+	// 	bind descriptor heaps
+	// 	bind shared quad VB / IB
+	// 	upload constants
+	// 	bind texture SRV
+	// 	DrawIndexedInstanced()
+	// 
+	// 	Then clear queued commands.
 }

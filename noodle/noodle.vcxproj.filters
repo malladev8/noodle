@@ -75,6 +75,9 @@
     <ClCompile Include="Source\Rendering\D3D12\D3D12SpriteRenderer.cpp">
       <Filter>Rendering\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Components\Camera.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -167,6 +170,12 @@
     </ClInclude>
     <ClInclude Include="Source\Rendering\D3D12\D3D12SpriteRenderer.h">
       <Filter>Rendering\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\CameraInterface.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\Camera.h">
+      <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

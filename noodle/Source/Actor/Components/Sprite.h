@@ -1,7 +1,7 @@
 #pragma once
-#include "../../Core/NoodleCore.h"
+#include "Core/NoodleCore.h"
 #include "SpriteInterface.h"
-#include "../../Resource/ResourceTypes.h"
+#include "Resource/ResourceTypes.h"
 
 class Sprite : public SpriteInterface
 {

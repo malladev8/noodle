@@ -69,6 +69,24 @@ static bool sReadVec3(const rapidjson::Value& arr, vec3& out)
     return true;
 }
 
+static bool sReadVec4(const rapidjson::Value& arr, vec4& out)
+{
+    if (!arr.IsArray() || arr.Size() != 4)
+    {
+        return false;
+    }
+
+    for (rapidjson::SizeType i = 0; i < 4; ++i)
+    {
+        if (!arr[i].IsNumber())
+        {
+            return false;
+        }
+        out.data[i] = arr[i].GetFloat();
+    }
+    return true;
+}
+
 static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
 {
     printf("Json Parse Error:\n");
@@ -134,6 +152,16 @@ static void sPrintParseError(rapidjson::ParseErrorCode errorCode)
     }
 }
 
+static bool sValidateJsonValueMember(const rapidjson::Value& value, const char*& memberName)
+{
+    if (!value.HasMember(memberName))
+    {
+        printf("%s is missing %s member.", value.GetString(), memberName);
+        return false;
+    }
+    return true;
+}
+
 static std::string sGenerateInputFilePath(const char* applicationRoot, const char* assetName, const char* exentsion)
 {
     std::string assetDirectory("Assets/");
@@ -186,7 +214,6 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
         printf("Scene has %i components.\n", numActors);
         out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint32));
 
-        uint32 actorIndex = 0;
         for (const rapidjson::Value& actor : actors.GetArray())
         {
             if (!actor.HasMember("Prefab"))
@@ -195,7 +222,6 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
             }
 
             std::string prefabName = actor["Prefab"].GetString();
-            std::string actorInstanceName = prefabName + "_" + std::to_string(actorIndex);
             std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data());
 
             // Actor Prefab Path
@@ -211,11 +237,10 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
             // Actor Scene Transform
             if (!sCookTransform(actor, jsonDoc, out))
             {
-                printf("Failed to parse Transform component for %s\n", actorInstanceName.data());
+                printf("Failed to parse Transform component for %s\n", prefabName.c_str());
                 return false;
             }
-            printf("Successfully parsed Transform component for %s.\n", actorInstanceName.data());
-            ++actorIndex;
+            printf("Successfully parsed Transform component for %s.\n", prefabName.c_str());
         }
     }
     return true;
@@ -239,9 +264,9 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
 
         for (const rapidjson::Value& component : components.GetArray())
         {
-            if (!component.HasMember("Type"))
+            const char* typeStr = "Type";
+            if (!sValidateJsonValueMember(component, typeStr))
             {
-                printf("Component missing Type member.\n");
                 return false;
             }
 
@@ -265,9 +290,8 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 out.write(reinterpret_cast<const char*>(&spriteId), sizeof(eComponentId));
 
                 const char* material = "Material";
-                if (!component.HasMember(material))
+                if (!sValidateJsonValueMember(component, material))
                 {
-                    printf("Sprite Component missing Material member.\n");
                     return false;
                 }
 
@@ -284,6 +308,63 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 }
                 printf("Successfully cooked %s Material.\n", materialName.data());
                 printf("Successfully parsed Sprite component.\n");
+            }
+            else if (type == "Camera")
+            {
+                eComponentId cameraId = eComponentId::COMPONENT_CAMERA;
+                out.write(reinterpret_cast<const char*>(&cameraId), sizeof(cameraId));
+
+                const char* projection = "Projection";
+                if (!sValidateJsonValueMember(component, projection))
+                {
+                    return false;
+                }
+
+                std::string projectionName = component[projection].GetString();
+                if (_strcmpi(projectionName.c_str(), "Orthographic") == 0)
+                {
+                    eProjectionType projectionType = eProjectionType::ORTHOGRAPHIC;
+                    out.write(reinterpret_cast<const char*>(&projectionType), sizeof(projectionType));
+
+                    const char* near = "NearPlane";
+                    if (!sValidateJsonValueMember(component, near))
+                    {
+                        return false;
+                    }
+                    float32 nearPlane = component[near].GetFloat();
+                    out.write(reinterpret_cast<const char*>(&nearPlane), sizeof(float32));
+
+                    const char* far = "FarPlane";
+                    if (!sValidateJsonValueMember(component, far))
+                    {
+                        return false;
+                    }
+                    float32 farPlane = component[far].GetFloat();
+                    out.write(reinterpret_cast<const char*>(&farPlane), sizeof(float32));
+
+                    const char* ortho = "OrthoHeight";
+                    if (!sValidateJsonValueMember(component, ortho))
+                    {
+                        return false;
+                    }
+                    float32 orthoHeight = component[ortho].GetFloat();
+                    out.write(reinterpret_cast<const char*>(&orthoHeight), sizeof(float32));
+
+                    const char* clear = "ClearColor";
+                    if (!sValidateJsonValueMember(component, clear))
+                    {
+                        return false;
+                    }
+                    vec4 clearColor;
+                    sReadVec4(component[clear], clearColor);
+                    out.write(reinterpret_cast<const char*>(&clearColor), sizeof(vec4));
+                }
+                else
+                {
+                    printf("%s projection not yet supported.\n", projectionName.c_str());
+                    return false;
+                }
+                printf("Successfully parsed Camera component.\n");
             }
         }
     }
