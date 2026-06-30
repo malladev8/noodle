@@ -4,6 +4,8 @@
 #include "Rendering/RenderCommands.h"
 #include <queue>
 
+constexpr uint32 MaxSprites = 1024;
+
 class D3D12SpriteRenderer
 {
 public:
@@ -15,12 +17,14 @@ public:
 protected:
 
 private:
+	D3D12_VERTEX_BUFFER_VIEW m_QuadVertexBufferView = {};
+	D3D12_INDEX_BUFFER_VIEW m_QuadIndexBufferView = {};
+
 	D3D12Renderer* m_Renderer = nullptr;
 	ComPtr<ID3D12Resource> m_QuadVertexBuffer = nullptr;
 	ComPtr<ID3D12Resource> m_QuadIndexBuffer = nullptr;
-
-	D3D12_VERTEX_BUFFER_VIEW m_QuadVertexBufferView = {};
-	D3D12_INDEX_BUFFER_VIEW m_QuadIndexBufferView = {};
+	ComPtr<ID3D12Resource> m_SpriteConstantBuffer = nullptr;
+	uint8* m_MappedSpriteConstants = nullptr;
 
 	std::queue<SpriteRenderCommand>m_SpriteCommands;
 };

@@ -22,11 +22,16 @@ D3D12Renderer::D3D12Renderer()
 	  m_FrameConstantBuffer(nullptr),
 	  m_MappedFrameCB(nullptr),
 	  m_FrameCBGpuAddress(0),
+	  m_UploadAllocator(nullptr),
+	  m_UploadCommandList(nullptr),
+	  m_UploadFence(nullptr),
+	  m_UploadFenceEvent(nullptr),
 	  m_SpriteRenderer(nullptr),
 	  m_RenderTargets({}),
 	  m_CommandAllocators({}),
 	  m_FenceValue({}),
 	  m_CurrentFenceValue(0),
+	  m_UploadFenceValue(0),
 	  m_RtvHandles({}),
 	  m_RtvDescriptorSize(0),
 	  m_CurrentFrameIndex(0),
@@ -138,7 +143,14 @@ void D3D12Renderer::Initialize(void* hwnd, Window& windowDesc)
 		}
 	}
 
-	// Create Command List
+	hr = m_Device->CreateCommandAllocator(queueDesc.Type, IID_PPV_ARGS(&m_UploadAllocator));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create D3D12 Upload Command Allocator. HR: %i",  hr);
+		return;
+	}
+
+	// Create Command Lists
 	uint32 nodeMask = 0;
 	ID3D12PipelineState* initialPipelineState = nullptr;
 	hr = m_Device->CreateCommandList(nodeMask, queueDesc.Type, m_CommandAllocators[0].Get(), initialPipelineState, IID_PPV_ARGS(&m_CommandList));
@@ -150,7 +162,15 @@ void D3D12Renderer::Initialize(void* hwnd, Window& windowDesc)
 	// D3D12 creates the command list in an open state. Close immediately.
 	m_CommandList->Close();
 
-	// Create Fence
+	hr = m_Device->CreateCommandList(nodeMask, queueDesc.Type, m_UploadAllocator.Get(), initialPipelineState, IID_PPV_ARGS(&m_UploadCommandList));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create D3D12 Upload Command List. HR: %i", hr);
+		return;
+	}
+	m_UploadCommandList->Close();
+
+	// Create Fences
 	hr = m_Device->CreateFence(m_CurrentFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence));
 	if (FAILED(hr))
 	{
@@ -158,6 +178,14 @@ void D3D12Renderer::Initialize(void* hwnd, Window& windowDesc)
 		return;
 	}
 	m_FenceEvent = CreateEvent(nullptr, false, false, nullptr);
+
+	hr = m_Device->CreateFence(m_UploadFenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_UploadFence));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create D3D12 Upload Fence. HR: %i", hr);
+		return;
+	}
+	m_UploadFenceEvent = CreateEvent(nullptr, false, false, nullptr);
 
 	// Create Viewport and Scissor
 	UpdateViewport(windowDesc.GetWidth(), windowDesc.GetHeight());
@@ -259,6 +287,8 @@ void D3D12Renderer::BeginFrame(const CameraData& camData)
 
 void D3D12Renderer::RenderFrame()
 {
+	// Bind Frame Constant Buffer
+
 	// Flush Sub-renderers - convert queued render commands into GPU draw calls
 	m_SpriteRenderer->Flush();
 	// TODO: m_DebugRenderer->Flush();
@@ -315,10 +345,7 @@ void D3D12Renderer::CreateTextureResources(Texture& texture, const std::vector<u
 
 	// Using D3D12_RESOURCE_STATE_COPY_DEST because we're uploading onto it.
 	HRESULT hr = m_Device->CreateCommittedResource(&defaultHeap, D3D12_HEAP_FLAG_NONE, &textureDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&d3d12Texture->textureResource));
-	if (FAILED(hr))
-	{
-		N_LOG("Failed to create Texture resource. HR: %i", hr);
-	}
+	N_ASSERT(!FAILED(hr), "Failed to create Texture resource.");
 
 	// Create upload heap
 	uint64 uploadBufferSize = 0;
@@ -326,9 +353,8 @@ void D3D12Renderer::CreateTextureResources(Texture& texture, const std::vector<u
 
 	CD3DX12_HEAP_PROPERTIES uploadHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	CD3DX12_RESOURCE_DESC uploadDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
-	m_Device->CreateCommittedResource(&uploadHeap, D3D12_HEAP_FLAG_NONE, &uploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&d3d12Texture->uploadResource));
-
-	// TODO: Eventually we'll want to clean up the upload heap after the GPU finishes the copy. Fine to keep upload resource alive forever for now though.
+	hr = m_Device->CreateCommittedResource(&uploadHeap, D3D12_HEAP_FLAG_NONE, &uploadDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&d3d12Texture->uploadResource));
+	N_ASSERT(!FAILED(hr), "Failed to create upload resource.");
 
 	// Prepare subresource data
 	D3D12_SUBRESOURCE_DATA subresourceData = {};
@@ -337,13 +363,30 @@ void D3D12Renderer::CreateTextureResources(Texture& texture, const std::vector<u
 	subresourceData.SlicePitch = subresourceData.RowPitch * texture.height;
 
 	// Upload texture data
+	hr = m_UploadAllocator->Reset();
+	N_ASSERT(!FAILED(hr), "Failed to reset upload allocator.");
+
+	hr = m_UploadCommandList->Reset(m_UploadAllocator.Get(), nullptr);
+	N_ASSERT(!FAILED(hr), "Failed to reset upload command list during texture resource creation.");
+
 	// Helper from d3dx12.h
 	// Internally: maps upload heap, copies CPU data, records copy commands
-	UpdateSubresources(m_CommandList.Get(), d3d12Texture->textureResource.Get(), d3d12Texture->uploadResource.Get(), 0, 0, 1, &subresourceData);
+	UpdateSubresources(m_UploadCommandList.Get(), d3d12Texture->textureResource.Get(), d3d12Texture->uploadResource.Get(), 0, 0, 1, &subresourceData);
 
 	// Transition texture resource state COPY_DEST -> PIXEL_SHADER_RESOURCE
 	CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d12Texture->textureResource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	m_CommandList->ResourceBarrier(1, &barrier);
+	m_UploadCommandList->ResourceBarrier(1, &barrier);
+	hr = m_UploadCommandList->Close();
+	N_ASSERT(!FAILED(hr), "Failed to close upload command list during texture resource creation.");
+
+	ID3D12CommandList* uploadLists[] = { m_UploadCommandList.Get() };
+	m_CommandQueue->ExecuteCommandLists(1, uploadLists);
+	hr = m_CommandQueue->Signal(m_UploadFence.Get(), ++m_UploadFenceValue);
+	N_ASSERT(!FAILED(hr), "Failed to signal upload fence.");
+	WaitForGpuUpload();
+
+	// Clean up upload resource
+	d3d12Texture->uploadResource.Reset();
 
 	// Create SRV
 	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
@@ -412,6 +455,15 @@ void D3D12Renderer::WaitForGpu()
 	{
 		m_Fence->SetEventOnCompletion(m_FenceValue[m_CurrentFrameIndex], m_FenceEvent);
 		WaitForSingleObject(m_FenceEvent, INFINITE);
+	}
+}
+
+void D3D12Renderer::WaitForGpuUpload()
+{
+	if (m_UploadFence->GetCompletedValue() < m_UploadFenceValue)
+	{
+		m_UploadFence->SetEventOnCompletion(m_UploadFenceValue, m_UploadFenceEvent);
+		WaitForSingleObject(m_UploadFenceEvent, INFINITE);
 	}
 }
 

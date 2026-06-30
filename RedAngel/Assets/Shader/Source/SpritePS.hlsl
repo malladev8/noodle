@@ -1,5 +1,5 @@
-Texture2D DiffuseTexture : register(t0);
-SamplerState LinearSampler : register(s0);
+Texture2D gTexture : register(t0);
+SamplerState gSampler : register(s0);
 
 struct PSInput
 {
@@ -9,5 +9,5 @@ struct PSInput
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return DiffuseTexture.Sample(LinearSampler, input.uv);
+    return gTexture.Sample(gSampler, input.uv);
 }

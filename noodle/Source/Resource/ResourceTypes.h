@@ -94,3 +94,9 @@ struct FrameConstants
 	mat4x4 projection;
 	mat4x4 viewProjection;
 };
+
+struct SpriteConstants
+{
+	mat4x4 world;
+	vec4 color;
+};

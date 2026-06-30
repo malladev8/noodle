@@ -84,6 +84,33 @@ bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)
 	m_QuadIndexBufferView.Format = DXGI_FORMAT_R32_UINT; // Match uint32_t indices array
 	m_QuadIndexBufferView.SizeInBytes = sizeof(sQuadIndices);
 
+	// Initialize Sprite Constant Buffer
+	uint32 cbSize = align::Align256(sizeof(FrameConstants)); // D3D12 requires all constant buffers to be 256 byte-aligned
+	cbSize *= MaxSprites;
+
+	D3D12_HEAP_PROPERTIES spriteCbHeapProps = {};
+	spriteCbHeapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+	D3D12_RESOURCE_DESC spriteCbDesc = {};
+	spriteCbDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	spriteCbDesc.Width = cbSize;
+	spriteCbDesc.Height = 1;
+	spriteCbDesc.DepthOrArraySize = 1;
+	spriteCbDesc.MipLevels = 1;
+	spriteCbDesc.SampleDesc.Count = 1;
+	spriteCbDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	hr = device->CreateCommittedResource(&spriteCbHeapProps, D3D12_HEAP_FLAG_NONE, &spriteCbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_SpriteConstantBuffer));
+	if (FAILED(hr))
+	{
+		N_LOG("Failed to create committed resource for Sprite Constant Buffer. HR: %i", hr);
+		return false;
+	}
+
+	D3D12_RANGE spriteCbReadRange = { 0, 0 };
+	// Common in D3D12 to leave upload CBs mapped forever like this
+	m_SpriteConstantBuffer->Map(0, &spriteCbReadRange, reinterpret_cast<void**>(&m_MappedSpriteConstants));
+
 	return true;
 }
 
@@ -110,9 +137,10 @@ void D3D12SpriteRenderer::CreateShaderResources(std::shared_ptr<struct Shader>& 
 	CD3DX12_DESCRIPTOR_RANGE texRange;
 	texRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // t0
 
-	CD3DX12_ROOT_PARAMETER rootParams[2];
-	rootParams[0].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL); // Texture descriptor table
-	rootParams[1].InitAsConstantBufferView(0); // Transform constant buffer, b0
+	CD3DX12_ROOT_PARAMETER rootParams[(uint32)eRootParamIndex::COUNT];
+	rootParams[(uint32)eRootParamIndex::FRAME_CB].InitAsConstantBufferView((uint32)eRootParamIndex::FRAME_CB); // Frame constant buffer, b0
+	rootParams[(uint32)eRootParamIndex::OBJECT_CB].InitAsConstantBufferView((uint32)eRootParamIndex::OBJECT_CB); // Object constant buffer, b1
+	rootParams[(uint32)eRootParamIndex::SRV].InitAsDescriptorTable(1, &texRange, D3D12_SHADER_VISIBILITY_PIXEL); // SRV t0
 
 	CD3DX12_STATIC_SAMPLER_DESC sampler(0, D3D12_FILTER_MIN_MAG_MIP_LINEAR); // s0
 
@@ -201,16 +229,57 @@ void D3D12SpriteRenderer::CreateShaderResources(std::shared_ptr<struct Shader>& 
 
 void D3D12SpriteRenderer::Flush()
 {
-	// Convert queued render commands into GPU draw calls
-	// For each sprite :
-	// 
-	// bind PSO
-	// 	bind root signature
-	// 	bind descriptor heaps
-	// 	bind shared quad VB / IB
-	// 	upload constants
-	// 	bind texture SRV
-	// 	DrawIndexedInstanced()
-	// 
-	// 	Then clear queued commands.
+	ID3D12GraphicsCommandList* cmdList = m_Renderer->GetCommandList();
+
+	// Set Descriptor Heaps
+	ID3D12DescriptorHeap* heaps[] =
+	{
+		m_Renderer->GetSrvHeap()
+	};
+	cmdList->SetDescriptorHeaps(1, heaps);
+
+	// Bind VB and IB
+	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	cmdList->IASetVertexBuffers(0, 1, &m_QuadVertexBufferView);
+	cmdList->IASetIndexBuffer(&m_QuadIndexBufferView);
+
+	// Convert queued render commands into GPU draw calls for each sprite
+	const uint32 alignedSize = align::Align256(sizeof(SpriteConstants));
+	uint32 spriteIndex = 0;
+	ID3D12Resource* frameConstantBuffer = m_Renderer->GetFrameConstantBuffer();
+
+	while (!m_SpriteCommands.empty())
+	{
+		const SpriteRenderCommand& spriteCmd = m_SpriteCommands.front();
+		const uint32 offset = spriteIndex * alignedSize;
+		N_ASSERT(cmdList != nullptr, "cmdList cannot be null");
+
+		// Bind PSO
+		D3D12Shader* shader = static_cast<D3D12Shader*>(spriteCmd.material->shader.get());
+		cmdList->SetPipelineState(shader->pso.Get());
+		cmdList->SetGraphicsRootSignature(shader->rootSignature.Get());
+
+		// Frame Constant Buffer
+		cmdList->SetGraphicsRootConstantBufferView((uint32)eRootParamIndex::FRAME_CB, frameConstantBuffer->GetGPUVirtualAddress());
+
+		// Map sprite constants
+		SpriteConstants spriteConstants;
+		spriteConstants.world = spriteCmd.world;
+		spriteConstants.color = spriteCmd.color;
+		memcpy(m_MappedSpriteConstants + offset, &spriteConstants, sizeof(spriteConstants));
+
+		// Bind sprite constant buffer
+		D3D12_GPU_VIRTUAL_ADDRESS gpuAddress = m_SpriteConstantBuffer->GetGPUVirtualAddress() + offset;
+		cmdList->SetGraphicsRootConstantBufferView((uint32)eRootParamIndex::OBJECT_CB, gpuAddress);
+
+		// Bind Texture
+		D3D12TextureResource* texture = static_cast<D3D12TextureResource*>(spriteCmd.material->diffuseTexture->resource.get());
+		cmdList->SetGraphicsRootDescriptorTable((uint32)eRootParamIndex::SRV, texture->srvGpuHandle);
+
+		// Draw
+		cmdList->DrawIndexedInstanced(6 /*quad indices*/, 1 /*instance count*/, 0, 0, 0);
+
+		m_SpriteCommands.pop();
+		++spriteIndex;
+	}
 }

@@ -1,6 +1,14 @@
-cbuffer TransformBuffer : register(b0)
+cbuffer FrameConstants : register(b0)
 {
-    float4x4 wvp;
+    float4x4 gView;
+    float4x4 gProjection;
+    float4x4 gViewProjection;
+};
+
+cbuffer ObjectConstants : register(b1)
+{
+    float4x4 gWorld;
+    float4 gColor;
 };
 
 struct VSInput
@@ -18,7 +26,7 @@ struct PSInput
 PSInput VSMain(VSInput input)
 {
     PSInput output;
-    output.pos = mul(wvp, float4(input.pos, 1));
+    output.pos = mul(float4(input.pos, 1.0f), mul(gWorld, gViewProjection));
     output.uv = input.uv;
     return output;
 }
