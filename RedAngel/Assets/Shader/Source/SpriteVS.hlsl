@@ -14,7 +14,7 @@ cbuffer ObjectConstants : register(b1)
 struct VSInput
 {
     float3 pos : POSITION;
-    float2 uv : UV;
+    float2 uv : TEXCOORD0;
 };
 
 struct PSInput
@@ -26,7 +26,12 @@ struct PSInput
 PSInput VSMain(VSInput input)
 {
     PSInput output;
-    output.pos = mul(float4(input.pos, 1.0f), mul(gWorld, gViewProjection));
+    
+    float4 worldPos = mul(gWorld, float4(input.pos, 1));
+    float4 viewPos = mul(gView, worldPos);
+    float4 clipPos = mul(gProjection, viewPos);
+    output.pos = clipPos;
+    
     output.uv = input.uv;
     return output;
 }

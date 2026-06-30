@@ -3,18 +3,32 @@
 #include "D3D12Renderer.h"
 #include "D3D12ResourceTypes.h"
 
+//static const SpriteVertex sQuadVerts[]
+//{
+//	{{ 0.0f, -0.5f, -0.5f}, {0,1}}, // bottom left
+//	{{ 0.0f,  0.5f, -0.5f}, {1,1}}, // bottom right
+//	{{ 0.0f, -0.5f,  0.5f}, {1,0}}, // top left
+//	{{ 0.0f,  0.5f,  0.5f}, {0,0}}  // top right
+//};
+//
+//static const uint32 sQuadIndices[]
+//{
+//	0, 1, 2, // bl, br, tl
+//	2, 1, 3  // tl, br, tr
+//};
+
 static const SpriteVertex sQuadVerts[]
 {
-	{{ 0.0f, -0.5f, -0.5f}, {0,1}}, // bottom left
-	{{ 0.0f,  0.5f, -0.5f}, {1,1}}, // bottom right
-	{{ 0.0f, -0.5f,  0.5f}, {1,0}}, // top left
-	{{ 0.0f,  0.5f,  0.5f}, {0,0}}  // top right
+	{{-0.5f, -0.5f,  0.0f}, {0,1}}, // bottom left
+	{{ 0.5f, -0.5f,  0.0f}, {1,1}}, // bottom right
+	{{ 0.5f,  0.5f,  0.0f}, {1,0}}, // top left
+	{{-0.5f,  0.5f,  0.0f}, {0,0}}  // top right
 };
 
 static const uint32 sQuadIndices[]
 {
 	0, 1, 2, // bl, br, tl
-	2, 1, 3  // tl, br, tr
+	0, 2, 3  // tl, br, tr
 };
 
 bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)
@@ -178,7 +192,7 @@ void D3D12SpriteRenderer::CreateShaderResources(std::shared_ptr<struct Shader>& 
 		},
 
 		{
-			"UV",
+			"TEXCOORD",
 			0,
 			DXGI_FORMAT_R32G32_FLOAT,
 			0,
@@ -203,7 +217,7 @@ void D3D12SpriteRenderer::CreateShaderResources(std::shared_ptr<struct Shader>& 
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = BufferCount; // Does this need to change to match our number of back buffers?
+	psoDesc.NumRenderTargets = 1; // Does this need to change to match our number of back buffers?
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 
@@ -264,7 +278,7 @@ void D3D12SpriteRenderer::Flush()
 
 		// Map sprite constants
 		SpriteConstants spriteConstants;
-		spriteConstants.world = spriteCmd.world;
+		spriteConstants.world = spriteCmd.world.Transpose();
 		spriteConstants.color = spriteCmd.color;
 		memcpy(m_MappedSpriteConstants + offset, &spriteConstants, sizeof(spriteConstants));
 

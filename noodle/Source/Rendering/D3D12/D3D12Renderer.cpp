@@ -275,9 +275,12 @@ void D3D12Renderer::BeginFrame(const CameraData& camData)
 
 	// Update Frame Constant Buffer
 	FrameConstants frameConstants;
-	frameConstants.view = camData.view;
-	frameConstants.projection = camData.projection;
+	frameConstants.view = camData.view.Transpose();
+	//frameConstants.view = mat4x4::Identity();
+	frameConstants.projection = camData.projection.Transpose();
+	//frameConstants.projection = mat4x4::Identity();
 	frameConstants.viewProjection = frameConstants.projection * frameConstants.view;
+	frameConstants.viewProjection = frameConstants.viewProjection.Transpose();
 	memcpy(m_MappedFrameCB, &frameConstants, sizeof(frameConstants));
 
 	// Clear
@@ -287,7 +290,11 @@ void D3D12Renderer::BeginFrame(const CameraData& camData)
 
 void D3D12Renderer::RenderFrame()
 {
-	// Bind Frame Constant Buffer
+	D3D12_VIEWPORT viewports[]{ m_Viewport };
+	m_CommandList->RSSetViewports(1, viewports);
+
+	D3D12_RECT scissorRects[]{ m_ScissorRect };
+	m_CommandList->RSSetScissorRects(1, scissorRects);
 
 	// Flush Sub-renderers - convert queued render commands into GPU draw calls
 	m_SpriteRenderer->Flush();

@@ -9,5 +9,6 @@ struct PSInput
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return gTexture.Sample(gSampler, input.uv);
+    //return gTexture.Sample(gSampler, input.uv);
+    return float4(1, 0, 1, 1);
 }
