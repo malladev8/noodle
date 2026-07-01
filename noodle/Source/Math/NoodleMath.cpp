@@ -157,27 +157,30 @@ mat4x4 mat4x4::BuildRotation(const quaternion& q)
 mat4x4 mat4x4::BuildLookAt(const vec3& eye, const vec3& target, const vec3& up)
 {
 	vec3 forward = vec3::Normalize(target - eye);
-	vec3 right = vec3::Normalize(vec3::Cross(up, forward));
-	vec3 newUp = vec3::Cross(forward, right);
+	vec3 right = vec3::Normalize(vec3::Cross(up, forward)); // TODO: verify this is the correct cross order
+	vec3 newUp = vec3::Cross(forward, right); // TODO: verify this is the correct cross order
 
-	// X axis (forward)
 	mat4x4 m;
+
+	// Forward -> column 0
 	m.m[0][0] = forward.x;
-	m.m[0][1] = forward.y;
-	m.m[0][2] = forward.z;
-	m.m[0][3] = -1.0f * vec3::Dot(forward, eye);
+	m.m[1][0] = forward.y;
+	m.m[2][0] = forward.z;
 
-	// Y axis (right)
-	m.m[1][0] = right.x;
+	// Right -> column 1
+	m.m[0][1] = right.x;
 	m.m[1][1] = right.y;
-	m.m[1][2] = right.z;
-	m.m[1][3] = -1.0f * vec3::Dot(right, eye);
+	m.m[2][1] = right.z;
 
-	// Z axis (up)
-	m.m[2][0] = newUp.x;
-	m.m[2][1] = newUp.y;
+	// Up -> column 2
+	m.m[0][2] = newUp.x;
+	m.m[1][2] = newUp.y;
 	m.m[2][2] = newUp.z;
-	m.m[2][3] = -1.0f * vec3::Dot(newUp, eye);
+
+	// Translation column
+	m.m[0][3] = -vec3::Dot(forward, eye);
+	m.m[1][3] = -vec3::Dot(right, eye);
+	m.m[2][3] = -vec3::Dot(newUp, eye);
 
 	m.m[3][3] = 1.0f;
 
@@ -188,13 +191,37 @@ mat4x4 mat4x4::BuildPerspective(float32 fov, float32 aspect, float32 nearZ, floa
 {
 	float f = 1.0f / tanf(fov * 0.5f);
 
-	mat4x4 m;
-
+	mat4x4 m = {};
 	m.m[0][0] = f / aspect;
 	m.m[1][1] = f;
+
 	m.m[2][2] = farZ / (farZ - nearZ);
-	m.m[2][3] = (-1.0f * nearZ * farZ) / (farZ - nearZ);
+	m.m[2][3] = (-nearZ * farZ) / (farZ - nearZ);
+
 	m.m[3][2] = 1.0f;
+	m.m[3][3] = 0.0f;
+
+	return m;
+}
+
+mat4x4 mat4x4::GetEngineToRenderBasis()
+{
+	mat4x4 m = mat4x4::Identity();
+
+	// Column 0 = Render X in engine space
+	m.m[0][0] = 0.0f;
+	m.m[1][0] = 1.0f;
+	m.m[2][0] = 0.0f;
+
+	// Column 1 = Render Y in engine space
+	m.m[0][1] = 0.0f;
+	m.m[1][1] = 0.0f;
+	m.m[2][1] = 1.0f;
+
+	// Column 2 = Render Z in engine space
+	m.m[0][2] = 1.0f;
+	m.m[1][2] = 0.0f;
+	m.m[2][2] = 0.0f;
 
 	return m;
 }

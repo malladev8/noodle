@@ -53,7 +53,7 @@ struct vec2
 	vec2& operator-=(const vec2& other) { x -= other.x; y -= other.y; return *this; }
 	vec2& operator*=(float s) { x *= s; y *= s; return *this; }
 
-	float LengthSq() const { return powf(x, 2.0f) + powf(y, 2.0f); }
+	float LengthSq() const { return x * x + y * y; }
 	float Length() const { return sqrtf(LengthSq()); }
 };
 
@@ -80,7 +80,7 @@ struct vec3
 	vec3& operator-=(const vec3& other) { x -= other.x; y -= other.y; z -= other.z; return *this; }
 	vec3& operator*=(float s) { x *= s; y *= s; z *= s; return *this; }
 
-	float LengthSq() const { return powf(x, 2.0f) + powf(y, 2.0f) + powf(z, 2.0f); }
+	float LengthSq() const { return x * x + y * y + z * z; }
 	float Length() const { return sqrtf(LengthSq()); }
 	void Normalize()
 	{
@@ -121,9 +121,9 @@ struct vec4
 
 	vec4& operator+=(const vec4& other) { x += other.x; y += other.y; z += other.z; w += other.w; return *this; }
 	vec4& operator-=(const vec4& other) { x -= other.x; y -= other.y; z -= other.z; w -= other.w; return *this; }
-	vec4& operator*=(float s) { x *= s; y *= s; z *= s; return *this; }
+	vec4& operator*=(float s) { x *= s; y *= s; z *= s; w *= s; return *this; }
 
-	float LengthSq() const { return powf(x, 2.0f) + powf(y, 2.0f) + powf(z, 2.0f) + powf(w, 2.0f); }
+	float LengthSq() const { return x * x + y * y + z * z + w * w; }
 	float Length() const { return sqrtf(LengthSq()); }
 };
 
@@ -201,10 +201,12 @@ struct quaternion
 
 	quaternion& operator*=(const quaternion& rhs) 
 	{
-		x = w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y;
-		y = w * rhs.y - x * rhs.z + y * rhs.w + z * rhs.x;
-		z = w * rhs.z + x * rhs.y - y * rhs.x + z * rhs.w;
-		w = w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z;
+		quaternion lhs = *this;
+		x = lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y;
+		y = lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x;
+		z = lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w;
+		w = lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z;
+		return *this;
 	}
 };
 
@@ -316,7 +318,7 @@ struct mat4x4
 		   m00(_00), m01(_01), m02(_02), m03(_03),
 		   m10(_10), m11(_11), m12(_12), m13(_13),
 		   m20(_20), m21(_21), m22(_22), m23(_23),
-		   m30(_20), m31(_21), m32(_22), m33(_33) {}
+		   m30(_30), m31(_31), m32(_32), m33(_33) {}
 
 	static mat4x4 Identity()
 	{
@@ -342,24 +344,49 @@ struct mat4x4
 
 	mat4x4 InverseTransform() const
 	{
-		mat4x4 r;
+		//mat4x4 r;
+		//
+		//// Transpose rotation
+		//for (uint32 i = 0; i < 3; ++i)
+		//{
+		//	for (uint32 j = 0; j < 3; ++j)
+		//	{
+		//		r.m[i][j] = m[j][i];
+		//	}
+		//}
+		//
+		//// Invert translation
+		//r.m[0][3] = -1.0f * (r.m[0][0] * m[0][3] + r.m[0][1] * m[1][3] + r.m[0][2] * m[2][3]);
+		//r.m[1][3] = -1.0f * (r.m[1][0] * m[0][3] + r.m[1][1] * m[1][3] + r.m[1][2] * m[2][3]);
+		//r.m[2][3] = -1.0f * (r.m[2][0] * m[0][3] + r.m[2][1] * m[1][3] + r.m[2][2] * m[2][3]);
+		//
+		//// Last row
+		//r.m[3][0] = r.m[3][1] = r.m[3][2] = 0.0f;
+		//r.m[3][3] = 1.0f;
+		//
+		//return r;
 
-		// Transpose rotation
-		for (uint32 i = 0; i < 3; ++i)
-		{
-			for (uint32 j = 0; j < 3; ++j)
-			{
+		mat4x4 r = {};
+
+		// Transpose upper-left 3x3 (rotation)
+		for (int i = 0; i < 3; ++i)
+			for (int j = 0; j < 3; ++j)
 				r.m[i][j] = m[j][i];
-			}
-		}
 
-		// Invert translation
-		r.m[0][3] = -1.0f * (r.m[0][0] * m[0][3] + r.m[0][1] * m[1][3] + r.m[0][2] * m[2][3]);
-		r.m[1][3] = -1.0f * (r.m[1][0] * m[0][3] + r.m[1][1] * m[1][3] + r.m[1][2] * m[2][3]);
-		r.m[2][3] = -1.0f * (r.m[2][0] * m[0][3] + r.m[2][1] * m[1][3] + r.m[2][2] * m[2][3]);
+		// Extract translation
+		float tx = m[0][3];
+		float ty = m[1][3];
+		float tz = m[2][3];
 
-		// Last row
-		r.m[3][0] = r.m[3][1] = r.m[3][2] = 0.0f;
+		// Compute -R^T * t
+		r.m[0][3] = -(r.m[0][0] * tx + r.m[0][1] * ty + r.m[0][2] * tz);
+		r.m[1][3] = -(r.m[1][0] * tx + r.m[1][1] * ty + r.m[1][2] * tz);
+		r.m[2][3] = -(r.m[2][0] * tx + r.m[2][1] * ty + r.m[2][2] * tz);
+
+		// Affine bottom row
+		r.m[3][0] = 0.0f;
+		r.m[3][1] = 0.0f;
+		r.m[3][2] = 0.0f;
 		r.m[3][3] = 1.0f;
 
 		return r;
@@ -396,6 +423,8 @@ struct mat4x4
 	static mat4x4 BuildRotation(const quaternion& q);
 	static mat4x4 BuildLookAt(const vec3& eye, const vec3& target, const vec3& up);
 	static mat4x4 BuildPerspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ);
+	static mat4x4 BuildViewMatrix(const vec3& position, const vec3& forward, const vec3& right, const vec3& up);
+	static mat4x4 GetEngineToRenderBasis();
 };
 
 inline mat4x4 operator*(const mat4x4& a, const mat4x4& b)

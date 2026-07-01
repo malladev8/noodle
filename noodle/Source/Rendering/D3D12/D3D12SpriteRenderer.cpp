@@ -19,10 +19,10 @@
 
 static const SpriteVertex sQuadVerts[]
 {
-	{{-0.5f, -0.5f,  0.0f}, {0,1}}, // bottom left
-	{{ 0.5f, -0.5f,  0.0f}, {1,1}}, // bottom right
-	{{ 0.5f,  0.5f,  0.0f}, {1,0}}, // top left
-	{{-0.5f,  0.5f,  0.0f}, {0,0}}  // top right
+	{{-0.5f, -0.5f, 0.0f}, {0,1}}, // bottom left
+	{{ 0.5f, -0.5f, 0.0f}, {1,1}}, // bottom right
+	{{ 0.5f,  0.5f, 0.0f}, {1,0}}, // top right
+	{{-0.5f,  0.5f, 0.0f}, {0,0}}, // top left
 };
 
 static const uint32 sQuadIndices[]

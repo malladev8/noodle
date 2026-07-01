@@ -276,9 +276,7 @@ void D3D12Renderer::BeginFrame(const CameraData& camData)
 	// Update Frame Constant Buffer
 	FrameConstants frameConstants;
 	frameConstants.view = camData.view.Transpose();
-	//frameConstants.view = mat4x4::Identity();
 	frameConstants.projection = camData.projection.Transpose();
-	//frameConstants.projection = mat4x4::Identity();
 	frameConstants.viewProjection = frameConstants.projection * frameConstants.view;
 	frameConstants.viewProjection = frameConstants.viewProjection.Transpose();
 	memcpy(m_MappedFrameCB, &frameConstants, sizeof(frameConstants));
