@@ -20,7 +20,7 @@ bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out, Asset
     out.write(reinterpret_cast<const char*>(&assetId), sizeof(AssetId));
 
     // TODO: Actually read in format from somewhere
-    eTextureFormat texformat = eTextureFormat::RGBA8_UNORM_SRGB;
+    eTextureFormat texformat = eTextureFormat::RGBA8_UNORM;
     out.write(reinterpret_cast<const char*>(&texformat), sizeof(eTextureFormat));
 
     uint32 uwidth = (uint32)width;
