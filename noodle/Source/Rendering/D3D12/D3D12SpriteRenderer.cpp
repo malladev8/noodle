@@ -76,6 +76,8 @@ bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)
 	// Configure buffer views
 	// Initialize the Vertex Buffer View (VBV)
 	m_QuadVertexBufferView.BufferLocation = m_QuadVertexBuffer->GetGPUVirtualAddress();
+
+	N_ASSERT(sizeof(SpriteVertex) == 20, "SpriteVertex has unexpected padding/alignment.");
 	m_QuadVertexBufferView.StrideInBytes = sizeof(SpriteVertex);
 	m_QuadVertexBufferView.SizeInBytes = sizeof(sQuadVerts);
 

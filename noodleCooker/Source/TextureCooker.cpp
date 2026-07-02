@@ -31,7 +31,7 @@ bool TextureCooker::CookTexture(const char* assetPath, std::ofstream& out, Asset
     uint32 pixelCount = width * height * req_comp;
     out.write(reinterpret_cast<const char*>(&pixelCount), sizeof(pixelCount));
 
-    out.write(reinterpret_cast<const char*>(&pixels), pixelCount);
+    out.write(reinterpret_cast<const char*>(pixels), pixelCount);
 
     stbi_image_free(pixels);
     return true;
