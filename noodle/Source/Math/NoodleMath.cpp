@@ -157,30 +157,30 @@ mat4x4 mat4x4::BuildRotation(const quaternion& q)
 mat4x4 mat4x4::BuildLookAt(const vec3& eye, const vec3& target, const vec3& up)
 {
 	vec3 forward = vec3::Normalize(target - eye);
-	vec3 right = vec3::Normalize(vec3::Cross(up, forward)); // TODO: verify this is the correct cross order
-	vec3 newUp = vec3::Cross(forward, right); // TODO: verify this is the correct cross order
+	vec3 right = vec3::Normalize(vec3::Cross(up, forward));
+	vec3 correctedUp = vec3::Cross(forward, right);
 
-	mat4x4 m;
+	mat4x4 m = {};
 
-	// Forward -> column 0
-	m.m[0][0] = forward.x;
-	m.m[1][0] = forward.y;
-	m.m[2][0] = forward.z;
+	// Column 0 = right
+	m.m[0][0] = right.x;
+	m.m[1][0] = right.y;
+	m.m[2][0] = right.z;
 
-	// Right -> column 1
-	m.m[0][1] = right.x;
-	m.m[1][1] = right.y;
-	m.m[2][1] = right.z;
+	// Column 1 = up
+	m.m[0][1] = correctedUp.x;
+	m.m[1][1] = correctedUp.y;
+	m.m[2][1] = correctedUp.z;
 
-	// Up -> column 2
-	m.m[0][2] = newUp.x;
-	m.m[1][2] = newUp.y;
-	m.m[2][2] = newUp.z;
+	// Column 2 = forward
+	m.m[0][2] = forward.x;
+	m.m[1][2] = forward.y;
+	m.m[2][2] = forward.z;
 
-	// Translation column
-	m.m[0][3] = -vec3::Dot(forward, eye);
-	m.m[1][3] = -vec3::Dot(right, eye);
-	m.m[2][3] = -vec3::Dot(newUp, eye);
+	// Translation
+	m.m[0][3] = eye.x;
+	m.m[1][3] = eye.y;
+	m.m[2][3] = eye.z;
 
 	m.m[3][3] = 1.0f;
 
