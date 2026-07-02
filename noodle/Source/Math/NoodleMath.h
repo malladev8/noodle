@@ -400,7 +400,6 @@ struct mat4x4
 		{
 			for (uint32 c = 0; c < 4; ++c)
 			{
-				
 				out.append(std::to_string(m[r][c]));
 				out.append(", ");
 			}
