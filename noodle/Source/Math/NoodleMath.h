@@ -396,8 +396,6 @@ struct mat4x4
 	std::string GetString() const
 	{
 		std::string out;
-		out.reserve(20);
-
 		for (uint32 r = 0; r < 4; ++r)
 		{
 			for (uint32 c = 0; c < 4; ++c)
