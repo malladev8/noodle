@@ -26,16 +26,7 @@ struct PSInput
 PSInput VSMain(VSInput input)
 {
     PSInput output;
-    
-    //float4 worldPos = mul(gWorld, float4(input.pos, 1));
-    //float4 viewPos = mul(gView, worldPos);
-    //float4 clipPos = mul(gProjection, viewPos);
-    //output.pos = clipPos;
-    
-    //output.pos = float4(input.pos.xy, 0, 1);
-    
-    output.pos = mul(gProjection, mul(gView, mul(gWorld, float4(input.pos, 1))));
-    
+    output.pos = mul(gViewProjection, mul(gWorld, float4(input.pos, 1)));
     output.uv = input.uv;
     return output;
 }

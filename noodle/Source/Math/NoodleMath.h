@@ -5,9 +5,9 @@
 // Noodle Math Conventions:
 //
 // Left-handed coordinate system
-// +X forward
-// +Y right
-// +Z up
+// +X = right
+// +Y = up
+// +Z = forward
 //
 // Column-vector math:
 // v' = M * v
@@ -16,7 +16,7 @@
 // m[row][column]
 //
 // Transform composition:
-// World = T * R * S
+// World = Translation * Rotation * Scale
 
 constexpr float32 EPSILON = 1e-6f;
 constexpr float32 EPSILON_SQ = EPSILON * EPSILON;
@@ -95,9 +95,9 @@ struct vec3
 	static vec3 Cross(const vec3& v0, const vec3& v1);
 	static vec3 Normalize(const vec3& v);
 
-	static vec3 Forward() { return { 1.0f, 0.0f, 0.0f }; }
-	static vec3 Right() { return { 0.0f, 1.0f, 0.0f }; }
-	static vec3 Up() { return { 0.0f, 0.0f, 1.0f }; }
+	static vec3 Forward() { return { 0.0f, 0.0f, 1.0f }; }
+	static vec3 Right() { return { 1.0f, 0.0f, 0.0f }; }
+	static vec3 Up() { return { 0.0f, 1.0f, 0.0f }; }
 };
 
 inline vec3 operator+(const vec3& a, const vec3& b) { return { a.x + b.x, a.y + b.y, a.z + b.z }; }
@@ -344,34 +344,17 @@ struct mat4x4
 
 	mat4x4 InverseTransform() const
 	{
-		//mat4x4 r;
-		//
-		//// Transpose rotation
-		//for (uint32 i = 0; i < 3; ++i)
-		//{
-		//	for (uint32 j = 0; j < 3; ++j)
-		//	{
-		//		r.m[i][j] = m[j][i];
-		//	}
-		//}
-		//
-		//// Invert translation
-		//r.m[0][3] = -1.0f * (r.m[0][0] * m[0][3] + r.m[0][1] * m[1][3] + r.m[0][2] * m[2][3]);
-		//r.m[1][3] = -1.0f * (r.m[1][0] * m[0][3] + r.m[1][1] * m[1][3] + r.m[1][2] * m[2][3]);
-		//r.m[2][3] = -1.0f * (r.m[2][0] * m[0][3] + r.m[2][1] * m[1][3] + r.m[2][2] * m[2][3]);
-		//
-		//// Last row
-		//r.m[3][0] = r.m[3][1] = r.m[3][2] = 0.0f;
-		//r.m[3][3] = 1.0f;
-		//
-		//return r;
-
-		mat4x4 r = {};
+		mat4x4 r = mat4x4::Identity();
 
 		// Transpose upper-left 3x3 (rotation)
 		for (int i = 0; i < 3; ++i)
+		{
 			for (int j = 0; j < 3; ++j)
+			{
 				r.m[i][j] = m[j][i];
+
+			}
+		}
 
 		// Extract translation
 		float tx = m[0][3];
@@ -410,6 +393,24 @@ struct mat4x4
 		return *this;
 	}
 
+	std::string GetString() const
+	{
+		std::string out;
+		out.reserve(20);
+
+		for (uint32 r = 0; r < 4; ++r)
+		{
+			for (uint32 c = 0; c < 4; ++c)
+			{
+				
+				out.append(std::to_string(m[r][c]));
+				out.append(", ");
+			}
+			out.append(1, '\n');
+		}
+		return out;
+	}
+
 	// Transform Builders
 	static mat4x4 BuildTranslation(float32 x, float32 y, float32 z);
 	static mat4x4 BuildTranslation(const vec3& v);
@@ -423,8 +424,6 @@ struct mat4x4
 	static mat4x4 BuildRotation(const quaternion& q);
 	static mat4x4 BuildLookAt(const vec3& eye, const vec3& target, const vec3& up);
 	static mat4x4 BuildPerspective(float32 fov, float32 aspect, float32 nearZ, float32 farZ);
-	static mat4x4 BuildViewMatrix(const vec3& position, const vec3& forward, const vec3& right, const vec3& up);
-	static mat4x4 GetEngineToRenderBasis();
 };
 
 inline mat4x4 operator*(const mat4x4& a, const mat4x4& b)

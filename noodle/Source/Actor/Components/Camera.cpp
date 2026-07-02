@@ -29,9 +29,7 @@ CameraData Camera::BuildCameraData(float32 aspectRatio) const
 	CameraData camData;
 
     const Transform& camTransform = *m_Owner->GetComponent<Transform>();
-    mat4x4 engineWorld = camTransform.GetWorldMatrix();
-	mat4x4 renderWorld = mat4x4::GetEngineToRenderBasis() * engineWorld;
-    camData.view = renderWorld.InverseTransform();
+    camData.view = camTransform.GetWorldMatrix().InverseTransform();
 
     float32 orthoWidth = m_OrthoHeight * aspectRatio;
     camData.projection = sGetOrthographicLH(orthoWidth, m_OrthoHeight, m_NearPlane, m_FarPlane);

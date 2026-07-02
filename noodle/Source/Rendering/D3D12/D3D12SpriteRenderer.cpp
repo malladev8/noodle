@@ -3,20 +3,6 @@
 #include "D3D12Renderer.h"
 #include "D3D12ResourceTypes.h"
 
-//static const SpriteVertex sQuadVerts[]
-//{
-//	{{ 0.0f, -0.5f, -0.5f}, {0,1}}, // bottom left
-//	{{ 0.0f,  0.5f, -0.5f}, {1,1}}, // bottom right
-//	{{ 0.0f, -0.5f,  0.5f}, {1,0}}, // top left
-//	{{ 0.0f,  0.5f,  0.5f}, {0,0}}  // top right
-//};
-//
-//static const uint32 sQuadIndices[]
-//{
-//	0, 1, 2, // bl, br, tl
-//	2, 1, 3  // tl, br, tr
-//};
-
 static const SpriteVertex sQuadVerts[]
 {
 	{{-0.5f, -0.5f, 0.0f}, {0,1}}, // bottom left
@@ -27,8 +13,8 @@ static const SpriteVertex sQuadVerts[]
 
 static const uint32 sQuadIndices[]
 {
-	0, 1, 2, // bl, br, tl
-	0, 2, 3  // tl, br, tr
+	0, 1, 2, // bl, br, tr
+	0, 2, 3  // bl, tr, tl
 };
 
 bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)

@@ -203,25 +203,3 @@ mat4x4 mat4x4::BuildPerspective(float32 fov, float32 aspect, float32 nearZ, floa
 
 	return m;
 }
-
-mat4x4 mat4x4::GetEngineToRenderBasis()
-{
-	mat4x4 m = mat4x4::Identity();
-
-	// Column 0 = Render X in engine space
-	m.m[0][0] = 0.0f;
-	m.m[1][0] = 1.0f;
-	m.m[2][0] = 0.0f;
-
-	// Column 1 = Render Y in engine space
-	m.m[0][1] = 0.0f;
-	m.m[1][1] = 0.0f;
-	m.m[2][1] = 1.0f;
-
-	// Column 2 = Render Z in engine space
-	m.m[0][2] = 1.0f;
-	m.m[1][2] = 0.0f;
-	m.m[2][2] = 0.0f;
-
-	return m;
-}
