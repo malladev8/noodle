@@ -12,5 +12,8 @@ public:
 protected:
 private:
 	std::shared_ptr<Material> m_Material = nullptr;
+	uint32 m_PixelsPerUnit = 100;
+	vec2 m_WorldSize { 1.0f, 1.0f };
+
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

@@ -306,6 +306,15 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 {
                     return false;
                 }
+
+                const char* ppuName = "PixelsPerUnit";
+                if (!sValidateJsonValueMember(component, ppuName))
+                {
+                    return false;
+                }
+                uint32 ppu = component[ppuName].GetUint();
+                out.write(reinterpret_cast<const char*>(&ppu), sizeof(ppu));
+
                 printf("Successfully cooked %s Material.\n", materialName.data());
                 printf("Successfully parsed Sprite component.\n");
             }
