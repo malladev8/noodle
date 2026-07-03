@@ -306,7 +306,9 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 {
                     return false;
                 }
+                printf("Successfully cooked %s Material.\n", materialName.data());
 
+                // Pixels per unit
                 const char* ppuName = "PixelsPerUnit";
                 if (!sValidateJsonValueMember(component, ppuName))
                 {
@@ -315,7 +317,16 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 uint32 ppu = component[ppuName].GetUint();
                 out.write(reinterpret_cast<const char*>(&ppu), sizeof(ppu));
 
-                printf("Successfully cooked %s Material.\n", materialName.data());
+                // Color
+                const char* colorName = "Color";
+                if (!sValidateJsonValueMember(component, colorName))
+                {
+                    return false;
+                }
+                vec4 color;
+                sReadVec4(component[colorName], color);
+                out.write(reinterpret_cast<const char*>(&color), sizeof(color));
+
                 printf("Successfully parsed Sprite component.\n");
             }
             else if (type == "Camera")

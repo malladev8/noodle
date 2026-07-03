@@ -5,7 +5,8 @@
 		{
 			"Type": "Sprite",
 			"Material": "Material/TestSpriteMaterial",
-			"PixelsPerUnit" :  100
+			"PixelsPerUnit": 100,
+			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
 		}
 	]
 }

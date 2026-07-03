@@ -20,6 +20,8 @@ void Sprite::SubmitRenderCommands(IRenderer& renderer) const
 	const Transform* transform = m_Owner->GetComponent<Transform>();
 	N_ASSERT(transform != nullptr, "No transform component found for owning actor.");
 	cmd.world = transform->GetWorldMatrix() * mat4x4::BuildScale(m_WorldSize.x, m_WorldSize.y, 1.0f);
+	
+	cmd.color = m_Color;
 
 	renderer.SubmitSprite(cmd);
 }
@@ -41,6 +43,9 @@ bool Sprite::Init(std::ifstream& bin, EngineContext& engineContext)
 	const Texture* texture = m_Material->diffuseTexture.get();
 	m_WorldSize.x = static_cast<float32>(texture->width) / static_cast<float32>(m_PixelsPerUnit);
 	m_WorldSize.y = static_cast<float32>(texture->height) / static_cast<float32>(m_PixelsPerUnit);
+
+	// Color
+	bin.read(reinterpret_cast<char*>(&m_Color), sizeof(m_Color));
 
 	return true;
 }
