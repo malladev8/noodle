@@ -87,7 +87,7 @@ bool D3D12SpriteRenderer::Initialize(D3D12Renderer& renderer)
 	m_QuadIndexBufferView.SizeInBytes = sizeof(sQuadIndices);
 
 	// Initialize Sprite Constant Buffer
-	uint32 cbSize = align::Align256(sizeof(FrameConstants)); // D3D12 requires all constant buffers to be 256 byte-aligned
+	uint32 cbSize = align::Align256(sizeof(SpriteConstants)); // D3D12 requires all constant buffers to be 256 byte-aligned
 	cbSize *= MaxSprites;
 
 	D3D12_HEAP_PROPERTIES spriteCbHeapProps = {};
