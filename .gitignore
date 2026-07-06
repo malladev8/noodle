@@ -23,6 +23,16 @@ mono_crash.*
 [Rr]elease/
 [Rr]eleases/
 x64/
+
+# x64 exceptions
+!ThirdParty/
+!ThirdParty/dxc/
+!ThirdParty/dxc/bin/
+!ThirdParty/dxc/bin/x64/
+!ThirdParty/dxc/bin/x64/dxcompiler.dll
+!ThirdParty/dxc/bin/x64/dxil.dll
+!ThirdParty/dxc/bin/x64/dxc.exe
+
 x86/
 [Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
