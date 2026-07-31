@@ -10,6 +10,7 @@ public:
 	const vec3& GetScale() const { return m_Scale; }
 	const quaternion& GetRotation() const { return m_Rotation; }
 	mat4x4 GetWorldMatrix() const;
+	mat4x4 GetLocalMatrix() const;
 
 	void SetPosition(const vec3& pos) { m_Position = pos; }
 	void SetScale(const vec3& scale) { m_Scale = scale; }

@@ -6,6 +6,7 @@
 
 
 typedef uint32 ActorId;
+class Transform;
 
 class Actor
 {
@@ -22,6 +23,8 @@ public:
 	void SubmitRenderCommands(class IRenderer& IRenderer) const;
 
 	ActorId GetId() const { return m_ActorId; }
+	Actor* GetParent() const { return m_Parent; }
+	Transform* GetTransform() const { return m_CachedTransform; }
 	
 	template<class ComponentType>
 	ComponentType* GetComponent()
@@ -40,6 +43,11 @@ private:
 	ActorId m_ActorId;
 	std::vector<std::unique_ptr<ActorComponent>> m_Components;
 	std::unordered_map<eComponentId, ActorComponent*> m_ComponentLookup;
+
+	Actor* m_Parent = nullptr;
+	std::vector<Actor*> m_Children;
+
+	Transform* m_CachedTransform = nullptr;
 
 	// This is called by the ActorFactory. No one else should be adding components
 	void AddComponent(ActorComponent* component);

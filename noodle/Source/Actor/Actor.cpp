@@ -1,5 +1,6 @@
 #include "NoodlePch.h"
 #include "Actor.h"
+#include "Components/Transform.h"
 
 Actor::Actor(ActorId actorId)
 	: m_ActorId (actorId)
@@ -52,4 +53,10 @@ void Actor::AddComponent(ActorComponent* component)
 	m_Components.push_back(std::unique_ptr<ActorComponent>(component));
 	size_t numComponents = m_Components.size();
 	m_ComponentLookup[componentId] = m_Components[numComponents - 1].get();
+
+	// Transform component is accessed frequently, cache it
+	if (componentId == eComponentId::COMPONENT_TRANSFORM)
+	{
+		m_CachedTransform = static_cast<Transform*>(component);
+	}
 }
