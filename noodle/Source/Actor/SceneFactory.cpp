@@ -36,6 +36,16 @@ Scene* SceneFactory::CreateScene(const char* binPath)
 		scene->AddActor(actor);
 	}
 
+	// Set up parent actor relationships
+	for (uint32 i = 0; i < numActors; ++i)
+	{
+		Actor& actor = *scene->m_Actors[i].get();
+		if (actor.GetParentId().has_value())
+		{
+			actor.SetParent(scene->m_ActorLookup[actor.GetParentId().value()]);
+		}
+	}
+
 	bin.close();
 	return scene;
 }

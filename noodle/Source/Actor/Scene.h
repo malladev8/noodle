@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/NoodleCore.h"
 #include "Actor.h"
+#include <unordered_map>
 
 class Actor;
 class IRenderer;
@@ -18,6 +19,7 @@ public:
 protected:
 private:
 	std::vector<std::unique_ptr<Actor>> m_Actors;
+	std::unordered_map<ActorId, Actor*> m_ActorLookup;
 	std::vector<Camera*> m_Cameras;
 	void AddActor(Actor* actor);
 };

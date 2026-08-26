@@ -1,9 +1,10 @@
 #include "NoodlePch.h"
 #include "Actor.h"
 #include "Components/Transform.h"
+#include <algorithm>
 
 Actor::Actor(ActorId actorId)
-	: m_ActorId (actorId)
+	: m_ActorId (actorId), m_ParentId(std::nullopt)
 {
 }
 
@@ -40,6 +41,24 @@ void Actor::SubmitRenderCommands(IRenderer& IRenderer) const
 	{
 		m_Components[i]->SubmitRenderCommands(IRenderer);
 	}
+}
+
+void Actor::SetParent(Actor* parent)
+{
+	N_ASSERT(parent != nullptr, "Parent Actor cannot be null.");
+	m_Parent = parent;
+	m_ParentId = m_Parent->GetId();
+	parent->m_Children.push_back(this);
+}
+
+void Actor::UnParent()
+{
+	if (m_Parent)
+	{
+		std::erase(m_Parent->m_Children, this);
+	}
+	m_Parent = nullptr;
+	m_ParentId = std::nullopt;
 }
 
 void Actor::AddComponent(ActorComponent* component)

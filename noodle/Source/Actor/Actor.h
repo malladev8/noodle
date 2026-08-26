@@ -3,6 +3,7 @@
 #include "Components/ActorComponent.h"
 #include <unordered_map>
 #include <vector>
+#include <optional>
 
 
 typedef uint32 ActorId;
@@ -24,7 +25,11 @@ public:
 
 	ActorId GetId() const { return m_ActorId; }
 	Actor* GetParent() const { return m_Parent; }
+	std::optional<ActorId> GetParentId() const { return m_ParentId; }
 	Transform* GetTransform() const { return m_CachedTransform; }
+
+	void SetParent(Actor* parent);
+	void UnParent();
 	
 	template<class ComponentType>
 	ComponentType* GetComponent()
@@ -45,6 +50,7 @@ private:
 	std::unordered_map<eComponentId, ActorComponent*> m_ComponentLookup;
 
 	Actor* m_Parent = nullptr;
+	std::optional<ActorId> m_ParentId;
 	std::vector<Actor*> m_Children;
 
 	Transform* m_CachedTransform = nullptr;

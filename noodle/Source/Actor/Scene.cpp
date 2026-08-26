@@ -39,6 +39,7 @@ void Scene::AddActor(Actor* actor)
 {
 	N_ASSERT(actor != nullptr, "Cannot add null actor to scene.");
 	m_Actors.push_back(std::unique_ptr<Actor>(actor));
+	m_ActorLookup.insert({ actor->GetId(), actor });
 
 	Camera* camera = actor->GetComponent<Camera>();
 	if (camera != nullptr)

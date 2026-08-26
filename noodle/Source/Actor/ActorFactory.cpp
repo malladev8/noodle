@@ -40,7 +40,18 @@ Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream
 		return N_NEW Actor(-1);
 	}
 
-	Actor* actor = N_NEW Actor(GetNextActorID());
+	AssetId actorPrefabId = 0;
+	bin.read(reinterpret_cast<char*>(&actorPrefabId), sizeof(AssetId));
+
+	// Currently only maintaining GetNextActorID() to support runtime actor creation
+	// Otherwise ActorId comes from scene data
+	ActorId newActorId = GetNextActorID();
+	if (sceneStream != nullptr)
+	{
+		sceneStream->read(reinterpret_cast<char*>(&newActorId), sizeof(newActorId));
+	}
+
+	Actor* actor = N_NEW Actor(newActorId);
 
 	if (!actor->Init(binPath))
 	{
@@ -49,8 +60,18 @@ Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream
 		return actor;
 	}
 
-	AssetId actorPrefabId = 0;
-	bin.read(reinterpret_cast<char*>(&actorPrefabId), sizeof(AssetId));
+	// Check for parent Actor and cache parent ID
+	bool hasParent = false;
+	if (sceneStream != nullptr)
+	{
+		sceneStream->read(reinterpret_cast<char*>(&hasParent), sizeof(hasParent));
+	}
+	if (hasParent)
+	{
+		ActorId parentId = UINT_MAX;
+		sceneStream->read(reinterpret_cast<char*>(&parentId), sizeof(parentId));
+		actor->m_ParentId = parentId;
+	}
 
 	EngineContext& context = Engine::Get().GetContext();
 

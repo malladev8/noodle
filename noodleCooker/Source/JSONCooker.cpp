@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <unordered_map>
+#include <optional>
 
 static const char* BINARY_EXTENSION = ".bin";
 
@@ -216,6 +217,7 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
 
         for (const rapidjson::Value& actor : actors.GetArray())
         {
+            // Prefab
             if (!actor.HasMember("Prefab"))
             {
                 printf("Actor missing Prefab member.\n");
@@ -226,6 +228,28 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
 
             // Actor Prefab Path
             path::WritePath(actorOutputPath, out);
+
+            // ID
+            if (!actor.HasMember("Id"))
+            {
+                printf("Actor missing Id member.\n");
+            }
+            uint32 actorId = actor["Id"].GetUint();
+            out.write(reinterpret_cast<const char*>(&actorId), sizeof(actorId));
+
+            // Parent ID
+            uint32 parentId = UINT_MAX;
+            bool hasParent = false;
+            if (actor.HasMember("Parent"))
+            {
+                parentId = actor["Parent"].GetUint();
+                hasParent = true;
+            }
+            out.write(reinterpret_cast<const char*>(&hasParent), sizeof(hasParent));
+            if (hasParent)
+            {
+                out.write(reinterpret_cast<const char*>(&parentId), sizeof(parentId));
+            }
 
             // Cook Actor Prefab
             if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
