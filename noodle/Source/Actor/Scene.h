@@ -2,6 +2,7 @@
 #include "Core/NoodleCore.h"
 #include "Actor.h"
 #include <unordered_map>
+#include "Controllers/Controller.h"
 
 class Actor;
 class IRenderer;
@@ -21,5 +22,6 @@ private:
 	std::vector<std::unique_ptr<Actor>> m_Actors;
 	std::unordered_map<ActorId, Actor*> m_ActorLookup;
 	std::vector<Camera*> m_Cameras;
+	std::vector<std::unique_ptr<class Controller>> m_Controllers;
 	void AddActor(Actor* actor);
 };

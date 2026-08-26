@@ -25,6 +25,9 @@
     <Filter Include="Rendering\D3D12">
       <UniqueIdentifier>{00e9b281-e652-4988-8218-5db59dec9303}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Actor\Controllers">
+      <UniqueIdentifier>{0f21c863-8994-4edc-afa0-e3c4b329b1eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\NoodleAllocator.cpp" />
@@ -79,6 +82,15 @@
       <Filter>Actor\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\NoodleWindow.cpp" />
+    <ClCompile Include="Source\Actor\Controllers\Controller.cpp">
+      <Filter>Actor\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Controllers\PlayerController.cpp">
+      <Filter>Actor\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor\Controllers\AIController.cpp">
+      <Filter>Actor\Controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -179,5 +191,14 @@
       <Filter>Actor\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\NoodleWindow.h" />
+    <ClInclude Include="Source\Actor\Controllers\Controller.h">
+      <Filter>Actor\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Controllers\PlayerController.h">
+      <Filter>Actor\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Controllers\AIController.h">
+      <Filter>Actor\Controllers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

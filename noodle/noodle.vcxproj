@@ -25,6 +25,9 @@
     <ClCompile Include="Source\Actor\Components\Camera.cpp" />
     <ClCompile Include="Source\Actor\Components\Sprite.cpp" />
     <ClCompile Include="Source\Actor\Components\Transform.cpp" />
+    <ClCompile Include="Source\Actor\Controllers\AIController.cpp" />
+    <ClCompile Include="Source\Actor\Controllers\Controller.cpp" />
+    <ClCompile Include="Source\Actor\Controllers\PlayerController.cpp" />
     <ClCompile Include="Source\Actor\Scene.cpp" />
     <ClCompile Include="Source\Actor\SceneFactory.cpp" />
     <ClCompile Include="Source\Core\NoodleLogger.cpp" />
@@ -53,6 +56,9 @@
     <ClInclude Include="Source\Actor\Components\SpriteInterface.h" />
     <ClInclude Include="Source\Actor\Components\Transform.h" />
     <ClInclude Include="Source\Actor\Components\TransformInterface.h" />
+    <ClInclude Include="Source\Actor\Controllers\AIController.h" />
+    <ClInclude Include="Source\Actor\Controllers\Controller.h" />
+    <ClInclude Include="Source\Actor\Controllers\PlayerController.h" />
     <ClInclude Include="Source\Actor\Scene.h" />
     <ClInclude Include="Source\Actor\SceneFactory.h" />
     <ClInclude Include="Source\Core\NoodleConfig.h" />

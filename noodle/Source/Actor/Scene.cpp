@@ -4,7 +4,6 @@
 #include "NoodleWindow.h"
 #include "Rendering/IRenderer.h"
 
-
 void Scene::Update(float deltaSeconds)
 {
 	for (auto& actor : m_Actors)
