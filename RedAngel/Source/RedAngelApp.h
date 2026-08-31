@@ -1,14 +1,23 @@
 #pragma once
-#include "NoodleApp.h"
+#include "Core/NoodleCore.h"
+#include <filesystem>
 
-class RedAngelApp : public NoodleApp
+class RedAngelApp
 {
 public:
-	RedAngelApp(EngineContext& engineContext);
-	virtual void Initialize() override;
-	virtual void Update(float deltaSeconds) override;
-	virtual void Shutdown() override;
+	RedAngelApp();
+	void Run();
 
 protected:
+
 private:
+	void Initialize();
+	void BeginFrame();
+	void Update(float deltaSeconds);
+	void Render();
+	void EndFrame();
+	void Shutdown();
+
+	std::filesystem::path m_ProjectRoot;
+	std::filesystem::path m_CookedAssetRoot;
 };

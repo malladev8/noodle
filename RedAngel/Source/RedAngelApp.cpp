@@ -1,28 +1,66 @@
 #include "NoodlePch.h"
 #include "RedAngelApp.h"
-#include "Actor/SceneFactory.h"
 #include "Event/EventManager.h"
+#include "EngineContext.h"
+#include "Event/WindowResizeEvent.h"
+#include "Rendering/IRenderer.h"
+#include "NoodleEngine.h"
 
-RedAngelApp::RedAngelApp(EngineContext& engineContext) : NoodleApp(engineContext)
+RedAngelApp::RedAngelApp()
 {
+}
+
+void RedAngelApp::Run()
+{
+	Initialize();
+
+	while (!PlatformShouldExit())
+	{
+		float32 deltaSeconds = Engine::Get().TickClock();
+		BeginFrame();
+		Update(deltaSeconds);
+		Render();
+		EndFrame();
+	}
+
+	Shutdown();
 }
 
 void RedAngelApp::Initialize()
 {
-	NoodleApp::Initialize();
+	Engine::Get().Initialize();
+
+	m_ProjectRoot = std::filesystem::current_path();
+	m_CookedAssetRoot = m_ProjectRoot / "Cooked";
 
 	// Testing scene creation
-	SceneFactory sceneFactory;
-	Scene* scene = sceneFactory.CreateScene("RedAngel/Cooked/Scene/TestScene.bin");
-	m_Scene = std::unique_ptr<Scene>(scene);
+	std::filesystem::path scenePath = m_CookedAssetRoot / "Scene" / "TestScene.bin";
+	Engine::Get().LoadScene(scenePath.string().c_str());
+
+	// Create Controllers
+}
+
+void RedAngelApp::BeginFrame()
+{
+	Engine::Get().BeginFrame();
 }
 
 void RedAngelApp::Update(float deltaSeconds)
 {
-	NoodleApp::Update(deltaSeconds);
+	Engine::Get().Update(deltaSeconds);
+}
+
+void RedAngelApp::Render()
+{
+	Engine::Get().Render();
+}
+
+void RedAngelApp::EndFrame()
+{
+	Engine::Get().EndFrame();
 }
 
 void RedAngelApp::Shutdown()
 {
-	NoodleApp::Shutdown();
+	Engine::Get().Shutdown();
 }

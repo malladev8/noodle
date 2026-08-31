@@ -1,9 +1,12 @@
 #include "NoodlePch.h"
 #include "NoodleEngine.h"
-#include "NoodleApp.h"
-#include "NoodleClock.h"
 #include "NoodleWindow.h"
 #include "Rendering/IRenderer.h"
+#include "Actor/SceneFactory.h"
+
+#if defined(WINDOWS)
+#include "Rendering/D3D12/D3D12Renderer.h"
+#endif
 
 Engine::Engine()
 	: m_EventManager(EventManager("GlobalEventManager")),
@@ -17,6 +20,7 @@ Engine::Engine()
 			  m_ResourceManager,
 			  m_InputManager,
 			  m_Window,
+			  m_Clock
 		  }
 	  )
 {
@@ -28,29 +32,10 @@ Engine& Engine::Get()
 	return sEngineInstance;
 }
 
-void Engine::BeginFrame()
-{
-	m_InputManager.BeginFrame();
-}
-
-void Engine::Update(float32 deltaSeconds)
-{
-	PlatformDispatchMessages();
-	m_EventManager.Update(deltaSeconds);
-	m_App->Update(deltaSeconds);
-}
-
-void Engine::Render()
-{
-	m_App->Render(*m_Renderer.get());
-}
-
-void Engine::Run(std::unique_ptr<NoodleApp> app,
-	             std::unique_ptr<IRenderer> renderer)
+void Engine::Initialize()
 {
 	// Initialization
-	Clock clock;
-	clock.Reset();
+	m_Clock.Reset();
 
 	PlatformInitLogger();
 
@@ -62,27 +47,55 @@ void Engine::Run(std::unique_ptr<NoodleApp> app,
 
 	void* hwnd = nullptr;
 	PlatformCreateWindow(m_Window, hwnd);
-	
-	m_Renderer = std::move(renderer);
-	m_Renderer->Initialize(hwnd, m_Window);
-	m_EngineContext.renderer = m_Renderer.get();
 
-	m_App = std::move(app);
-	m_App->Initialize();
-
-	// Game Loop
-	while (!PlatformShouldExit())
+#if defined(WINDOWS)
+	m_Renderer = std::make_unique<D3D12Renderer>();
+#endif
+	if (m_Renderer)
 	{
-		clock.Tick();
-		float32 deltaSeconds = clock.GetDeltaSeconds();
-		BeginFrame();
-		Update(deltaSeconds);
-		Render();
+		m_Renderer->Initialize(hwnd, m_Window);
 	}
-	
-	// Shutdown
-	m_App->Shutdown();
+	m_EngineContext.renderer = m_Renderer.get();
+}
+
+void Engine::BeginFrame()
+{
+	m_InputManager.BeginFrame();
+}
+
+void Engine::Update(float32 deltaSeconds)
+{
+	PlatformDispatchMessages();
+	m_EventManager.Update(deltaSeconds);
+	m_ActiveScene->Update(deltaSeconds);
+}
+
+void Engine::Render()
+{
+	m_ActiveScene->SubmitRenderCommands(*m_Renderer.get());
+	m_ActiveScene->Render(*m_Renderer.get(), m_Window);
+}
+
+void Engine::EndFrame()
+{
+}
+
+void Engine::Shutdown()
+{
 	m_Renderer->Shutdown();
 	m_Window.Shutdown(m_EngineContext);
 	PlatformShutdown();
+}
+
+void Engine::LoadScene(const char* scenePath)
+{
+	SceneFactory sceneFactory;
+	Scene* scene = sceneFactory.CreateScene(scenePath);
+	m_ActiveScene = std::unique_ptr<Scene>(scene);
+}
+
+float32 Engine::TickClock()
+{
+	m_Clock.Tick();
+	return m_Clock.GetDeltaSeconds();
 }

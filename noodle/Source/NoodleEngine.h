@@ -5,6 +5,7 @@
 #include "NoodleInput.h"
 #include "NoodleWindow.h"
 #include "Resource/ResourceManager.h"
+#include "NoodleClock.h"
 
 class NoodleApp;
 class IRenderer;
@@ -24,7 +25,15 @@ public:
 	Engine& operator=(const Engine&) = delete;
 
 	static Engine& Get();
-	void Run(std::unique_ptr<NoodleApp> app, std::unique_ptr<IRenderer> renderer);
+	void Initialize();
+	void BeginFrame();
+	void Update(float32 deltaSeconds);
+	void Render();
+	void EndFrame();
+	void Shutdown();
+
+	void LoadScene(const char* scenePath);
+	float32 TickClock();
 
 	EngineContext& GetContext() { return m_EngineContext; }
 
@@ -36,13 +45,11 @@ private:
 	std::unique_ptr<IRenderer> m_Renderer = nullptr;
 	ResourceManager m_ResourceManager;
 	InputManager m_InputManager;
+	Clock m_Clock;
 
 	EngineContext m_EngineContext;
 
-	std::unique_ptr<NoodleApp> m_App = nullptr;
+	std::unique_ptr<class Scene> m_ActiveScene;
 
 	Engine();
-	void BeginFrame();
-	void Update(float32 deltaSeconds);
-	void Render();
 };

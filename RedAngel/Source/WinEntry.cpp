@@ -147,8 +147,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 #if defined(DEBUG)
     CreateDebugConsole();
 #endif
-    Engine& engine = Engine::Get();
-    engine.Run(std::make_unique<RedAngelApp>(engine.GetContext()), std::make_unique<D3D12Renderer>());
+    RedAngelApp app;
+    app.Run();
     return 0;
 }
 #endif

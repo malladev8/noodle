@@ -8,12 +8,14 @@ struct EngineContext
 	class ResourceManager& resourceManager;
 	class InputManager& inputManager;
 	class Window& window;
+	class Clock& clock;
 
-	EngineContext(EventManager& events, IRenderer* inRenderer, ResourceManager& resources, InputManager& input, Window& inWindow)
+	EngineContext(EventManager& events, IRenderer* inRenderer, ResourceManager& resources, InputManager& input, Window& inWindow, Clock& inClock)
 		: eventManager(events), 
 		  renderer(inRenderer),
 		  resourceManager(resources),
 		  inputManager(input),
-		  window(inWindow)
+		  window(inWindow),
+		  clock(inClock)
 	{ }
 };

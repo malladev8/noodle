@@ -35,7 +35,6 @@
     <ClCompile Include="Source\Event\EventManager.cpp" />
     <ClCompile Include="Source\Math\NoodleMath.cpp" />
     <ClCompile Include="Source\NoodleAllocator.cpp" />
-    <ClCompile Include="Source\NoodleApp.cpp" />
     <ClCompile Include="Source\NoodleClock.cpp" />
     <ClCompile Include="Source\NoodleEngine.cpp" />
     <ClCompile Include="Source\NoodleInput.cpp" />
@@ -73,7 +72,6 @@
     <ClInclude Include="Source\Event\WindowResizeEvent.h" />
     <ClInclude Include="Source\Math\NoodleMath.h" />
     <ClInclude Include="Source\NoodleAllocator.h" />
-    <ClInclude Include="Source\NoodleApp.h" />
     <ClInclude Include="Source\NoodleClock.h" />
     <ClInclude Include="Source\NoodleEngine.h" />
     <ClInclude Include="Source\NoodleInput.h" />

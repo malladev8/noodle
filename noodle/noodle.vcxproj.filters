@@ -31,7 +31,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\NoodleAllocator.cpp" />
-    <ClCompile Include="Source\NoodleApp.cpp" />
     <ClCompile Include="Source\NoodleClock.cpp" />
     <ClCompile Include="Source\NoodleInput.cpp" />
     <ClCompile Include="Source\NoodlePch.cpp" />
@@ -94,7 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
-    <ClInclude Include="Source\NoodleApp.h" />
     <ClInclude Include="Source\NoodleClock.h" />
     <ClInclude Include="Source\NoodleInput.h" />
     <ClInclude Include="Source\NoodlePch.h" />
