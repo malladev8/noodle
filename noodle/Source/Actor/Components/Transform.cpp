@@ -22,6 +22,11 @@ mat4x4 Transform::GetLocalMatrix() const
     return mat4x4::BuildTranslation(m_Position) * mat4x4::BuildRotation(m_Rotation) * mat4x4::BuildScale(m_Scale);
 }
 
+void Transform::Translate(const vec3& translation)
+{
+    m_Position += translation;
+}
+
 bool Transform::Init(std::ifstream& bin, EngineContext& engineContext)
 {
     bin.read(reinterpret_cast<char*>(&m_Position), sizeof(vec3));

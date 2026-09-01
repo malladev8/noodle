@@ -16,6 +16,8 @@ public:
 	void SetScale(const vec3& scale) { m_Scale = scale; }
 	void SetRotation(const quaternion& rot) { m_Rotation = rot; }
 
+	void Translate(const vec3& translation);
+
 protected:
 private:
 	vec3 m_Position;
