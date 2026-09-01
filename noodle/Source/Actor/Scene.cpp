@@ -6,6 +6,11 @@
 
 void Scene::Update(float deltaSeconds)
 {
+	for (auto& controller : m_Controllers)
+	{
+		controller->Update(deltaSeconds);
+	}
+
 	for (auto& actor : m_Actors)
 	{
 		actor->Update(deltaSeconds);

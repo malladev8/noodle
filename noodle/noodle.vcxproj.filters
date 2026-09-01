@@ -84,6 +84,9 @@
     <ClCompile Include="Source\Actor\Controllers\Controller.cpp">
       <Filter>Actor\Controllers</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Components\Movement.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -185,6 +188,12 @@
     <ClInclude Include="Source\NoodleWindow.h" />
     <ClInclude Include="Source\Actor\Controllers\Controller.h">
       <Filter>Actor\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\MovementInterface.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\Movement.h">
+      <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

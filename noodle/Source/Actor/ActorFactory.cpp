@@ -3,6 +3,7 @@
 #include "Components/Sprite.h"
 #include "Components/Transform.h"
 #include "Components/Camera.h"
+#include "Components/Movement.h"
 #include "Math/NoodleMath.h"
 #include "NoodleEngine.h"
 
@@ -23,12 +24,18 @@ static ActorComponent* sCreateCameraComponent()
 	return N_NEW Camera;
 }
 
+static ActorComponent* sCreateMovementComponent()
+{
+	return N_NEW Movement;
+}
+
 ActorFactory::ActorFactory()
 	: m_LastActorId(0)
 {
 	m_ActorComponentCreators[eComponentId::COMPONENT_TRANSFORM] = sCreateTransformComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_SPRITE] = sCreateSpriteComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_CAMERA] = sCreateCameraComponent;
+	m_ActorComponentCreators[eComponentId::COMPONENT_MOVEMENT] = sCreateMovementComponent;
 }
 
 Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream)

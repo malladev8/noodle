@@ -23,6 +23,7 @@
     <ClCompile Include="Source\Actor\ActorFactory.cpp" />
     <ClCompile Include="Source\Actor\Components\ActorComponent.cpp" />
     <ClCompile Include="Source\Actor\Components\Camera.cpp" />
+    <ClCompile Include="Source\Actor\Components\Movement.cpp" />
     <ClCompile Include="Source\Actor\Components\Sprite.cpp" />
     <ClCompile Include="Source\Actor\Components\Transform.cpp" />
     <ClCompile Include="Source\Actor\Controllers\Controller.cpp" />
@@ -49,6 +50,8 @@
     <ClInclude Include="Source\Actor\Components\Camera.h" />
     <ClInclude Include="Source\Actor\Components\CameraInterface.h" />
     <ClInclude Include="Source\Actor\Components\ComponentIds.h" />
+    <ClInclude Include="Source\Actor\Components\Movement.h" />
+    <ClInclude Include="Source\Actor\Components\MovementInterface.h" />
     <ClInclude Include="Source\Actor\Components\Sprite.h" />
     <ClInclude Include="Source\Actor\Components\SpriteInterface.h" />
     <ClInclude Include="Source\Actor\Components\Transform.h" />

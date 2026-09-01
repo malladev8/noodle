@@ -428,6 +428,19 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 }
                 printf("Successfully parsed Camera component.\n");
             }
+            else if (type == "Movement")
+            {
+                eComponentId movementComponentId = eComponentId::COMPONENT_MOVEMENT;
+                out.write(reinterpret_cast<const char*>(&movementComponentId), sizeof(movementComponentId));
+                const char* speedName = "Speed";
+                if (!sValidateJsonValueMember(component, speedName))
+                {
+                    return false;
+                }
+                float32 speed = component[speedName].GetFloat();
+                out.write(reinterpret_cast<const char*>(&speed), sizeof(speed));
+                printf("Successfully parsed Movement component.\n");
+            }
         }
     }
 	return true;
