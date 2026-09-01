@@ -54,8 +54,8 @@ void Engine::Initialize()
 	if (m_Renderer)
 	{
 		m_Renderer->Initialize(hwnd, m_Window);
+		m_EngineContext.renderer = m_Renderer.get();
 	}
-	m_EngineContext.renderer = m_Renderer.get();
 }
 
 void Engine::BeginFrame()
@@ -72,8 +72,11 @@ void Engine::Update(float32 deltaSeconds)
 
 void Engine::Render()
 {
-	m_ActiveScene->SubmitRenderCommands(*m_Renderer.get());
-	m_ActiveScene->Render(*m_Renderer.get(), m_Window);
+	if(m_Renderer)
+	{
+		m_ActiveScene->SubmitRenderCommands(*m_Renderer.get());
+		m_ActiveScene->Render(*m_Renderer.get(), m_Window);
+	}
 }
 
 void Engine::EndFrame()
