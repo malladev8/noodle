@@ -3,8 +3,25 @@
   <ItemGroup>
     <ClCompile Include="Source\WinEntry.cpp" />
     <ClCompile Include="Source\RedAngelApp.cpp" />
+    <ClCompile Include="Source\Controllers\AIController.cpp">
+      <Filter>Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Controllers\PlayerController.cpp">
+      <Filter>Controllers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\RedAngelApp.h" />
+    <ClInclude Include="Source\Controllers\AIController.h">
+      <Filter>Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Controllers\PlayerController.h">
+      <Filter>Controllers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Controllers">
+      <UniqueIdentifier>{951d12ea-9835-4943-88b1-8981ee3df2b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

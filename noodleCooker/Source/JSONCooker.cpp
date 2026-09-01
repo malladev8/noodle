@@ -251,6 +251,24 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
                 out.write(reinterpret_cast<const char*>(&parentId), sizeof(parentId));
             }
 
+            // Controller
+            std::string controllerType;
+            bool hasController = false;
+            if (actor.HasMember("Controller"))
+            {
+                controllerType = actor["Controller"].GetString();
+                hasController = true;
+            }
+            out.write(reinterpret_cast<const char*>(&hasController), sizeof(hasController));
+            if (hasController)
+            {
+                printf("Actor has Controller type: %s\n", controllerType.c_str());
+
+                uint8 controllerTypeLength = (uint8)controllerType.length();
+                out.write(reinterpret_cast<const char*>(&controllerTypeLength), sizeof(uint8));
+                out.write(controllerType.data(), controllerTypeLength);
+            }
+
             // Cook Actor Prefab
             if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
             {

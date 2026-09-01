@@ -9,6 +9,7 @@
 
 class NoodleApp;
 class IRenderer;
+class Scene;
 
 // Platform functions should be implemented by platform entry point.
 // See WinEntry.cpp for examples
@@ -32,7 +33,7 @@ public:
 	void EndFrame();
 	void Shutdown();
 
-	void LoadScene(const char* scenePath);
+	Scene* LoadScene(const char* scenePath);
 	float32 TickClock();
 
 	EngineContext& GetContext() { return m_EngineContext; }
@@ -49,7 +50,7 @@ private:
 
 	EngineContext m_EngineContext;
 
-	std::unique_ptr<class Scene> m_ActiveScene;
+	std::unique_ptr<Scene> m_ActiveScene;
 
 	Engine();
 };

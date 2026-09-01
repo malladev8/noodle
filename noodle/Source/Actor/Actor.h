@@ -31,6 +31,8 @@ public:
 	void SetParent(Actor* parent);
 	void UnParent();
 	
+	const std::string& GetControllerType() const { return m_ControllerType; }
+
 	template<class ComponentType>
 	ComponentType* GetComponent()
 	{
@@ -54,6 +56,8 @@ private:
 	std::vector<Actor*> m_Children;
 
 	Transform* m_CachedTransform = nullptr;
+
+	std::string m_ControllerType;
 
 	// This is called by the ActorFactory. No one else should be adding components
 	void AddComponent(ActorComponent* component);

@@ -73,6 +73,20 @@ Actor* ActorFactory::CreateActor(const char* binPath, std::ifstream* sceneStream
 		actor->m_ParentId = parentId;
 	}
 
+	// Check if actor will need a Controller
+	bool hasController = false;
+	if (sceneStream != nullptr)
+	{
+		sceneStream->read(reinterpret_cast<char*>(&hasController), sizeof(hasController));
+	}
+	if (hasController)
+	{
+		uint8 controllerTypeLength = 0;
+		sceneStream->read(reinterpret_cast<char*>(&controllerTypeLength), sizeof(controllerTypeLength));
+		actor->m_ControllerType.resize(controllerTypeLength);
+		sceneStream->read(reinterpret_cast<char*>(actor->m_ControllerType.data()), controllerTypeLength);
+	}
+
 	EngineContext& context = Engine::Get().GetContext();
 
 	// If initialized from a scene, create transform component from scene transform data

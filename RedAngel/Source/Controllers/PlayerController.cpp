@@ -5,7 +5,6 @@
 
 PlayerController::PlayerController()
 {
-	m_InputManager = &Engine::Get().GetContext().inputManager;
 }
 
 void PlayerController::Update(float deltaSeconds)

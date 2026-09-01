@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/NoodleCore.h"
-#include "Controller.h"
+#include "Actor/Controllers/Controller.h"
 
 class AIController : public Controller
 {

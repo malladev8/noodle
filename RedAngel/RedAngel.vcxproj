@@ -176,10 +176,14 @@ dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Controllers\AIController.cpp" />
+    <ClCompile Include="Source\Controllers\PlayerController.cpp" />
     <ClCompile Include="Source\RedAngelApp.cpp" />
     <ClCompile Include="Source\WinEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Controllers\AIController.h" />
+    <ClInclude Include="Source\Controllers\PlayerController.h" />
     <ClInclude Include="Source\RedAngelApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

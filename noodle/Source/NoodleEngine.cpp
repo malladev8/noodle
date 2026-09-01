@@ -87,11 +87,12 @@ void Engine::Shutdown()
 	PlatformShutdown();
 }
 
-void Engine::LoadScene(const char* scenePath)
+Scene* Engine::LoadScene(const char* scenePath)
 {
 	SceneFactory sceneFactory;
 	Scene* scene = sceneFactory.CreateScene(scenePath);
 	m_ActiveScene = std::unique_ptr<Scene>(scene);
+	return m_ActiveScene.get();
 }
 
 float32 Engine::TickClock()

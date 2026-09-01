@@ -84,12 +84,6 @@
     <ClCompile Include="Source\Actor\Controllers\Controller.cpp">
       <Filter>Actor\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Actor\Controllers\PlayerController.cpp">
-      <Filter>Actor\Controllers</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Actor\Controllers\AIController.cpp">
-      <Filter>Actor\Controllers</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -190,12 +184,6 @@
     </ClInclude>
     <ClInclude Include="Source\NoodleWindow.h" />
     <ClInclude Include="Source\Actor\Controllers\Controller.h">
-      <Filter>Actor\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\Controllers\PlayerController.h">
-      <Filter>Actor\Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\Controllers\AIController.h">
       <Filter>Actor\Controllers</Filter>
     </ClInclude>
   </ItemGroup>

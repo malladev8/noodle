@@ -8,6 +8,7 @@ class Actor;
 class IRenderer;
 class Camera;
 class Window;
+class Controller;
 
 class Scene
 {
@@ -17,11 +18,28 @@ public:
 	void SubmitRenderCommands(IRenderer& IRenderer) const;
 	void Render(IRenderer& IRenderer, const Window& window) const;
 
+	template<class ControllerType>
+	std::vector<ControllerType*> CreateControllers(const std::string& controllerType)
+	{
+		std::vector<ControllerType*> controllers;
+		for (std::unique_ptr<Actor>& actor : m_Actors)
+		{
+			if (actor.get()->GetControllerType() == controllerType)
+			{
+				ControllerType* controller = N_NEW ControllerType();
+				controller->Possess(actor.get());
+				controllers.push_back(controller);
+				m_Controllers.push_back(std::unique_ptr<Controller>(controller));
+			}
+		}
+		return controllers;
+	}
+
 protected:
 private:
 	std::vector<std::unique_ptr<Actor>> m_Actors;
 	std::unordered_map<ActorId, Actor*> m_ActorLookup;
 	std::vector<Camera*> m_Cameras;
-	std::vector<std::unique_ptr<class Controller>> m_Controllers;
+	std::vector<std::unique_ptr<Controller>> m_Controllers;
 	void AddActor(Actor* actor);
 };

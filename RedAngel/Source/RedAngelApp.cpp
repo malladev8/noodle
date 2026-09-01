@@ -5,6 +5,8 @@
 #include "Event/WindowResizeEvent.h"
 #include "Rendering/IRenderer.h"
 #include "NoodleEngine.h"
+#include "Actor/Scene.h"
+#include "Controllers/PlayerController.h"
 
 RedAngelApp::RedAngelApp()
 {
@@ -35,9 +37,10 @@ void RedAngelApp::Initialize()
 
 	// Testing scene creation
 	std::filesystem::path scenePath = m_CookedAssetRoot / "Scene" / "TestScene.bin";
-	Engine::Get().LoadScene(scenePath.string().c_str());
+	Scene* scene = Engine::Get().LoadScene(scenePath.string().c_str());
 
 	// Create Controllers
+	std::vector<PlayerController*> playerControllers = scene->CreateControllers<PlayerController>("Player");
 }
 
 void RedAngelApp::BeginFrame()
