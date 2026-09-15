@@ -14,7 +14,17 @@ void SpriteAnimator::Update(float32 deltaSeconds)
 	if (m_FrameTime >= (1.0f / (float32)currentClip.fps))
 	{
 		m_FrameTime = 0.0f;
-		m_CurrentFrameIndex = m_CurrentFrameIndex >= currentClip.frames ? 0 : m_CurrentFrameIndex + 1;
+		if (m_CurrentFrameIndex >= currentClip.frames)
+		{
+			if (currentClip.loop)
+			{
+				m_CurrentFrameIndex = 0;
+			}
+		}
+		else
+		{
+			++m_CurrentFrameIndex;
+		}
 	}
 
 	Sprite* sprite = m_Owner->GetComponent<Sprite>();
