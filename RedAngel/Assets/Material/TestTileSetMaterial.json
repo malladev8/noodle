@@ -1,0 +1,11 @@
+{
+  "Name": "TestTileSetMaterial",
+  "Shader": "Shader/SpriteShader",
+  "DiffuseTexture": "Texture/craftpix/Musketeer/Idle",
+
+  "SpriteSheet":
+  {
+    "NumRows": 1,
+    "NumColumns": 5
+  }
+}

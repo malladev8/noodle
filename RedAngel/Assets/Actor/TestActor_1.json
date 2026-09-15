@@ -1,0 +1,16 @@
+{
+	"Name": "TestActor_1",
+	"Components": 
+	[
+		{
+			"Type": "Sprite",
+			"Material": "Material/TestTileSetMaterial",
+			"PixelsPerUnit": 100,
+			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
+		},
+		{
+			"Type": "Movement",
+			"Speed": 5.0
+		}
+	]
+}

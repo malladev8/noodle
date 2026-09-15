@@ -19,12 +19,21 @@ std::shared_ptr<Material> ResourceManager::LoadMaterial(std::ifstream& bin)
 		material->shader = LoadShader(shaderBin);
 		shaderBin.close();
 
-		// Texture
+		// Diffuse Texture
 		std::string diffuseTexturePath = path::ReadFilePath(bin);
 		std::ifstream diffuseTextureBin(diffuseTexturePath, std::ios::binary);
 		N_ASSERT(diffuseTextureBin.is_open(), "Failed to open Texture binary file.");
 		material->diffuseTexture = LoadTexture(diffuseTextureBin);
 		diffuseTextureBin.close();
+
+		// Texture Layout
+		uint32 numRows, numColumns;
+		N_ASSERT(bin.read(reinterpret_cast<char*>(&numRows), sizeof(numRows)), "Failed to read number of rows for texture layout");
+		N_ASSERT(bin.read(reinterpret_cast<char*>(&numColumns), sizeof(numColumns)), "Failed to read number of columns for texture layout");
+		material->diffuseTextureLayout.numRows = numRows;
+		material->diffuseTextureLayout.numColumns = numColumns;
+		material->diffuseTextureLayout.tileWidth = material->diffuseTexture->width / numColumns;
+		material->diffuseTextureLayout.tileHeight = material->diffuseTexture->height / numRows;
 
 		m_MaterialCache.insert({ assetId, material });
 		return material;

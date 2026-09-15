@@ -1,5 +1,11 @@
 {
   "Name": "TestSpriteMaterial",
   "Shader": "Shader/SpriteShader",
-  "DiffuseTexture": "Texture/craftpix/Autumn_Forest_2D_Platformer_Tileset_Environment - Tree 01"
+  "DiffuseTexture": "Texture/craftpix/AutumnForest/Autumn_Forest_2D_Platformer_Tileset_Environment - Tree 01",
+
+  "SpriteSheet": 
+  {
+    "NumRows": 1,
+    "NumColumns": 1
+  }
 }

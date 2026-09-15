@@ -9,10 +9,13 @@ class Sprite : public SpriteInterface
 
 public:
 	virtual void SubmitRenderCommands(class IRenderer& renderer) const override;
+	void SetUvRect(const vec4& uvRect) { m_UvRect = uvRect; }
+
 protected:
 private:
 	std::shared_ptr<Material> m_Material = nullptr;
 	vec4 m_Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+	vec4 m_UvRect{ 0.0f, 0.0f, 1.0f, 1.0f };
 	vec2 m_WorldSize{ 1.0f, 1.0f };
 	uint32 m_PixelsPerUnit = 100;
 

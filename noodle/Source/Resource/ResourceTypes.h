@@ -58,6 +58,14 @@ struct Texture
 	eTextureFormat format = eTextureFormat::UNKNOWN;
 };
 
+struct TextureLayout
+{
+	uint32 tileWidth = 0;
+	uint32 tileHeight = 0;
+	uint32 numRows = 0;
+	uint32 numColumns = 0;
+};
+
 struct Shader
 {
 	virtual ~Shader() = default;
@@ -73,6 +81,7 @@ struct Material
 {
 	std::shared_ptr<Shader> shader = nullptr;
 	std::shared_ptr<Texture> diffuseTexture = nullptr;
+	TextureLayout diffuseTextureLayout;
 };
 
 enum class eProjectionType

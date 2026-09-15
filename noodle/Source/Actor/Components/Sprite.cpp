@@ -23,6 +23,11 @@ void Sprite::SubmitRenderCommands(IRenderer& renderer) const
 	
 	cmd.color = m_Color;
 
+	cmd.uvMin.x = m_UvRect.x;
+	cmd.uvMin.y = m_UvRect.y;
+	cmd.uvMax.x = m_UvRect.z;
+	cmd.uvMax.y = m_UvRect.w;
+
 	renderer.SubmitSprite(cmd);
 }
 

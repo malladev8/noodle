@@ -509,6 +509,27 @@ bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson:
         sCookedAssets.insert({ textureAssetId, metadata });
     }
 
+    // Sprite Sheet / Texture Layout
+    const char* spriteSheetName = "SpriteSheet";
+    if (!sValidateJsonValueMember(jsonDoc, spriteSheetName))
+    {
+        return false;
+    }
+    const char* numRowsName = "NumRows";
+    if (!sValidateJsonValueMember(jsonDoc[spriteSheetName], numRowsName))
+    {
+        return false;
+    }
+    const char* numColumnsName = "NumColumns";
+    if (!sValidateJsonValueMember(jsonDoc[spriteSheetName], numColumnsName))
+    {
+        return false;
+    }
+    uint32 numRows = jsonDoc[spriteSheetName][numRowsName].GetUint();
+    uint32 numColumns = jsonDoc[spriteSheetName][numColumnsName].GetUint();
+    out.write(reinterpret_cast<const char*>(&numRows), sizeof(numRows));
+    out.write(reinterpret_cast<const char*>(&numColumns), sizeof(numColumns));
+
     return true;
 }
 
