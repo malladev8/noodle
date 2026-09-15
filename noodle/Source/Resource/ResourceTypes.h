@@ -99,4 +99,6 @@ struct SpriteConstants
 {
 	mat4x4 world;
 	vec4 color;
+	vec2 uvMin;
+	vec2 uvMax;
 };

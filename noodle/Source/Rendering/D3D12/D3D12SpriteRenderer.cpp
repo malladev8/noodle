@@ -268,6 +268,8 @@ void D3D12SpriteRenderer::Flush()
 		SpriteConstants spriteConstants;
 		spriteConstants.world = spriteCmd.world.Transpose();
 		spriteConstants.color = spriteCmd.color;
+		spriteConstants.uvMin = spriteCmd.uvMin;
+		spriteConstants.uvMax = spriteCmd.uvMax;
 		memcpy(m_MappedSpriteConstants + offset, &spriteConstants, sizeof(spriteConstants));
 
 		// Bind sprite constant buffer

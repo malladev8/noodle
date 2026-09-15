@@ -9,6 +9,8 @@ cbuffer ObjectConstants : register(b1)
 {
     float4x4 gWorld;
     float4 gColor;
+    float2 gUVMin;
+    float2 gUVMax;
 };
 
 struct VSInput
@@ -27,6 +29,6 @@ PSInput VSMain(VSInput input)
 {
     PSInput output;
     output.pos = mul(gViewProjection, mul(gWorld, float4(input.pos, 1)));
-    output.uv = input.uv;
+    output.uv = gUVMin + input.uv * (gUVMax - gUVMin);
     return output;
 }
