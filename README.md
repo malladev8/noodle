@@ -8,16 +8,16 @@ Current Features:
 - Input Management
 - Event Management
 - Player Controller
+- Sprite sheet animations
 
 To Build and Run
-- Build the RA.slnx solution
-- Run RedAngel/CookAllScenes.bat
+- Build the RA.slnx solution in the debug configuration in Visual Studio 2026
+- Run RedAngel/CookAllScenes.bat (requires the noodleCooker debug exe)
 - Run the RedAngel project
 - Should be able to move the sprite around the window with WASD
 
 In progress:
-- Tile map rednering
-- Sprite sheet animations
+- Tile map level rendering
 
 Planned:
 - https://trello.com/b/leydXdFM/noodle
