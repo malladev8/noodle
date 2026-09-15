@@ -19,7 +19,10 @@ void Sprite::SubmitRenderCommands(IRenderer& renderer) const
 	N_ASSERT(m_Owner != nullptr, "Sprite component owning actor is null.");
 	const Transform* transform = m_Owner->GetComponent<Transform>();
 	N_ASSERT(transform != nullptr, "No transform component found for owning actor.");
-	cmd.world = transform->GetWorldMatrix() * mat4x4::BuildScale(m_WorldSize.x, m_WorldSize.y, 1.0f);
+
+	float32 worldScaleX = (float32)m_Material->diffuseTextureLayout.tileWidth / (float32)m_Material->diffuseTexture->width * m_WorldSize.x;
+	float32 worldScaleY = (float32)m_Material->diffuseTextureLayout.tileHeight / (float32)m_Material->diffuseTexture->height * m_WorldSize.y;
+	cmd.world = transform->GetWorldMatrix() * mat4x4::BuildScale(worldScaleX, worldScaleY, 1.0f);
 	
 	cmd.color = m_Color;
 

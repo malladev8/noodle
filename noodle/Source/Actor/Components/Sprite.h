@@ -10,6 +10,7 @@ class Sprite : public SpriteInterface
 public:
 	virtual void SubmitRenderCommands(class IRenderer& renderer) const override;
 	void SetUvRect(const vec4& uvRect) { m_UvRect = uvRect; }
+	std::weak_ptr<Material> GetMaterial() const { return m_Material; }
 
 protected:
 private:

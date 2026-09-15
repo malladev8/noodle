@@ -371,6 +371,67 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
 
                 printf("Successfully parsed Sprite component.\n");
             }
+            else if (type == "SpriteAnimator")
+            {
+                eComponentId componentId = eComponentId::COMPONENT_SPRITE_ANIMATOR;
+                out.write(reinterpret_cast<const char*>(&componentId), sizeof(eComponentId));
+
+                const char* animationClipsName = "AnimationClips";
+                if (!sValidateJsonValueMember(component, animationClipsName))
+                {
+                    return false;
+                }
+
+                if (!component[animationClipsName].IsArray())
+                {
+                    printf("Error: Animation Clips is not an array.\n");
+                    return false;
+                }
+                
+                uint32 numClips = component[animationClipsName].Size();
+                out.write(reinterpret_cast<const char*>(&numClips), sizeof(numClips));
+                
+                printf("Parsing %i animation clips.\n", numClips);
+                
+                for (const rapidjson::Value& animationClip : component[animationClipsName].GetArray())
+                {
+                    const char* clipName = "Name";
+                    if (!sValidateJsonValueMember(animationClip, clipName))
+                    {
+                        return false;
+                    }
+                    std::string clipNameStr = animationClip[clipName].GetString();
+                    uint32 clipNameLength = (uint32)clipNameStr.length();
+                    out.write(reinterpret_cast<const char*>(&clipNameLength), sizeof(clipNameLength));
+                    out.write(reinterpret_cast<const char*>(clipNameStr.data()), clipNameLength);
+                
+                    const char* fpsName = "FPS";
+                    if (!sValidateJsonValueMember(animationClip, fpsName))
+                    {
+                        return false;
+                    }
+                    uint32 fps = animationClip[fpsName].GetUint();
+                    out.write(reinterpret_cast<const char*>(&fps), sizeof(fps));
+                
+                    const char* framesName = "Frames";
+                    if (!sValidateJsonValueMember(animationClip, framesName))
+                    {
+                        return false;
+                    }
+                    uint32 frames = animationClip[framesName].GetUint();
+                    out.write(reinterpret_cast<const char*>(&frames), sizeof(frames));
+                
+                    const char* loopName = "Loop";
+                    if (!sValidateJsonValueMember(animationClip, loopName))
+                    {
+                        return false;
+                    }
+                    bool loop = animationClip[loopName].GetBool();
+                    out.write(reinterpret_cast<const char*>(&loop), sizeof(loop));
+                }
+
+                printf("Successfully parsed Sprite Animator component.\n");
+            }
             else if (type == "Camera")
             {
                 eComponentId cameraId = eComponentId::COMPONENT_CAMERA;

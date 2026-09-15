@@ -5,8 +5,20 @@
 		{
 			"Type": "Sprite",
 			"Material": "Material/TestTileSetMaterial",
-			"PixelsPerUnit": 100,
+			"PixelsPerUnit": 50,
 			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
+		},
+		{
+			"Type": "SpriteAnimator",
+			"AnimationClips": 
+			[
+				{
+					"Name": "Idle",
+					"FPS": 12,
+					"Frames": 5,
+					"Loop": true
+				}
+	    ]
 		},
 		{
 			"Type": "Movement",

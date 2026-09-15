@@ -1,6 +1,7 @@
 #include "NoodlePch.h"
 #include "ActorFactory.h"
 #include "Components/Sprite.h"
+#include "Components/SpriteAnimator.h"
 #include "Components/Transform.h"
 #include "Components/Camera.h"
 #include "Components/Movement.h"
@@ -19,6 +20,11 @@ static ActorComponent* sCreateSpriteComponent()
 	return N_NEW Sprite;
 }
 
+static ActorComponent* sCreateSpriteAnimatorComponent()
+{
+	return N_NEW SpriteAnimator;
+}
+
 static ActorComponent* sCreateCameraComponent()
 {
 	return N_NEW Camera;
@@ -34,6 +40,7 @@ ActorFactory::ActorFactory()
 {
 	m_ActorComponentCreators[eComponentId::COMPONENT_TRANSFORM] = sCreateTransformComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_SPRITE] = sCreateSpriteComponent;
+	m_ActorComponentCreators[eComponentId::COMPONENT_SPRITE_ANIMATOR] = sCreateSpriteAnimatorComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_CAMERA] = sCreateCameraComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_MOVEMENT] = sCreateMovementComponent;
 }

@@ -87,6 +87,9 @@
     <ClCompile Include="Source\Actor\Components\Movement.cpp">
       <Filter>Actor\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Components\SpriteAnimator.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -193,6 +196,12 @@
       <Filter>Actor\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Actor\Components\Movement.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\SpriteAnimatorInterface.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\SpriteAnimator.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>

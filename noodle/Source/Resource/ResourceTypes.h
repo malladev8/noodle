@@ -111,3 +111,11 @@ struct SpriteConstants
 	vec2 uvMin;
 	vec2 uvMax;
 };
+
+struct SpriteAnimationClip
+{
+	std::string name = "";
+	uint32 fps = 0;
+	uint32 frames = 0;
+	bool loop = false;
+};
