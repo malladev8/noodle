@@ -6,6 +6,7 @@
 #include "Rendering/IRenderer.h"
 #include "NoodleEngine.h"
 #include "Actor/Scene.h"
+#include "Actor/Components/Camera.h"
 #include "Controllers/PlayerController.h"
 
 RedAngelApp::RedAngelApp()
@@ -41,6 +42,12 @@ void RedAngelApp::Initialize()
 
 	// Create Controllers
 	std::vector<PlayerController*> playerControllers = scene->CreateControllers<PlayerController>("Player");
+
+	// Have Camera Follow Player
+	N_ASSERT(playerControllers.size() > 0, "Failed to create player controller.");
+	const std::vector<Camera*>& cameras = scene->GetCameras();
+	N_ASSERT(cameras.size() > 0, "No cameras in scene.");
+	cameras.back()->GetOwner()->SetParent(playerControllers.back()->GetActor());
 }
 
 void RedAngelApp::BeginFrame()

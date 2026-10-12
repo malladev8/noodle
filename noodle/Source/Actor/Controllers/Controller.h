@@ -8,7 +8,7 @@ public:
 	virtual void Update(float deltaSeconds) = 0;
 	void Possess(Actor* actor);
 	void UnPossess();
-	Actor* GetActor() const { return m_PossessedActor; }
+	Actor* const GetActor() const { return m_PossessedActor; }
 
 protected:
 	Actor* m_PossessedActor = nullptr;

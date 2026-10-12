@@ -17,6 +17,7 @@ public:
 	void Update(float deltaSeconds);
 	void SubmitRenderCommands(IRenderer& IRenderer) const;
 	void Render(IRenderer& IRenderer, const Window& window) const;
+	const std::vector<Camera*>& GetCameras() const { return m_Cameras; }
 
 	template<class ControllerType>
 	std::vector<ControllerType*> CreateControllers(const std::string& controllerType)

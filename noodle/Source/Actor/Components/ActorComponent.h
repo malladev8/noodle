@@ -17,6 +17,7 @@ public:
 	virtual void Update(float deltaSeconds) {}
 	virtual void SubmitRenderCommands(IRenderer& IRenderer) const {}
 	virtual eComponentId GetComponentId() const = 0;
+	Actor* const GetOwner() const { return m_Owner; }
 
 protected:
 	Actor* m_Owner = nullptr;
