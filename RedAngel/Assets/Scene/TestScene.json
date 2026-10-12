@@ -3,8 +3,9 @@
   "Actors": [
     {
       "Id": 0,
-      "Prefab": "Actor/TestActor",
-      "Position": [ 5.0, 0.0, 0.0 ],
+      "Prefab": "Actor/PlayerActor",
+      "Controller": "Player",
+      "Position": [ 0.0, 0.0, 0.0 ],
       "Rotation": [ 0.0, 0.0, 0.0 ],
       "Scale": [ 1.0, 1.0, 1.0 ]
     },
@@ -17,9 +18,8 @@
     },
     {
       "Id": 2,
-      "Prefab": "Actor/TestActor_1",
-      "Controller": "Player",
-      "Position": [ 0.0, 0.0, 0.0 ],
+      "Prefab": "Actor/TreeActor",
+      "Position": [ 5.0, 0.0, 0.0 ],
       "Rotation": [ 0.0, 0.0, 0.0 ],
       "Scale": [ 1.0, 1.0, 1.0 ]
     }

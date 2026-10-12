@@ -1,5 +1,5 @@
 {
-  "Name": "TestTileSetMaterial",
+  "Name": "TestIdleAnimMaterial",
   "Shader": "Shader/SpriteShader",
   "DiffuseTexture": "Texture/craftpix/Musketeer/Idle",
 

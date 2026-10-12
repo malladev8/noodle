@@ -1,0 +1,12 @@
+{
+	"Name": "TreeActor",
+	"Components": 
+	[
+		{
+			"Type": "Sprite",
+			"Material": "Material/TestTreeMaterial",
+			"PixelsPerUnit": 100,
+			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
+		}
+	]
+}

@@ -1,10 +1,10 @@
 {
-	"Name": "TestActor_1",
+	"Name": "PlayerActor",
 	"Components": 
 	[
 		{
 			"Type": "Sprite",
-			"Material": "Material/TestTileSetMaterial",
+			"Material": "Material/TestIdleAnimMaterial",
 			"PixelsPerUnit": 50,
 			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
 		},

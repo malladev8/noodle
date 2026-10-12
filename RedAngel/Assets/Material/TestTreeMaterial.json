@@ -1,5 +1,5 @@
 {
-  "Name": "TestSpriteMaterial",
+  "Name": "TestTreeMaterial",
   "Shader": "Shader/SpriteShader",
   "DiffuseTexture": "Texture/craftpix/AutumnForest/Autumn_Forest_2D_Platformer_Tileset_Environment - Tree 01",
 
