@@ -1,0 +1,11 @@
+{
+  "Name": "AutumnForestMaterial",
+  "Shader": "Shader/SpriteShader",
+  "DiffuseTexture": "Texture/craftpix/AutumnForest/AutumnForestAtlas",
+
+  "SpriteSheet": 
+  {
+    "NumRows": 1,
+    "NumColumns": 1
+  }
+}

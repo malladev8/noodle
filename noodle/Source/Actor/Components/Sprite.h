@@ -15,6 +15,8 @@ public:
 protected:
 private:
 	std::shared_ptr<Material> m_Material = nullptr;
+	std::shared_ptr<TextureAtlas> m_Atlas = nullptr;
+	std::string m_RegionName = "";
 	vec4 m_Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 	vec4 m_UvRect{ 0.0f, 0.0f, 1.0f, 1.0f };
 	vec2 m_WorldSize{ 1.0f, 1.0f };

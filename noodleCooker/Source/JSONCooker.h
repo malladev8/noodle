@@ -7,6 +7,7 @@ enum class eJsonType
 	ACTOR,
 	MATERIAL,
 	SHADER,
+	ATLAS,
 	COUNT
 };
 

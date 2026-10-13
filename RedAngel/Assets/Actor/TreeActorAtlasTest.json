@@ -1,0 +1,14 @@
+{
+	"Name": "TreeActor",
+	"Components": 
+	[
+		{
+			"Type": "Sprite",
+			"Material": "Material/AutumnForestMaterial",
+			"Atlas": "Atlas/AutumnForestAtlas",
+			"Region": "Autumn_Forest_2D_Platformer_Tileset_Environment - Tree 02",
+			"PixelsPerUnit": 100,
+			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
+		}
+	]
+}

@@ -199,6 +199,23 @@ static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::D
     return true;
 }
 
+static bool sCookMaterial(const char* material, const char* applicationRoot, std::ofstream& out, const rapidjson::Value& component)
+{
+    std::string materialName = component[material].GetString();
+    std::string materialOutputPath = sGenerateOutputFilePath(applicationRoot, materialName.data());
+
+    // Write material path
+    path::WritePath(materialOutputPath, out);
+
+    // Cook Material
+    if (!ConvertJsonToBinary(eJsonType::MATERIAL, applicationRoot, materialName.data()))
+    {
+        return false;
+    }
+    printf("Successfully cooked %s Material.\n", materialName.data());
+    return true;
+}
+
 static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     if (jsonDoc.HasMember("Actors"))
@@ -331,24 +348,42 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 eComponentId spriteId = eComponentId::COMPONENT_SPRITE;
                 out.write(reinterpret_cast<const char*>(&spriteId), sizeof(eComponentId));
 
+                // Material
                 const char* material = "Material";
                 if (!sValidateJsonValueMember(component, material))
                 {
                     return false;
                 }
+                sCookMaterial(material, applicationRoot, out, component);
 
-                std::string materialName = component[material].GetString();
-                std::string materialOutputPath = sGenerateOutputFilePath(applicationRoot, materialName.data());
-
-                // Write material path
-                path::WritePath(materialOutputPath, out);
-
-                // Cook Material
-                if (!ConvertJsonToBinary(eJsonType::MATERIAL, applicationRoot, materialName.data()))
+                // Atlas
+                const char* atlas = "Atlas";
+                bool usingAtlas = component.HasMember(atlas);
+                out.write(reinterpret_cast<const char*>(&usingAtlas), sizeof(usingAtlas));
+                if (usingAtlas)
                 {
-                    return false;
+                    std::string atlasName = component[atlas].GetString();
+                    std::string atlasOutputPath = sGenerateOutputFilePath(applicationRoot, atlasName.data());
+
+                    // Write atlas path
+                    path::WritePath(atlasOutputPath, out);
+
+                    // Cook Atlas
+                    if (!ConvertJsonToBinary(eJsonType::ATLAS, applicationRoot, atlasName.data()))
+                    {
+                        return false;
+                    }
+                    printf("Successfully cooked %s Atlas.\n", atlasName.data());
+
+                    // TODO: Write Region Info
+                    const char* regionMemberName = "Region";
+                    if (!sValidateJsonValueMember(component, regionMemberName))
+                    {
+                        return false;
+                    }
+                    std::string region = component[regionMemberName].GetString();
+                    path::WritePath(region, out);
                 }
-                printf("Successfully cooked %s Material.\n", materialName.data());
 
                 // Pixels per unit
                 const char* ppuName = "PixelsPerUnit";
@@ -689,6 +724,69 @@ bool static sConvertShaderJsonToBinary(const char* applicationRoot, rapidjson::D
     return true;
 }
 
+bool static sConvertAtlasJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+{
+    const char* framesMemberName = "frames";
+    if (!sValidateJsonValueMember(jsonDoc, framesMemberName))
+    {
+        return false;
+    }
+
+    const rapidjson::Value& frames = jsonDoc[framesMemberName];
+
+    if (!frames.IsArray())
+    {
+        printf("Error: Atlas frames is not an array.\n");
+        return false;
+    }
+
+    uint32 numFrames = (uint32)frames.Size();
+    printf("Atlas has %i frames.\n", numFrames);
+    out.write(reinterpret_cast<const char*>(&numFrames), sizeof(numFrames));
+    for (const rapidjson::Value& frame : frames.GetArray())
+    {
+        // Write frame key
+        const char* frameMemberName = "filename";
+        if (!sValidateJsonValueMember(frame, frameMemberName))
+        {
+            return false;
+        }
+        std::string frameName = frame[frameMemberName].GetString();
+        path::WritePath(frameName, out);
+
+        // Write frame data - x, y, width, height
+        const char* frameDataMemberName = "frame";
+        if (!sValidateJsonValueMember(frame, frameDataMemberName))
+        {
+            return false;
+        }
+
+        const char* xName = "x";
+        const char* yName = "y";
+        const char* wName = "w";
+        const char* hName = "h";
+
+        if (!sValidateJsonValueMember(frame[frameDataMemberName], xName) ||
+            !sValidateJsonValueMember(frame[frameDataMemberName], yName) ||
+            !sValidateJsonValueMember(frame[frameDataMemberName], wName) ||
+            !sValidateJsonValueMember(frame[frameDataMemberName], hName))
+        {
+            return false;
+        }
+
+        uint32 x = frame[frameDataMemberName][xName].GetUint();
+        uint32 y = frame[frameDataMemberName][yName].GetUint();
+        uint32 w = frame[frameDataMemberName][wName].GetUint();
+        uint32 h = frame[frameDataMemberName][hName].GetUint();
+        out.write(reinterpret_cast<const char*>(&x), sizeof(x));
+        out.write(reinterpret_cast<const char*>(&y), sizeof(y));
+        out.write(reinterpret_cast<const char*>(&w), sizeof(w));
+        out.write(reinterpret_cast<const char*>(&h), sizeof(h));
+    }
+    printf("Successfully parsed Atlas.\n");
+    return true;
+}
+
 bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char* assetName)
 {
     AssetId assetId = sGenerateAssetId(assetName);
@@ -754,6 +852,11 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     case eJsonType::SHADER:
     {
         success = sConvertShaderJsonToBinary(applicationRoot, jsonDoc, out);
+        break;
+    }
+    case eJsonType::ATLAS:
+    {
+        success = sConvertAtlasJsonToBinary(applicationRoot, jsonDoc, out);
         break;
     }
     default:

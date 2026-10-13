@@ -2,6 +2,7 @@
 #include "Core/NoodleCore.h"
 #include "Math/NoodleMath.h"
 #include <vector>
+#include <unordered_map>
 #include <memory>
 
 using AssetId = uint64;
@@ -82,6 +83,19 @@ struct Material
 	std::shared_ptr<Shader> shader = nullptr;
 	std::shared_ptr<Texture> diffuseTexture = nullptr;
 	TextureLayout diffuseTextureLayout;
+};
+
+struct SpriteRegion
+{
+	uint32 x = 0;
+	uint32 y = 0;
+	uint32 width = 0;
+	uint32 height = 0;
+};
+
+struct TextureAtlas
+{
+	std::unordered_map<std::string, SpriteRegion> regions;
 };
 
 enum class eProjectionType

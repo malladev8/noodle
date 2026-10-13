@@ -109,6 +109,32 @@ std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
 	return nullptr;
 }
 
+std::shared_ptr<TextureAtlas> ResourceManager::LoadAtlas(std::ifstream& bin)
+{
+	AssetId assetId = ReadAssetId(bin);
+	if (!m_AtlasCache.contains(assetId) || m_AtlasCache[assetId].expired())
+	{
+		std::shared_ptr<TextureAtlas> atlas = std::make_shared<TextureAtlas>();
+		uint32 numRegions = 0;
+		bin.read(reinterpret_cast<char*>(&numRegions), sizeof(numRegions));
+		for (uint32 i = 0; i < numRegions; ++i)
+		{
+			std::string regionName = path::ReadFilePath(bin);
+			SpriteRegion regionData;
+			bin.read(reinterpret_cast<char*>(&regionData.x), sizeof(regionData.x));
+			bin.read(reinterpret_cast<char*>(&regionData.y), sizeof(regionData.y));
+			bin.read(reinterpret_cast<char*>(&regionData.width), sizeof(regionData.width));
+			bin.read(reinterpret_cast<char*>(&regionData.height), sizeof(regionData.height));
+			atlas->regions.insert({ regionName, regionData });
+		}
+		return atlas;
+	}
+	else
+	{
+		return m_AtlasCache[assetId].lock();
+	}
+}
+
 AssetId ResourceManager::ReadAssetId(std::ifstream& bin)
 {
 	AssetId assetId = 0;

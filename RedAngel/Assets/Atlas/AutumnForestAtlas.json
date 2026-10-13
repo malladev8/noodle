@@ -1,0 +1,620 @@
+{"frames": [
+
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Background - Layer 00",
+	"frame": {"x":1,"y":1,"w":1334,"h":750},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1334,"h":750},
+	"sourceSize": {"w":1334,"h":750}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Background - Layer 01",
+	"frame": {"x":1337,"y":1,"w":1304,"h":750},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":15,"y":0,"w":1304,"h":750},
+	"sourceSize": {"w":1335,"h":750}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Coin 01",
+	"frame": {"x":2519,"y":753,"w":110,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":9,"w":110,"h":110},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Coin 02",
+	"frame": {"x":903,"y":879,"w":102,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":13,"y":9,"w":102,"h":110},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Coin 03",
+	"frame": {"x":1306,"y":879,"w":72,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":28,"y":9,"w":72,"h":110},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Coin 04",
+	"frame": {"x":1744,"y":858,"w":36,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":46,"y":9,"w":36,"h":110},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Coin 05",
+	"frame": {"x":1670,"y":858,"w":72,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":28,"y":9,"w":72,"h":110},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Coin 06",
+	"frame": {"x":1007,"y":879,"w":102,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":13,"y":9,"w":102,"h":110},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Crystal",
+	"frame": {"x":3729,"y":622,"w":110,"h":112},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":8,"w":110,"h":112},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Flash Star",
+	"frame": {"x":1111,"y":879,"w":103,"h":103},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":13,"y":13,"w":103,"h":103},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Golden Key",
+	"frame": {"x":1383,"y":860,"w":118,"h":64},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":0,"w":118,"h":64},
+	"sourceSize": {"w":128,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Life",
+	"frame": {"x":2277,"y":753,"w":116,"h":110},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":9,"w":116,"h":110},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Locked Golden Treasure Box",
+	"frame": {"x":3701,"y":832,"w":117,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":25,"w":117,"h":91},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Locked Silver Treasure Box",
+	"frame": {"x":3699,"y":925,"w":117,"h":91},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":25,"w":117,"h":91},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Mushroom ",
+	"frame": {"x":1586,"y":926,"w":82,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":23,"y":18,"w":82,"h":92},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Silver Key",
+	"frame": {"x":1503,"y":860,"w":118,"h":64},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":0,"w":118,"h":64},
+	"sourceSize": {"w":128,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Star",
+	"frame": {"x":791,"y":879,"w":110,"h":106},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":11,"w":110,"h":106},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Unlocked Golden Treasure Box",
+	"frame": {"x":1383,"y":753,"w":128,"h":105},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":11,"w":128,"h":105},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Collectable Object - Unlocked Silver Treasure Box",
+	"frame": {"x":1513,"y":753,"w":128,"h":105},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":11,"w":128,"h":105},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Box",
+	"frame": {"x":1380,"y":926,"w":106,"h":67},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":61,"w":106,"h":67},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Bush 01",
+	"frame": {"x":3537,"y":318,"w":128,"h":75},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":53,"w":128,"h":75},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Bush 02",
+	"frame": {"x":3262,"y":972,"w":128,"h":48},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":16,"w":128,"h":48},
+	"sourceSize": {"w":128,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Bush 03",
+	"frame": {"x":3491,"y":970,"w":126,"h":43},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":21,"w":126,"h":43},
+	"sourceSize": {"w":128,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Fence 01",
+	"frame": {"x":1773,"y":753,"w":128,"h":102},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":26,"w":128,"h":102},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Fence 02",
+	"frame": {"x":2155,"y":753,"w":120,"h":106},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":22,"w":120,"h":106},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Fire",
+	"frame": {"x":519,"y":883,"w":66,"h":126},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":31,"y":2,"w":66,"h":126},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - House",
+	"frame": {"x":2643,"y":1,"w":558,"h":382},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":22,"y":19,"w":558,"h":382},
+	"sourceSize": {"w":601,"h":401}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 01",
+	"frame": {"x":3701,"y":736,"w":124,"h":94},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":17,"w":124,"h":94},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 02",
+	"frame": {"x":2395,"y":753,"w":122,"h":100},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":14,"w":122,"h":100},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 03",
+	"frame": {"x":2513,"y":865,"w":112,"h":58},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":8,"y":3,"w":112,"h":58},
+	"sourceSize": {"w":128,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 04",
+	"frame": {"x":2395,"y":855,"w":116,"h":60},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":2,"w":116,"h":60},
+	"sourceSize": {"w":128,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 05",
+	"frame": {"x":1782,"y":913,"w":56,"h":52},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":6,"w":56,"h":52},
+	"sourceSize": {"w":64,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 06",
+	"frame": {"x":1670,"y":970,"w":58,"h":46},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":9,"w":58,"h":46},
+	"sourceSize": {"w":64,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 07",
+	"frame": {"x":1782,"y":857,"w":62,"h":54},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":5,"w":62,"h":54},
+	"sourceSize": {"w":64,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Rock 08",
+	"frame": {"x":1846,"y":857,"w":54,"h":52},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":6,"w":54,"h":52},
+	"sourceSize": {"w":64,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Signpost 01",
+	"frame": {"x":3599,"y":730,"w":100,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":10,"w":100,"h":118},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Signpost 02",
+	"frame": {"x":3491,"y":730,"w":106,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":10,"w":106,"h":118},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Signpost 03",
+	"frame": {"x":3491,"y":850,"w":104,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":12,"y":10,"w":104,"h":118},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Signpost 04",
+	"frame": {"x":3597,"y":850,"w":100,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":10,"w":100,"h":118},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Signpost 05",
+	"frame": {"x":587,"y":879,"w":100,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":10,"w":100,"h":118},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Signpost 06",
+	"frame": {"x":689,"y":879,"w":100,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":10,"w":100,"h":118},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Stone 01",
+	"frame": {"x":1903,"y":753,"w":124,"h":109},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":19,"w":124,"h":109},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Stone 02",
+	"frame": {"x":1488,"y":926,"w":96,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":16,"y":35,"w":96,"h":93},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Stone 03",
+	"frame": {"x":2029,"y":753,"w":124,"h":105},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":23,"w":124,"h":105},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Tree 01",
+	"frame": {"x":2643,"y":385,"w":320,"h":318},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":11,"y":22,"w":320,"h":318},
+	"sourceSize": {"w":341,"h":340}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Environment - Tree 02",
+	"frame": {"x":3203,"y":1,"w":332,"h":405},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":7,"y":5,"w":332,"h":405},
+	"sourceSize": {"w":346,"h":410}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Bonus",
+	"frame": {"x":775,"y":753,"w":120,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":2,"w":120,"h":124},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Brick 01",
+	"frame": {"x":897,"y":753,"w":120,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":2,"w":120,"h":124},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Brick 02",
+	"frame": {"x":1019,"y":753,"w":120,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":2,"w":120,"h":124},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Bridge Part 01",
+	"frame": {"x":3667,"y":318,"w":60,"h":24},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":20,"w":60,"h":24},
+	"sourceSize": {"w":64,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Bridge Part 02",
+	"frame": {"x":3667,"y":344,"w":60,"h":24},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":20,"w":60,"h":24},
+	"sourceSize": {"w":64,"h":64}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 01",
+	"frame": {"x":1,"y":753,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 02",
+	"frame": {"x":3262,"y":712,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 03",
+	"frame": {"x":1,"y":883,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 04",
+	"frame": {"x":261,"y":883,"w":127,"h":128},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":127,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 05",
+	"frame": {"x":131,"y":753,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 06",
+	"frame": {"x":3262,"y":842,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 07",
+	"frame": {"x":131,"y":883,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 08",
+	"frame": {"x":391,"y":753,"w":127,"h":128},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":127,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 09",
+	"frame": {"x":3392,"y":730,"w":97,"h":128},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":31,"y":0,"w":97,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 10",
+	"frame": {"x":390,"y":883,"w":127,"h":122},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":127,"h":122},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 11",
+	"frame": {"x":261,"y":753,"w":128,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 12",
+	"frame": {"x":520,"y":753,"w":127,"h":122},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":127,"h":122},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground 13",
+	"frame": {"x":3392,"y":860,"w":97,"h":128},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":128},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 01",
+	"frame": {"x":3409,"y":408,"w":318,"h":320},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":0,"w":318,"h":320},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 02",
+	"frame": {"x":3537,"y":1,"w":306,"h":315},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":9,"y":5,"w":306,"h":315},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 03",
+	"frame": {"x":2643,"y":705,"w":308,"h":304},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":6,"y":16,"w":308,"h":304},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 04",
+	"frame": {"x":2953,"y":712,"w":307,"h":304},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":16,"w":307,"h":304},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 05",
+	"frame": {"x":3729,"y":318,"w":114,"h":302},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":14,"y":18,"w":114,"h":302},
+	"sourceSize": {"w":128,"h":320}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 06",
+	"frame": {"x":2965,"y":385,"w":120,"h":303},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":17,"w":120,"h":303},
+	"sourceSize": {"w":128,"h":320}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 07",
+	"frame": {"x":3087,"y":408,"w":320,"h":302},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":18,"w":320,"h":302},
+	"sourceSize": {"w":320,"h":320}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ladder",
+	"frame": {"x":1216,"y":879,"w":88,"h":118},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":20,"y":5,"w":88,"h":118},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Spike",
+	"frame": {"x":1643,"y":753,"w":128,"h":103},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":25,"w":128,"h":103},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Stone",
+	"frame": {"x":1141,"y":753,"w":120,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":2,"w":120,"h":124},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Wooden Barrel",
+	"frame": {"x":1263,"y":753,"w":118,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":2,"w":118,"h":124},
+	"sourceSize": {"w":128,"h":128}
+},
+{
+	"filename": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Wooden Box",
+	"frame": {"x":649,"y":753,"w":124,"h":124},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":124,"h":124},
+	"sourceSize": {"w":129,"h":128}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "AutumnForestAtlas.png",
+	"format": "RGBA8888",
+	"size": {"w":3844,"h":1021},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:48e00c29d43d1e50ea61d64884685e8e:db0c06da9a58026cec449f181eb01b04:eea335e0c624cf47a4fee3cdf227644e$"
+}
+}
