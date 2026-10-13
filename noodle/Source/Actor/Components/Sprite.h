@@ -21,6 +21,8 @@ private:
 	vec4 m_UvRect{ 0.0f, 0.0f, 1.0f, 1.0f };
 	vec2 m_WorldSize{ 1.0f, 1.0f };
 	uint32 m_PixelsPerUnit = 100;
+	eSpriteLayer m_Layer = eSpriteLayer::BACKGROUND;
+	int32 m_Order = 0;
 
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

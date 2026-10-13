@@ -26,5 +26,5 @@ private:
 	ComPtr<ID3D12Resource> m_SpriteConstantBuffer = nullptr;
 	uint8* m_MappedSpriteConstants = nullptr;
 
-	std::queue<SpriteRenderCommand>m_SpriteCommands;
+	std::priority_queue<SpriteRenderCommand, std::vector<SpriteRenderCommand>, CompareSpriteLayer>m_SpriteCommands;
 };

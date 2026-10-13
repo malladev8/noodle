@@ -252,7 +252,7 @@ void D3D12SpriteRenderer::Flush()
 
 	while (!m_SpriteCommands.empty())
 	{
-		const SpriteRenderCommand& spriteCmd = m_SpriteCommands.front();
+		const SpriteRenderCommand& spriteCmd = m_SpriteCommands.top();
 		const uint32 offset = spriteIndex * alignedSize;
 		N_ASSERT(cmdList != nullptr, "cmdList cannot be null");
 

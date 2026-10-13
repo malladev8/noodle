@@ -6,7 +6,9 @@
 			"Type": "Sprite",
 			"Material": "Material/TestIdleAnimMaterial",
 			"PixelsPerUnit": 50,
-			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
+			"Color": [ 1.0, 1.0, 1.0, 1.0 ],
+			"Layer": "Character",
+			"Order": 0
 		},
 		{
 			"Type": "SpriteAnimator",

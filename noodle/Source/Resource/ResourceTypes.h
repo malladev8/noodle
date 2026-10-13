@@ -133,3 +133,12 @@ struct SpriteAnimationClip
 	uint32 frames = 0;
 	bool loop = false;
 };
+
+enum class eSpriteLayer : uint32
+{
+	BACKGROUND = 0,
+	WORLD,
+	CHARACTER,
+	FOREGROUND,
+	UI,
+};

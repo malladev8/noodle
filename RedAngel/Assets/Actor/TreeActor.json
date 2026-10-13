@@ -6,7 +6,9 @@
 			"Type": "Sprite",
 			"Material": "Material/TestTreeMaterial",
 			"PixelsPerUnit": 100,
-			"Color": [ 1.0, 1.0, 1.0, 1.0 ]
+			"Color": [ 1.0, 1.0, 1.0, 1.0 ],
+			"Layer": "World",
+			"Order": 0
 		}
 	]
 }

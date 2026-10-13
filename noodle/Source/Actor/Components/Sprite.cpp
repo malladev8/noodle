@@ -27,6 +27,9 @@ void Sprite::SubmitRenderCommands(IRenderer& renderer) const
 	cmd.uvMin.y = m_UvRect.y;
 	cmd.uvMax.x = m_UvRect.z;
 	cmd.uvMax.y = m_UvRect.w;
+	
+	cmd.layer = (uint32)m_Layer;
+	cmd.order = m_Order;
 
 	renderer.SubmitSprite(cmd);
 }
@@ -85,6 +88,10 @@ bool Sprite::Init(std::ifstream& bin, EngineContext& engineContext)
 	
 	// Color
 	bin.read(reinterpret_cast<char*>(&m_Color), sizeof(m_Color));
+
+	// Layering
+	bin.read(reinterpret_cast<char*>(&m_Layer), sizeof(m_Layer));
+	bin.read(reinterpret_cast<char*>(&m_Order), sizeof(m_Order));
 
 	return true;
 }

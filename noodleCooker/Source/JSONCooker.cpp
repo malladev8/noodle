@@ -29,6 +29,15 @@ static void sClearCookedCache()
     sCookedAssets.clear();
 }
 
+static std::unordered_map<std::string, eSpriteLayer> sSpriteLayerLookup
+{
+    {"Background", eSpriteLayer::BACKGROUND},
+    {"World", eSpriteLayer::WORLD},
+    {"Character", eSpriteLayer::CHARACTER},
+    {"Foreground", eSpriteLayer::FOREGROUND},
+    {"UI", eSpriteLayer::UI},
+};
+
 static AssetId sGenerateAssetId(const std::string& path)
 {
     std::filesystem::path normalized = path;
@@ -403,6 +412,25 @@ static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Do
                 vec4 color;
                 sReadVec4(component[colorName], color);
                 out.write(reinterpret_cast<const char*>(&color), sizeof(color));
+
+                // Layering
+                const char* layerMemberName = "Layer";
+                const char* orderMemberName = "Order";
+                if (!sValidateJsonValueMember(component, layerMemberName) ||
+                    !sValidateJsonValueMember(component, orderMemberName))
+                {
+                    return false;
+                }
+                std::string layerName = component[layerMemberName].GetString();
+                if (!sSpriteLayerLookup.contains(layerName))
+                {
+                    printf("Invalid sprite layer: %s.\n", layerName.data());
+                    return false;
+                }
+                eSpriteLayer spriteLayer = sSpriteLayerLookup[layerName];
+                int32 spriteOrder = component[orderMemberName].GetInt();
+                out.write(reinterpret_cast<const char*>(&spriteLayer), sizeof(spriteLayer));
+                out.write(reinterpret_cast<const char*>(&spriteOrder), sizeof(spriteOrder));
 
                 printf("Successfully parsed Sprite component.\n");
             }
