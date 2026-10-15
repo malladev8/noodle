@@ -2,6 +2,7 @@
 #include "Movement.h"
 #include "Transform.h"
 #include "Actor/Actor.h"
+#include "Resource/SerializationTypes.h"
 #include <fstream>
 
 const eComponentId MovementInterface::COMPONENT_ID = eComponentId::COMPONENT_MOVEMENT;
@@ -20,6 +21,8 @@ void Movement::Update(float32 deltaSeconds)
 
 bool Movement::Init(std::ifstream& bin, EngineContext& engineContext)
 {
-	bin.read(reinterpret_cast<char*>(&m_Speed), sizeof(float32));
+	MovementSerializationData movementData;
+	bin.read(reinterpret_cast<char*>(&movementData), sizeof(MovementSerializationData));
+	m_Speed = movementData.speed;
 	return true;
 }

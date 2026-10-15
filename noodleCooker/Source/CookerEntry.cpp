@@ -5,7 +5,7 @@
 
 static const std::unordered_map<std::string, eJsonType> sJsonTypeLookup
 {
-    {"actor", eJsonType::ACTOR},
+    //{"actor", eJsonType::ACTOR},
     {"scene", eJsonType::SCENE}
 };
 

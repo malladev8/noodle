@@ -4,7 +4,6 @@
 enum class eJsonType
 {
 	SCENE = 0,
-	ACTOR,
 	MATERIAL,
 	SHADER,
 	ATLAS,

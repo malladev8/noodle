@@ -53,10 +53,7 @@ bool SpriteAnimator::Init(std::ifstream& bin, EngineContext& engineContext)
 	for (uint32 i = 0; i < numClips; ++i)
 	{
 		SpriteAnimationClip clip;
-		uint32 clipNameLength = 0;
-		bin.read(reinterpret_cast<char*>(&clipNameLength), sizeof(clipNameLength));
-		clip.name.resize((size_t)clipNameLength);
-		bin.read(reinterpret_cast<char*>(clip.name.data()), clipNameLength);
+		clip.name = path::ReadFilePath(bin);
 
 		bin.read(reinterpret_cast<char*>(&clip.fps), sizeof(clip.fps));
 		bin.read(reinterpret_cast<char*>(&clip.frames), sizeof(clip.frames));

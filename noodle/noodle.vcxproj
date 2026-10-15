@@ -87,6 +87,7 @@
     <ClInclude Include="Source\Rendering\IRenderer.h" />
     <ClInclude Include="Source\Resource\ResourceManager.h" />
     <ClInclude Include="Source\Resource\ResourceTypes.h" />
+    <ClInclude Include="Source\Resource\SerializationTypes.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>

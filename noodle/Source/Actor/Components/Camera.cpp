@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "Actor/Actor.h"
 #include "Actor/Components/Transform.h"
+#include "Resource/SerializationTypes.h"
 #include <fstream>
 
 const eComponentId CameraInterface::COMPONENT_ID = eComponentId::COMPONENT_CAMERA;
@@ -41,10 +42,12 @@ CameraData Camera::BuildCameraData(float32 aspectRatio) const
 
 bool Camera::Init(std::ifstream& bin, EngineContext& engineContext)
 {
-	bin.read(reinterpret_cast<char*>(&m_ProjectionType), sizeof(eProjectionType));
-	bin.read(reinterpret_cast<char*>(&m_NearPlane), sizeof(float32));
-	bin.read(reinterpret_cast<char*>(&m_FarPlane), sizeof(float32));
-	bin.read(reinterpret_cast<char*>(&m_OrthoHeight), sizeof(float32));
-	bin.read(reinterpret_cast<char*>(&m_ClearColor), sizeof(vec4));
+	CameraSerializationData cameraData;
+	bin.read(reinterpret_cast<char*>(&cameraData), sizeof(CameraSerializationData));
+	m_ProjectionType = cameraData.projectionType;
+	m_NearPlane = cameraData.nearPlane;
+	m_FarPlane = cameraData.farPlane;
+	m_OrthoHeight = cameraData.orthoHeight;
+	m_ClearColor = cameraData.clearColor;
 	return true;
 }

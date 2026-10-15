@@ -204,5 +204,8 @@
     <ClInclude Include="Source\Actor\Components\SpriteAnimator.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Resource\SerializationTypes.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

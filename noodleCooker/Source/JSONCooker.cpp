@@ -2,9 +2,8 @@
 #include "ShaderCooker.h"
 #include "TextureCooker.h"
 #include "ThirdParty/rapidjson-master/include/rapidjson/document.h"
-#include "Math/NoodleMath.h"
 #include "Actor/Components/ComponentIds.h"
-#include "Resource/ResourceTypes.h"
+#include "Resource/SerializationTypes.h"
 
 #include <fstream>
 #include <sstream>
@@ -36,6 +35,15 @@ static std::unordered_map<std::string, eSpriteLayer> sSpriteLayerLookup
     {"Character", eSpriteLayer::CHARACTER},
     {"Foreground", eSpriteLayer::FOREGROUND},
     {"UI", eSpriteLayer::UI},
+};
+
+static std::unordered_map<std::string, eComponentId> sComponentTypeLookup
+{
+    {"Transform", eComponentId::COMPONENT_TRANSFORM},
+    {"Sprite", eComponentId::COMPONENT_SPRITE},
+    {"SpriteAnimator", eComponentId::COMPONENT_SPRITE_ANIMATOR},
+    {"Movement", eComponentId::COMPONENT_MOVEMENT},
+    {"Camera", eComponentId::COMPONENT_CAMERA},
 };
 
 static AssetId sGenerateAssetId(const std::string& path)
@@ -184,44 +192,343 @@ static std::string sGenerateOutputFilePath(const char* applicationRoot, const ch
     return applicationRoot + assetDirectory + assetName + BINARY_EXTENSION;
 }
 
-static bool sCookTransform(const rapidjson::Value& jsonValue, const rapidjson::Document& jsonDoc, std::ofstream& out)
+static bool sParseTransformComponent(const rapidjson::Value& component, TransformSerializationData& outData)
 {
-    eComponentId transformId = eComponentId::COMPONENT_TRANSFORM;
-    out.write(reinterpret_cast<const char*>(&transformId), sizeof(eComponentId));
-
     vec3 posVec, rotVec, scaleVec;
-    if (!sReadVec3(jsonValue["Position"], posVec) ||
-        !sReadVec3(jsonValue["Rotation"], rotVec) ||
-        !sReadVec3(jsonValue["Scale"], scaleVec))
+
+    if (component.HasMember("Position"))
     {
-        return false;
+        sReadVec3(component["Position"], posVec);
+        outData.position = posVec;
     }
 
-    out.write(reinterpret_cast<const char*>(&posVec), sizeof(vec3));
-    out.write(reinterpret_cast<const char*>(&scaleVec), sizeof(vec3));
+    if (component.HasMember("Scale"))
+    {
+        sReadVec3(component["Scale"], scaleVec);
+        outData.scale = scaleVec;
+    }
 
-    rotVec.x = DegToRad(rotVec.x);
-    rotVec.y = DegToRad(rotVec.y);
-    rotVec.z = DegToRad(rotVec.z);
-    quaternion rotation = quaternion::FromEuler(rotVec.x, rotVec.y, rotVec.z);
-    out.write(reinterpret_cast<const char*>(&rotation), sizeof(quaternion));
+    if (component.HasMember("Rotation"))
+    {
+        sReadVec3(component["Rotation"], rotVec);
+        rotVec.x = DegToRad(rotVec.x);
+        rotVec.y = DegToRad(rotVec.y);
+        rotVec.z = DegToRad(rotVec.z);
+        quaternion rotation = quaternion::FromEuler(rotVec.x, rotVec.y, rotVec.z);
+        outData.rotation = rotation;
+    }
+    
     return true;
 }
 
-static bool sCookMaterial(const char* material, const char* applicationRoot, std::ofstream& out, const rapidjson::Value& component)
+static bool sParseSpriteComponent(const rapidjson::Value& component, SpriteSerializationData& outData)
 {
-    std::string materialName = component[material].GetString();
-    std::string materialOutputPath = sGenerateOutputFilePath(applicationRoot, materialName.data());
+    // Material
+    const char* material = "Material";
+    if (component.HasMember(material))
+    {
+        std::string materialName = component[material].GetString();
+        outData.material = materialName;
+    }
 
-    // Write material path
-    path::WritePath(materialOutputPath, out);
+    // Atlas
+    const char* atlas = "Atlas";
+    bool usingAtlas = component.HasMember(atlas);
+    outData.usingAtlas = usingAtlas || outData.usingAtlas;
 
-    // Cook Material
-    if (!ConvertJsonToBinary(eJsonType::MATERIAL, applicationRoot, materialName.data()))
+    if (usingAtlas)
+    {
+        std::string atlasName = component[atlas].GetString();
+        outData.atlas = atlasName;
+
+        const char* regionMemberName = "Region";
+        if (component.HasMember(regionMemberName))
+        {
+            std::string region = component[regionMemberName].GetString();
+            outData.region = region;
+        }
+    }
+
+    // Pixels per unit
+    const char* ppuName = "PixelsPerUnit";
+    if (component.HasMember(ppuName))
+    {
+        uint32 ppu = component[ppuName].GetUint();
+        outData.pixlesPerUnit = ppu;
+    }
+
+    // Color
+    const char* colorName = "Color";
+    if (component.HasMember(colorName))
+    {
+        vec4 color;
+        sReadVec4(component[colorName], color);
+        outData.color = color;
+    }
+
+    // Layering
+    const char* layerMemberName = "Layer";
+    const char* orderMemberName = "Order";
+
+    if (component.HasMember(layerMemberName))
+    {
+        std::string layerName = component[layerMemberName].GetString();
+        eSpriteLayer spriteLayer = eSpriteLayer::BACKGROUND;
+        if (!sSpriteLayerLookup.contains(layerName))
+        {
+            printf("Invalid sprite layer: %s.\n", layerName.data());
+        }
+        else
+        {
+            spriteLayer = sSpriteLayerLookup[layerName];
+        }
+        outData.layer = spriteLayer;
+    }
+    
+    if (component.HasMember(orderMemberName))
+    {
+        int32 spriteOrder = component[orderMemberName].GetInt();
+        outData.order = spriteOrder;
+    }
+   
+    return true;
+}
+
+static bool sParseSpriteAnimatorComponent(const rapidjson::Value& component, SpriteAnimatorSerializationData& outData)
+{
+    const char* animationClipsName = "AnimationClips";
+    if (!sValidateJsonValueMember(component, animationClipsName))
     {
         return false;
     }
-    printf("Successfully cooked %s Material.\n", materialName.data());
+
+    if (!component[animationClipsName].IsArray())
+    {
+        printf("Error: Animation Clips is not an array.\n");
+        return false;
+    }
+
+    uint32 numClips = component[animationClipsName].Size();
+    outData.numClips += numClips;
+
+    printf("Parsing %i animation clips.\n", numClips);
+
+    for (const rapidjson::Value& animationClip : component[animationClipsName].GetArray())
+    {
+        SpriteAnimationClip animClipData;
+        const char* clipName = "Name";
+        if (!sValidateJsonValueMember(animationClip, clipName))
+        {
+            return false;
+        }
+        std::string clipNameStr = animationClip[clipName].GetString();
+        uint32 clipNameLength = (uint32)clipNameStr.length();
+        animClipData.name = clipNameStr;
+
+        const char* fpsName = "FPS";
+        if (!sValidateJsonValueMember(animationClip, fpsName))
+        {
+            return false;
+        }
+        uint32 fps = animationClip[fpsName].GetUint();
+        animClipData.fps = fps;
+
+        const char* framesName = "Frames";
+        if (!sValidateJsonValueMember(animationClip, framesName))
+        {
+            return false;
+        }
+        uint32 frames = animationClip[framesName].GetUint();
+        animClipData.frames = frames;
+
+        const char* loopName = "Loop";
+        if (!sValidateJsonValueMember(animationClip, loopName))
+        {
+            return false;
+        }
+        bool loop = animationClip[loopName].GetBool();
+        animClipData.loop = loop;
+
+        outData.animationClips.push_back(animClipData);
+    }
+    return true;
+}
+
+static bool sParseCameraComponent(const rapidjson::Value& component, CameraSerializationData& outData)
+{
+    const char* projection = "Projection";
+    if (component.HasMember(projection))
+    {
+        std::string projectionName = component[projection].GetString();
+        if (_strcmpi(projectionName.c_str(), "Orthographic") == 0)
+        {
+            eProjectionType projectionType = eProjectionType::ORTHOGRAPHIC;
+            outData.projectionType = projectionType;
+
+            const char* near = "NearPlane";
+            if (component.HasMember(near))
+            {
+                float32 nearPlane = component[near].GetFloat();
+                outData.nearPlane = nearPlane;
+            }
+
+            const char* far = "FarPlane";
+            if (component.HasMember(far))
+            {
+                float32 farPlane = component[far].GetFloat();
+                outData.farPlane = farPlane;
+            }
+
+            const char* ortho = "OrthoHeight";
+            if (component.HasMember(ortho))
+            {
+                float32 orthoHeight = component[ortho].GetFloat();
+                outData.orthoHeight = orthoHeight;
+            }
+
+            const char* clear = "ClearColor";
+            if (component.HasMember(clear))
+            {
+                vec4 clearColor;
+                sReadVec4(component[clear], clearColor);
+                outData.clearColor = clearColor;
+            }
+        }
+        else
+        {
+            printf("%s projection not yet supported.\n", projectionName.c_str());
+        }
+    }
+    
+    return true;
+}
+
+static bool sParseMovementComponent(const rapidjson::Value& component, MovementSerializationData& outData)
+{
+    const char* speedName = "Speed";
+    if (component.HasMember(speedName))
+    {
+        float32 speed = component[speedName].GetFloat();
+        outData.speed = speed;
+    }
+    return true;
+}
+
+static bool sParseComponents(const rapidjson::Value& components, std::vector<std::unique_ptr<ComponentSerializationData>>& componentData, uint8& numComponents)
+{
+    if (!components.IsArray())
+    {
+        printf("Error: Components is not an array.\n");
+        return false;
+    }
+
+    for (const rapidjson::Value& component : components.GetArray())
+    {
+        const char* typeStr = "Type";
+        if (!sValidateJsonValueMember(component, typeStr))
+        {
+            return false;
+        }
+
+        std::string type = component["Type"].GetString();
+        printf("Parsing %s component...\n", type.data());
+
+        eComponentId componentType = sComponentTypeLookup[type];
+
+        switch (componentType)
+        {
+        default:
+        {
+            printf("Unsupported Component Type: %s\n", type.data());
+            break;
+        }
+        case eComponentId::COMPONENT_TRANSFORM:
+        {
+            TransformSerializationData* transformData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                transformData = N_NEW TransformSerializationData();
+                componentData[(uint32)componentType].reset(transformData);
+                ++numComponents;
+            }
+            else
+            {
+                transformData = static_cast<TransformSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            transformData->componentId = componentType;
+            sParseTransformComponent(component, *transformData);
+            break;
+        }
+        case eComponentId::COMPONENT_SPRITE:
+        {
+            SpriteSerializationData* spriteData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                spriteData = N_NEW SpriteSerializationData();
+                componentData[(uint32)componentType].reset(spriteData);
+                ++numComponents;
+            }
+            else
+            {
+                spriteData = static_cast<SpriteSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            spriteData->componentId = componentType;
+            sParseSpriteComponent(component, *spriteData);
+            break;
+        }
+        case eComponentId::COMPONENT_SPRITE_ANIMATOR:
+        {
+            SpriteAnimatorSerializationData* spriteAnimatorData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                spriteAnimatorData = N_NEW SpriteAnimatorSerializationData();
+                componentData[(uint32)componentType].reset(spriteAnimatorData);
+                ++numComponents;
+            }
+            else
+            {
+                spriteAnimatorData = static_cast<SpriteAnimatorSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            spriteAnimatorData->componentId = componentType;
+            sParseSpriteAnimatorComponent(component, *spriteAnimatorData);
+            break;
+        }
+        case eComponentId::COMPONENT_CAMERA:
+        {
+            CameraSerializationData* cameraData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                cameraData = N_NEW CameraSerializationData();
+                componentData[(uint32)componentType].reset(cameraData);
+                ++numComponents;
+            }
+            else
+            {
+                cameraData = static_cast<CameraSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            cameraData->componentId = componentType;
+            sParseCameraComponent(component, *cameraData);
+            break;
+        }
+        case eComponentId::COMPONENT_MOVEMENT:
+        {
+            MovementSerializationData* movementData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                movementData = N_NEW MovementSerializationData();
+                componentData[(uint32)componentType].reset(movementData);
+                ++numComponents;
+            }
+            else
+            {
+                movementData = static_cast<MovementSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            movementData->componentId = componentType;
+            sParseMovementComponent(component, *movementData);
+            break;
+        }
+        }
+    }
     return true;
 }
 
@@ -238,23 +545,11 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
         }
 
         uint32 numActors = (uint32)actors.Size();
-        printf("Scene has %i components.\n", numActors);
+        printf("Scene has %i actors.\n", numActors);
         out.write(reinterpret_cast<const char*>(&numActors), sizeof(uint32));
 
         for (const rapidjson::Value& actor : actors.GetArray())
         {
-            // Prefab
-            if (!actor.HasMember("Prefab"))
-            {
-                printf("Actor missing Prefab member.\n");
-            }
-
-            std::string prefabName = actor["Prefab"].GetString();
-            std::string actorOutputPath = sGenerateOutputFilePath(applicationRoot, prefabName.data());
-
-            // Actor Prefab Path
-            path::WritePath(actorOutputPath, out);
-
             // ID
             if (!actor.HasMember("Id"))
             {
@@ -262,6 +557,7 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
             }
             uint32 actorId = actor["Id"].GetUint();
             out.write(reinterpret_cast<const char*>(&actorId), sizeof(actorId));
+            printf("Parsing Actor ID: %i.\n", actorId);
 
             // Parent ID
             uint32 parentId = UINT_MAX;
@@ -295,279 +591,150 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
                 out.write(controllerType.data(), controllerTypeLength);
             }
 
-            // Cook Actor Prefab
-            if (!ConvertJsonToBinary(eJsonType::ACTOR, applicationRoot, prefabName.data()))
-            {
-                return false;
-            }
-            printf("Successfully cooked %s Actor Prefab.\n", prefabName.data());
+            // Prepare to parse components
+            std::vector<std::unique_ptr<ComponentSerializationData>> componentData;
+            componentData.resize((uint32)eComponentId::COUNT);
+            uint8 numComponents = 0;
 
-            // Actor Scene Transform
-            if (!sCookTransform(actor, jsonDoc, out))
+            // Parse Actor prefab data into cooked struct
+            if (actor.HasMember("Prefab"))
             {
-                printf("Failed to parse Transform component for %s\n", prefabName.c_str());
-                return false;
+                std::string prefabName = actor["Prefab"].GetString();
+                printf("Parsing Actor Prefab: %s.\n", prefabName.data());
+
+                // Parse the actor prefab json
+                std::string inputPath = sGenerateInputFilePath(applicationRoot, prefabName.data(), ".json");
+                std::string jsonStr;
+                if (!sLoadFileToString(inputPath, jsonStr))
+                {
+                    printf("Failed to load json file to string from %s\n", inputPath.data());
+                    return false;
+                }
+                printf("Successfully loaded json file string from %s\n", inputPath.data());
+
+                rapidjson::Document actorJsonDoc;
+                actorJsonDoc.Parse(jsonStr.data());
+
+                if (actorJsonDoc.HasParseError())
+                {
+                    sPrintParseError(actorJsonDoc.GetParseError());
+                    return false;
+                }
+
+                // Parse prefab components
+                if (actorJsonDoc.HasMember("Components"))
+                {
+                    const rapidjson::Value& components = actorJsonDoc["Components"];
+                    sParseComponents(components, componentData, numComponents);
+                }
             }
-            printf("Successfully parsed Transform component for %s.\n", prefabName.c_str());
+
+            // Overwirte prefab component data with scene instance data
+            if (actor.HasMember("Components"))
+            {
+                const rapidjson::Value& components = actor["Components"];
+                sParseComponents(components, componentData, numComponents);
+            }
+
+            // Serialize components
+            out.write(reinterpret_cast<const char*>(&numComponents), sizeof(numComponents));
+            printf("Serializing %i Components.\n", numComponents);
+
+            for (std::unique_ptr<ComponentSerializationData>& data : componentData)
+            {
+                if (data.get() != nullptr)
+                {
+                    eComponentId componentId = data->componentId;
+                    out.write(reinterpret_cast<const char*>(&componentId), sizeof(componentId));
+
+                    printf("Serializing Component ID: %i.\n", (uint32)componentId);
+
+                    switch (componentId)
+                    {
+                    case eComponentId::COMPONENT_TRANSFORM:
+                    {
+                        out.write(reinterpret_cast<const char*>(data.get()), sizeof(TransformSerializationData));
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    case eComponentId::COMPONENT_SPRITE:
+                    {
+                        SpriteSerializationData* spriteData = static_cast<SpriteSerializationData*>(data.get());
+
+                        // Cook material
+                        std::string materialOutputPath = sGenerateOutputFilePath(applicationRoot, spriteData->material.data());
+                        path::WritePath(materialOutputPath, out);
+                        if (!ConvertJsonToBinary(eJsonType::MATERIAL, applicationRoot, spriteData->material.data()))
+                        {
+                            printf("Failed to serialize Material for Sprite Component: %s.\n", spriteData->material.data());
+                            return false;
+                        }
+                        printf("Successfully serialized Material for Sprite Component: %s.\n", spriteData->material.data());
+
+                        // Atlas
+                        out.write(reinterpret_cast<const char*>(&spriteData->usingAtlas), sizeof(spriteData->usingAtlas));
+                        printf("Serializing Atlas: %s.\n", spriteData->usingAtlas ? "True" : "False");
+                        if (spriteData->usingAtlas)
+                        {
+                            // Cook Atlas
+                            std::string atlasOutputPath = sGenerateOutputFilePath(applicationRoot, spriteData->atlas.data());
+                            path::WritePath(atlasOutputPath, out);
+                            if (!ConvertJsonToBinary(eJsonType::ATLAS, applicationRoot, spriteData->atlas.data()))
+                            {
+                                printf("Failed to serialize Atlas for Sprite Component: %s.\n", spriteData->atlas.data());
+                                return false;
+                            }
+                            printf("Successfully serialized Atlas for Sprite Component: %s.\n", spriteData->atlas.data());
+
+                            // Region
+                            path::WritePath(spriteData->region, out);
+                        }
+
+                        out.write(reinterpret_cast<const char*>(&spriteData->pixlesPerUnit), sizeof(spriteData->pixlesPerUnit));
+                        out.write(reinterpret_cast<const char*>(&spriteData->color), sizeof(spriteData->color));
+                        out.write(reinterpret_cast<const char*>(&spriteData->layer), sizeof(spriteData->layer));
+                        out.write(reinterpret_cast<const char*>(&spriteData->order), sizeof(spriteData->order));
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    case eComponentId::COMPONENT_SPRITE_ANIMATOR:
+                    {
+                        SpriteAnimatorSerializationData* spriteAnimatorData = static_cast<SpriteAnimatorSerializationData*>(data.get());
+                        out.write(reinterpret_cast<const char*>(&spriteAnimatorData->numClips), sizeof(spriteAnimatorData->numClips));
+                        for (const SpriteAnimationClip& animClip : spriteAnimatorData->animationClips)
+                        {
+                            path::WritePath(animClip.name, out);
+                            out.write(reinterpret_cast<const char*>(&animClip.fps), sizeof(animClip.fps));
+                            out.write(reinterpret_cast<const char*>(&animClip.frames), sizeof(animClip.frames));
+                            out.write(reinterpret_cast<const char*>(&animClip.loop), sizeof(animClip.loop));
+                        }
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    case eComponentId::COMPONENT_CAMERA:
+                    {
+                        out.write(reinterpret_cast<const char*>(data.get()), sizeof(CameraSerializationData));
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    case eComponentId::COMPONENT_MOVEMENT:
+                    {
+                        out.write(reinterpret_cast<const char*>(data.get()), sizeof(MovementSerializationData));
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    default:
+                    {
+                        printf("Cannot serialiaze unsupported component type: %i\n", (uint32)componentId);
+                        break;
+                    }
+                    }
+                }
+            }
+
         }
     }
     return true;
-}
-
-static bool sConvertActorJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
-{
-    if (jsonDoc.HasMember("Components"))
-    {
-        const rapidjson::Value& components = jsonDoc["Components"];
-
-        if (!components.IsArray())
-        {
-            printf("Error: Components is not an array.\n");
-            return false;
-        }
-
-        uint8 numComponents = (uint8)components.Size();
-        printf("Actor has %i components.\n", numComponents);
-        out.write(reinterpret_cast<const char*>(&numComponents), sizeof(uint8));
-
-        for (const rapidjson::Value& component : components.GetArray())
-        {
-            const char* typeStr = "Type";
-            if (!sValidateJsonValueMember(component, typeStr))
-            {
-                return false;
-            }
-
-            std::string type = component["Type"].GetString();
-            printf("Parsing %s component...\n", type.data());
-
-            // Note, Transform components are typically defined in the scene json, relative to the scene's origin
-            if (type == "Transform")
-            {
-                printf("WARNING: Parsing Transform component directly from Actor json. Make sure this is intentional.\n");
-                if (!sCookTransform(component, jsonDoc, out))
-                {
-                    printf("Failed to parse Transform component.\n");
-                    return false;
-                }
-                printf("Successfully parsed Transform component.\n");
-            }
-            else if (type == "Sprite")
-            {
-                eComponentId spriteId = eComponentId::COMPONENT_SPRITE;
-                out.write(reinterpret_cast<const char*>(&spriteId), sizeof(eComponentId));
-
-                // Material
-                const char* material = "Material";
-                if (!sValidateJsonValueMember(component, material))
-                {
-                    return false;
-                }
-                sCookMaterial(material, applicationRoot, out, component);
-
-                // Atlas
-                const char* atlas = "Atlas";
-                bool usingAtlas = component.HasMember(atlas);
-                out.write(reinterpret_cast<const char*>(&usingAtlas), sizeof(usingAtlas));
-                if (usingAtlas)
-                {
-                    std::string atlasName = component[atlas].GetString();
-                    std::string atlasOutputPath = sGenerateOutputFilePath(applicationRoot, atlasName.data());
-
-                    // Write atlas path
-                    path::WritePath(atlasOutputPath, out);
-
-                    // Cook Atlas
-                    if (!ConvertJsonToBinary(eJsonType::ATLAS, applicationRoot, atlasName.data()))
-                    {
-                        return false;
-                    }
-                    printf("Successfully cooked %s Atlas.\n", atlasName.data());
-
-                    // TODO: Write Region Info
-                    const char* regionMemberName = "Region";
-                    if (!sValidateJsonValueMember(component, regionMemberName))
-                    {
-                        return false;
-                    }
-                    std::string region = component[regionMemberName].GetString();
-                    path::WritePath(region, out);
-                }
-
-                // Pixels per unit
-                const char* ppuName = "PixelsPerUnit";
-                if (!sValidateJsonValueMember(component, ppuName))
-                {
-                    return false;
-                }
-                uint32 ppu = component[ppuName].GetUint();
-                out.write(reinterpret_cast<const char*>(&ppu), sizeof(ppu));
-
-                // Color
-                const char* colorName = "Color";
-                if (!sValidateJsonValueMember(component, colorName))
-                {
-                    return false;
-                }
-                vec4 color;
-                sReadVec4(component[colorName], color);
-                out.write(reinterpret_cast<const char*>(&color), sizeof(color));
-
-                // Layering
-                const char* layerMemberName = "Layer";
-                const char* orderMemberName = "Order";
-                if (!sValidateJsonValueMember(component, layerMemberName) ||
-                    !sValidateJsonValueMember(component, orderMemberName))
-                {
-                    return false;
-                }
-                std::string layerName = component[layerMemberName].GetString();
-                if (!sSpriteLayerLookup.contains(layerName))
-                {
-                    printf("Invalid sprite layer: %s.\n", layerName.data());
-                    return false;
-                }
-                eSpriteLayer spriteLayer = sSpriteLayerLookup[layerName];
-                int32 spriteOrder = component[orderMemberName].GetInt();
-                out.write(reinterpret_cast<const char*>(&spriteLayer), sizeof(spriteLayer));
-                out.write(reinterpret_cast<const char*>(&spriteOrder), sizeof(spriteOrder));
-
-                printf("Successfully parsed Sprite component.\n");
-            }
-            else if (type == "SpriteAnimator")
-            {
-                eComponentId componentId = eComponentId::COMPONENT_SPRITE_ANIMATOR;
-                out.write(reinterpret_cast<const char*>(&componentId), sizeof(eComponentId));
-
-                const char* animationClipsName = "AnimationClips";
-                if (!sValidateJsonValueMember(component, animationClipsName))
-                {
-                    return false;
-                }
-
-                if (!component[animationClipsName].IsArray())
-                {
-                    printf("Error: Animation Clips is not an array.\n");
-                    return false;
-                }
-                
-                uint32 numClips = component[animationClipsName].Size();
-                out.write(reinterpret_cast<const char*>(&numClips), sizeof(numClips));
-                
-                printf("Parsing %i animation clips.\n", numClips);
-                
-                for (const rapidjson::Value& animationClip : component[animationClipsName].GetArray())
-                {
-                    const char* clipName = "Name";
-                    if (!sValidateJsonValueMember(animationClip, clipName))
-                    {
-                        return false;
-                    }
-                    std::string clipNameStr = animationClip[clipName].GetString();
-                    uint32 clipNameLength = (uint32)clipNameStr.length();
-                    out.write(reinterpret_cast<const char*>(&clipNameLength), sizeof(clipNameLength));
-                    out.write(reinterpret_cast<const char*>(clipNameStr.data()), clipNameLength);
-                
-                    const char* fpsName = "FPS";
-                    if (!sValidateJsonValueMember(animationClip, fpsName))
-                    {
-                        return false;
-                    }
-                    uint32 fps = animationClip[fpsName].GetUint();
-                    out.write(reinterpret_cast<const char*>(&fps), sizeof(fps));
-                
-                    const char* framesName = "Frames";
-                    if (!sValidateJsonValueMember(animationClip, framesName))
-                    {
-                        return false;
-                    }
-                    uint32 frames = animationClip[framesName].GetUint();
-                    out.write(reinterpret_cast<const char*>(&frames), sizeof(frames));
-                
-                    const char* loopName = "Loop";
-                    if (!sValidateJsonValueMember(animationClip, loopName))
-                    {
-                        return false;
-                    }
-                    bool loop = animationClip[loopName].GetBool();
-                    out.write(reinterpret_cast<const char*>(&loop), sizeof(loop));
-                }
-
-                printf("Successfully parsed Sprite Animator component.\n");
-            }
-            else if (type == "Camera")
-            {
-                eComponentId cameraId = eComponentId::COMPONENT_CAMERA;
-                out.write(reinterpret_cast<const char*>(&cameraId), sizeof(cameraId));
-
-                const char* projection = "Projection";
-                if (!sValidateJsonValueMember(component, projection))
-                {
-                    return false;
-                }
-
-                std::string projectionName = component[projection].GetString();
-                if (_strcmpi(projectionName.c_str(), "Orthographic") == 0)
-                {
-                    eProjectionType projectionType = eProjectionType::ORTHOGRAPHIC;
-                    out.write(reinterpret_cast<const char*>(&projectionType), sizeof(projectionType));
-
-                    const char* near = "NearPlane";
-                    if (!sValidateJsonValueMember(component, near))
-                    {
-                        return false;
-                    }
-                    float32 nearPlane = component[near].GetFloat();
-                    out.write(reinterpret_cast<const char*>(&nearPlane), sizeof(float32));
-
-                    const char* far = "FarPlane";
-                    if (!sValidateJsonValueMember(component, far))
-                    {
-                        return false;
-                    }
-                    float32 farPlane = component[far].GetFloat();
-                    out.write(reinterpret_cast<const char*>(&farPlane), sizeof(float32));
-
-                    const char* ortho = "OrthoHeight";
-                    if (!sValidateJsonValueMember(component, ortho))
-                    {
-                        return false;
-                    }
-                    float32 orthoHeight = component[ortho].GetFloat();
-                    out.write(reinterpret_cast<const char*>(&orthoHeight), sizeof(float32));
-
-                    const char* clear = "ClearColor";
-                    if (!sValidateJsonValueMember(component, clear))
-                    {
-                        return false;
-                    }
-                    vec4 clearColor;
-                    sReadVec4(component[clear], clearColor);
-                    out.write(reinterpret_cast<const char*>(&clearColor), sizeof(vec4));
-                }
-                else
-                {
-                    printf("%s projection not yet supported.\n", projectionName.c_str());
-                    return false;
-                }
-                printf("Successfully parsed Camera component.\n");
-            }
-            else if (type == "Movement")
-            {
-                eComponentId movementComponentId = eComponentId::COMPONENT_MOVEMENT;
-                out.write(reinterpret_cast<const char*>(&movementComponentId), sizeof(movementComponentId));
-                const char* speedName = "Speed";
-                if (!sValidateJsonValueMember(component, speedName))
-                {
-                    return false;
-                }
-                float32 speed = component[speedName].GetFloat();
-                out.write(reinterpret_cast<const char*>(&speed), sizeof(speed));
-                printf("Successfully parsed Movement component.\n");
-            }
-        }
-    }
-	return true;
 }
 
 bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
@@ -654,6 +821,7 @@ bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson:
     out.write(reinterpret_cast<const char*>(&numRows), sizeof(numRows));
     out.write(reinterpret_cast<const char*>(&numColumns), sizeof(numColumns));
 
+    printf("Successfully Serialized Material Json.\n");
     return true;
 }
 
@@ -865,11 +1033,6 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     {
         success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out);
         sClearCookedCache();
-        break;
-    }
-    case eJsonType::ACTOR:
-    {
-        success = sConvertActorJsonToBinary(applicationRoot, jsonDoc, out);
         break;
     }
     case eJsonType::MATERIAL:

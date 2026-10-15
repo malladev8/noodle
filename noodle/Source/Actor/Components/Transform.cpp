@@ -2,6 +2,7 @@
 #include "Transform.h"
 #include "Actor/Actor.h"
 #include "EngineContext.h"
+#include "Resource/SerializationTypes.h"
 #include <fstream>
 
 const eComponentId TransformInterface::COMPONENT_ID = eComponentId::COMPONENT_TRANSFORM;
@@ -29,8 +30,10 @@ void Transform::Translate(const vec3& translation)
 
 bool Transform::Init(std::ifstream& bin, EngineContext& engineContext)
 {
-    bin.read(reinterpret_cast<char*>(&m_Position), sizeof(vec3));
-    bin.read(reinterpret_cast<char*>(&m_Scale), sizeof(vec3));
-    bin.read(reinterpret_cast<char*>(&m_Rotation), sizeof(quaternion));
+    TransformSerializationData transformData;
+    bin.read(reinterpret_cast<char*>(&transformData), sizeof(transformData));
+    m_Position = transformData.position;
+    m_Scale = transformData.scale;
+    m_Rotation = transformData.rotation;
     return true;
 }

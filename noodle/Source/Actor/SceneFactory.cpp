@@ -31,10 +31,10 @@ Scene* SceneFactory::CreateScene(const char* binPath)
 	ActorFactory actorFactory;
 	for (uint32 i = 0; i < numActors; ++i)
 	{
-		std::string actorPrefabPath = path::ReadFilePath(bin);
-		Actor* actor = actorFactory.CreateActor(actorPrefabPath.data(), &bin);
+		Actor* actor = actorFactory.CreateActor(bin);
 		scene->AddActor(actor);
 	}
+	bin.close();
 
 	// Set up parent actor relationships
 	for (uint32 i = 0; i < numActors; ++i)
@@ -46,6 +46,5 @@ Scene* SceneFactory::CreateScene(const char* binPath)
 		}
 	}
 
-	bin.close();
 	return scene;
 }
