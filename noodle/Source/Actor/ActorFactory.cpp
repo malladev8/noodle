@@ -47,21 +47,13 @@ ActorFactory::ActorFactory()
 
 Actor* ActorFactory::CreateActor(std::ifstream& sceneStream)
 {
-
 	// Currently only maintaining GetNextActorID() to support runtime actor creation
 	// Otherwise ActorId comes from scene data
 	ActorId newActorId = GetNextActorID();
 	sceneStream.read(reinterpret_cast<char*>(&newActorId), sizeof(newActorId));
 
 	Actor* actor = N_NEW Actor(newActorId);
-
-	// TODO: Refactor actor->Init
-	//if (!actor->Init(binPath))
-	//{
-	//	N_LOG("Failed to initialize actor");
-	//	bin.close();
-	//	return actor;
-	//}
+	actor->Init();
 
 	// Check for parent Actor and cache parent ID
 	bool hasParent = false;

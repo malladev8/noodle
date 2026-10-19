@@ -17,7 +17,7 @@ public:
 	explicit Actor(ActorId actorId);
 	virtual ~Actor();
 
-	bool Init(const char* binPath);
+	bool Init();
 	void PostInit();
 	void Destroy();
 	void Update(float deltaSeconds);

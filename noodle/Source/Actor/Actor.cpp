@@ -12,7 +12,7 @@ Actor::~Actor()
 {
 }
 
-bool Actor::Init(const char* binPath)
+bool Actor::Init()
 {
 	return true;
 }
