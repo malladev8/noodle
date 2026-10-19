@@ -5,7 +5,7 @@
 #include "Resource/SerializationTypes.h"
 #include <fstream>
 
-const eComponentId CameraInterface::COMPONENT_ID = eComponentId::COMPONENT_CAMERA;
+const eComponentId Camera::COMPONENT_ID = eComponentId::COMPONENT_CAMERA;
 
 // Standard Orthographic Projcetion
 static mat4x4 sGetOrthographicLH(float32 width, float32 height, float32 nearPlane, float32 farPlane)

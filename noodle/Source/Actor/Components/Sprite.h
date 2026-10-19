@@ -1,9 +1,9 @@
 #pragma once
 #include "Core/NoodleCore.h"
-#include "SpriteInterface.h"
+#include "ActorComponent.h"
 #include "Resource/ResourceTypes.h"
 
-class Sprite : public SpriteInterface
+class Sprite : public ActorComponent
 {
 	friend class ActorFactory;
 
@@ -11,6 +11,9 @@ public:
 	virtual void SubmitRenderCommands(class IRenderer& renderer) const override;
 	void SetUvRect(const vec4& uvRect) { m_UvRect = uvRect; }
 	std::weak_ptr<Material> GetMaterial() const { return m_Material; }
+	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
+
+	const static eComponentId COMPONENT_ID;
 
 protected:
 private:

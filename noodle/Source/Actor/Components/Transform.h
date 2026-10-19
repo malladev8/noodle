@@ -1,9 +1,9 @@
 #pragma once
 #include "Core/NoodleCore.h"
-#include "TransformInterface.h"
+#include "ActorComponent.h"
 #include "Math/NoodleMath.h"
 
-class Transform : public TransformInterface
+class Transform : public ActorComponent
 {
 public:
 	const vec3& GetPosition() const { return m_Position; }
@@ -17,6 +17,10 @@ public:
 	void SetRotation(const quaternion& rot) { m_Rotation = rot; }
 
 	void Translate(const vec3& translation);
+
+	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
+
+	const static eComponentId COMPONENT_ID;
 
 protected:
 private:

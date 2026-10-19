@@ -5,7 +5,7 @@
 #include "Resource/SerializationTypes.h"
 #include <fstream>
 
-const eComponentId TransformInterface::COMPONENT_ID = eComponentId::COMPONENT_TRANSFORM;
+const eComponentId Transform::COMPONENT_ID = eComponentId::COMPONENT_TRANSFORM;
 
 mat4x4 Transform::GetWorldMatrix() const
 {

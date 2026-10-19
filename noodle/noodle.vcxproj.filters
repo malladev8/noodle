@@ -153,13 +153,7 @@
     <ClInclude Include="Source\Actor\Components\Sprite.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actor\Components\SpriteInterface.h">
-      <Filter>Actor\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Actor\Components\Transform.h">
-      <Filter>Actor\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\Components\TransformInterface.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\NoodleEngine.h" />
@@ -182,9 +176,6 @@
     <ClInclude Include="Source\Rendering\D3D12\D3D12SpriteRenderer.h">
       <Filter>Rendering\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actor\Components\CameraInterface.h">
-      <Filter>Actor\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Actor\Components\Camera.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
@@ -192,13 +183,7 @@
     <ClInclude Include="Source\Actor\Controllers\Controller.h">
       <Filter>Actor\Controllers</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Actor\Components\MovementInterface.h">
-      <Filter>Actor\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Actor\Components\Movement.h">
-      <Filter>Actor\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Actor\Components\SpriteAnimatorInterface.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Actor\Components\SpriteAnimator.h">

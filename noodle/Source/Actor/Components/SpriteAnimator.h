@@ -1,11 +1,14 @@
 #pragma once
-#include"SpriteAnimatorInterface.h"
+#include"ActorComponent.h"
 #include <unordered_map>
 
-class SpriteAnimator : public SpriteAnimatorInterface
+class SpriteAnimator : public ActorComponent
 {
 public:
 	virtual void Update(float32 deltaSeconds) override;
+	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
+
+	const static eComponentId COMPONENT_ID;
 
 protected:
 

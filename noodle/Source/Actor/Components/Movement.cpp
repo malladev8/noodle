@@ -5,7 +5,7 @@
 #include "Resource/SerializationTypes.h"
 #include <fstream>
 
-const eComponentId MovementInterface::COMPONENT_ID = eComponentId::COMPONENT_MOVEMENT;
+const eComponentId Movement::COMPONENT_ID = eComponentId::COMPONENT_MOVEMENT;
 
 void Movement::Update(float32 deltaSeconds)
 {

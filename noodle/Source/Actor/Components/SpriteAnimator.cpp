@@ -5,7 +5,7 @@
 #include "Actor/Actor.h"
 #include <fstream>
 
-const eComponentId SpriteAnimatorInterface::COMPONENT_ID = eComponentId::COMPONENT_SPRITE_ANIMATOR;
+const eComponentId SpriteAnimator::COMPONENT_ID = eComponentId::COMPONENT_SPRITE_ANIMATOR;
 
 void SpriteAnimator::Update(float32 deltaSeconds)
 {

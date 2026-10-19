@@ -9,7 +9,7 @@
 #include "Transform.h"
 #include <fstream>
 
-const eComponentId SpriteInterface::COMPONENT_ID = eComponentId::COMPONENT_SPRITE;
+const eComponentId Sprite::COMPONENT_ID = eComponentId::COMPONENT_SPRITE;
 
 void Sprite::SubmitRenderCommands(IRenderer& renderer) const
 {

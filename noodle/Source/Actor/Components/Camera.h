@@ -1,13 +1,16 @@
 #pragma once
 #include "Core/NoodleCore.h"
-#include "CameraInterface.h"
+#include "ActorComponent.h"
 #include "Resource/ResourceTypes.h"
 
-class Camera : public CameraInterface 
+class Camera : public ActorComponent 
 {
 public:
 	virtual void Update(float deltaSeconds) override;
-	virtual struct CameraData BuildCameraData(float32 aspectRatio) const override;
+	struct CameraData BuildCameraData(float32 aspectRatio) const;
+	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
+
+	const static eComponentId COMPONENT_ID;
 
 protected:
 private:
