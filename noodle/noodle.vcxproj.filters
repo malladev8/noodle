@@ -90,6 +90,9 @@
     <ClCompile Include="Source\Actor\Components\SpriteAnimator.cpp">
       <Filter>Actor\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Components\Collider.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -191,6 +194,9 @@
     </ClInclude>
     <ClInclude Include="Source\Resource\SerializationTypes.h">
       <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\Collider.h">
+      <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

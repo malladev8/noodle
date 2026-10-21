@@ -142,3 +142,15 @@ enum class eSpriteLayer : uint32
 	FOREGROUND,
 	UI,
 };
+
+enum class eColliderShape : uint32
+{
+	AABB = 0,
+	CIRCLE,
+};
+
+struct AABB
+{
+	vec2 min;
+	vec2 max;
+};
