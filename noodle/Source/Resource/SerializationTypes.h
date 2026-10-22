@@ -44,3 +44,11 @@ struct CameraSerializationData : public ComponentSerializationData
 	float32 orthoHeight = 0.0f;
 	eProjectionType projectionType = eProjectionType::ORTHOGRAPHIC;
 };
+
+struct ColliderSerializationData : public ComponentSerializationData
+{
+	vec2 halfExtents;
+	vec2 offset;
+	float32 radius;
+	eColliderShape colliderShape = eColliderShape::AABB;
+};

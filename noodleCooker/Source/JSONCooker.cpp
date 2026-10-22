@@ -44,6 +44,7 @@ static std::unordered_map<std::string, eComponentId> sComponentTypeLookup
     {"SpriteAnimator", eComponentId::COMPONENT_SPRITE_ANIMATOR},
     {"Movement", eComponentId::COMPONENT_MOVEMENT},
     {"Camera", eComponentId::COMPONENT_CAMERA},
+    {"Collider", eComponentId::COMPONENT_COLLIDER},
 };
 
 static AssetId sGenerateAssetId(const std::string& path)
@@ -67,6 +68,24 @@ static bool sLoadFileToString(const std::string& path, std::string& out)
     out = buffer.str();
     file.close();
 	return true;
+}
+
+static bool sReadVec2(const rapidjson::Value& arr, vec2& out)
+{
+    if (!arr.IsArray() || arr.Size() != 2)
+    {
+        return false;
+    }
+
+    for (rapidjson::SizeType i = 0; i < 2; ++i)
+    {
+        if (!arr[i].IsNumber())
+        {
+            return false;
+        }
+        out.data[i] = arr[i].GetFloat();
+    }
+    return true;
 }
 
 static bool sReadVec3(const rapidjson::Value& arr, vec3& out)
@@ -414,6 +433,42 @@ static bool sParseMovementComponent(const rapidjson::Value& component, MovementS
     return true;
 }
 
+static bool sParseColliderComponent(const rapidjson::Value& component, ColliderSerializationData& outData)
+{
+    const char* colliderShapeName = "Shape";
+    if (component.HasMember(colliderShapeName))
+    {
+        std::string shapeStr = component[colliderShapeName].GetString();
+        if (_strcmpi(shapeStr.c_str(),"AABB") == 0)
+        {
+            outData.colliderShape = eColliderShape::AABB;
+        }
+        else if (_strcmpi(shapeStr.c_str(), "Circle") == 0)
+        {
+            outData.colliderShape = eColliderShape::CIRCLE;
+        }
+    }
+
+    const char* offsetName = "Offset";
+    if (component.HasMember(offsetName))
+    {
+        sReadVec2(component[offsetName], outData.offset);
+    }
+
+    const char* halfExtentsName = "HalfExtents";
+    if (component.HasMember(halfExtentsName))
+    {
+        sReadVec2(component[halfExtentsName], outData.halfExtents);
+    }
+
+    const char* radiusName = "Radius";
+    if (component.HasMember(radiusName))
+    {
+        outData.radius = component[radiusName].GetFloat();
+    }
+    return true;
+}
+
 static bool sParseComponents(const rapidjson::Value& components, std::vector<std::unique_ptr<ComponentSerializationData>>& componentData, uint8& numComponents)
 {
     if (!components.IsArray())
@@ -525,6 +580,23 @@ static bool sParseComponents(const rapidjson::Value& components, std::vector<std
             }
             movementData->componentId = componentType;
             sParseMovementComponent(component, *movementData);
+            break;
+        }
+        case eComponentId::COMPONENT_COLLIDER:
+        {
+            ColliderSerializationData* colliderData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                colliderData = N_NEW ColliderSerializationData();
+                componentData[(uint32)componentType].reset(colliderData);
+                ++numComponents;
+            }
+            else
+            {
+                colliderData = static_cast<ColliderSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            colliderData->componentId = componentType;
+            sParseColliderComponent(component, *colliderData);
             break;
         }
         }
@@ -720,6 +792,12 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
                     case eComponentId::COMPONENT_MOVEMENT:
                     {
                         out.write(reinterpret_cast<const char*>(data.get()), sizeof(MovementSerializationData));
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    case eComponentId::COMPONENT_COLLIDER:
+                    {
+                        out.write(reinterpret_cast<const char*>(data.get()), sizeof(ColliderSerializationData));
                         printf("Successfully serialized Component: %i.\n", (uint32)componentId);
                         break;
                     }

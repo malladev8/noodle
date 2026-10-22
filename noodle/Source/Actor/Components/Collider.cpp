@@ -2,7 +2,10 @@
 #include "Collider.h"
 
 #include "Actor/Actor.h"
+#include "Resource/SerializationTypes.h"
 #include "Transform.h"
+
+#include <fstream>
 
 const eComponentId Collider::COMPONENT_ID = eComponentId::COMPONENT_COLLIDER;
 
@@ -36,5 +39,13 @@ AABB Collider::GetWorldAABB() const
 
 bool Collider::Init(std::ifstream& bin, EngineContext& engineContext)
 {
+	ColliderSerializationData serializationData;
+	bin.read(reinterpret_cast<char*>(&serializationData), sizeof(serializationData));
+
+	m_ColliderShape = serializationData.colliderShape;
+	m_Offset = serializationData.offset;
+	m_HalfExtents = serializationData.halfExtents;
+	m_Radius = serializationData.radius;
+
 	return true;
 }
