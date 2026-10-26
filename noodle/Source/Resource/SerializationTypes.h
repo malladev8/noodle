@@ -47,8 +47,8 @@ struct CameraSerializationData : public ComponentSerializationData
 
 struct ColliderSerializationData : public ComponentSerializationData
 {
-	vec2 halfExtents;
-	vec2 offset;
+	vec3 halfExtents;
+	vec3 offset;
 	float32 radius;
-	eColliderShape colliderShape = eColliderShape::AABB;
+	eColliderType colliderType = eColliderType::AABB;
 };

@@ -23,16 +23,20 @@ AABB Collider::GetWorldAABB() const
 	const vec3& pos = transform->GetPosition();
 	const float32 centerX = pos.x + m_Offset.x;
 	const float32 centerY = pos.y + m_Offset.y;
+	const float32 centerZ = pos.z + m_Offset.z;
 
 	const vec3& scale = transform->GetScale();
 	const float32 halfWidth = m_HalfExtents.x * scale.x;
 	const float32 halfHeight = m_HalfExtents.y * scale.y;
+	const float32 halfDepth = m_HalfExtents.z * scale.z;
 
 	AABB aabb;
 	aabb.min.x = centerX - halfWidth;
 	aabb.min.y = centerY - halfHeight;
+	aabb.min.z = centerZ - halfDepth;
 	aabb.max.x = centerX + halfWidth;
 	aabb.max.y = centerY + halfHeight;
+	aabb.max.z = centerZ + halfDepth;
 
 	return aabb;
 }
@@ -42,7 +46,7 @@ bool Collider::Init(std::ifstream& bin, EngineContext& engineContext)
 	ColliderSerializationData serializationData;
 	bin.read(reinterpret_cast<char*>(&serializationData), sizeof(serializationData));
 
-	m_ColliderShape = serializationData.colliderShape;
+	m_ColliderType = serializationData.colliderType;
 	m_Offset = serializationData.offset;
 	m_HalfExtents = serializationData.halfExtents;
 	m_Radius = serializationData.radius;

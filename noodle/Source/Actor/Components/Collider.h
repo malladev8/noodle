@@ -10,7 +10,7 @@ public:
 	virtual void Update(float32 deltaSeconds) override;
 	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
 
-	eColliderShape GetShape() const { return m_ColliderShape; }
+	eColliderType GetShape() const { return m_ColliderType; }
 
 	AABB GetWorldAABB() const;
 
@@ -19,8 +19,8 @@ private:
 
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 
-	vec2 m_Offset = {};
-	vec2 m_HalfExtents = { 0.5f, 0.5f };
+	vec3 m_Offset = {};
+	vec3 m_HalfExtents = { 0.5f, 0.5f, 0.0f };
 	float32 m_Radius = 0.5f;
-	eColliderShape m_ColliderShape = eColliderShape::AABB;
+	eColliderType m_ColliderType = eColliderType::AABB;
 };

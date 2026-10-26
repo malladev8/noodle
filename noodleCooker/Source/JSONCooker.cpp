@@ -441,24 +441,24 @@ static bool sParseColliderComponent(const rapidjson::Value& component, ColliderS
         std::string shapeStr = component[colliderShapeName].GetString();
         if (_strcmpi(shapeStr.c_str(),"AABB") == 0)
         {
-            outData.colliderShape = eColliderShape::AABB;
+            outData.colliderType = eColliderType::AABB;
         }
         else if (_strcmpi(shapeStr.c_str(), "Circle") == 0)
         {
-            outData.colliderShape = eColliderShape::CIRCLE;
+            outData.colliderType = eColliderType::CIRCLE;
         }
     }
 
     const char* offsetName = "Offset";
     if (component.HasMember(offsetName))
     {
-        sReadVec2(component[offsetName], outData.offset);
+        sReadVec3(component[offsetName], outData.offset);
     }
 
     const char* halfExtentsName = "HalfExtents";
     if (component.HasMember(halfExtentsName))
     {
-        sReadVec2(component[halfExtentsName], outData.halfExtents);
+        sReadVec3(component[halfExtentsName], outData.halfExtents);
     }
 
     const char* radiusName = "Radius";
