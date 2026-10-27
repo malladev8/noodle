@@ -62,7 +62,7 @@ void PhysicsSystem::UnregisterCollider(ColliderHandle handle)
     }
 
     m_Colliders.pop_back();
-
+     
     slot.denseIndex = UINT32_MAX;
     ++slot.generation;
     m_FreeSlots.push_back(handle.index);
