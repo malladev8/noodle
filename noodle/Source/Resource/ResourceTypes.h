@@ -28,6 +28,12 @@ struct ColorVertex
 	vec4 color;
 };
 
+struct DebugVertex
+{
+	vec3 position;
+	vec4 color;
+};
+
 struct Mesh
 {
 	std::vector<Vertex> vertices;
@@ -65,6 +71,12 @@ struct TextureLayout
 	uint32 tileHeight = 0;
 	uint32 numRows = 0;
 	uint32 numColumns = 0;
+};
+
+enum class eShaderType : uint32
+{
+	SPRITE_SHADER = 0,
+	DEBUG_SHADER,
 };
 
 struct Shader

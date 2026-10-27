@@ -4,6 +4,7 @@
 #include "NoodleWindow.h"
 #include "Event/WindowResizeEvent.h"
 #include "D3D12SpriteRenderer.h"
+#include "D3D12DebugRenderer.h"
 
 #if defined(WINDOWS)
 D3D12Renderer::D3D12Renderer()
@@ -27,6 +28,7 @@ D3D12Renderer::D3D12Renderer()
 	  m_UploadFence(nullptr),
 	  m_UploadFenceEvent(nullptr),
 	  m_SpriteRenderer(nullptr),
+	  m_DebugRenderer(nullptr),
 	  m_RenderTargets({}),
 	  m_CommandAllocators({}),
 	  m_FenceValue({}),
@@ -209,6 +211,9 @@ void D3D12Renderer::Initialize(void* hwnd, Window& windowDesc)
 	m_SpriteRenderer = std::make_unique<D3D12SpriteRenderer>();
 	m_SpriteRenderer->Initialize(*this);
 
+	m_DebugRenderer = std::make_unique<D3D12DebugRenderer>();
+	m_DebugRenderer->Initialize(*this);
+
 	// Initialize Frame Constant Buffer
 	uint32 cbSize = align::Align256(sizeof(FrameConstants)); // D3D12 requires all constant buffers to be 256 byte-aligned
 
@@ -296,7 +301,7 @@ void D3D12Renderer::RenderFrame()
 
 	// Flush Sub-renderers - convert queued render commands into GPU draw calls
 	m_SpriteRenderer->Flush();
-	// TODO: m_DebugRenderer->Flush();
+	m_DebugRenderer->Flush();
 }
 
 void D3D12Renderer::EndFrame()
@@ -328,6 +333,11 @@ void D3D12Renderer::Present()
 void D3D12Renderer::SubmitSprite(const SpriteRenderCommand& cmd)
 {
 	m_SpriteRenderer->SubmitSprite(cmd);
+}
+
+void D3D12Renderer::SubmitDebugAABB(const DebugAABBCommand& cmd)
+{
+	m_DebugRenderer->SubmitAABB(cmd);
 }
 
 void D3D12Renderer::CreateTextureResources(Texture& texture, const std::vector<uint8>& pixels)
@@ -417,10 +427,14 @@ void D3D12Renderer::CreateTextureResources(Texture& texture, const std::vector<u
 	texture.resource = std::move(d3d12Texture);
 }
 
-void D3D12Renderer::CreateShaderResources(std::shared_ptr<struct Shader>& outShader, const CookedShaderData& shaderData)
+void D3D12Renderer::CreateSpriteShaderResources(std::shared_ptr<struct Shader>& outShader, const CookedShaderData& shaderData)
 {
-	// TODO: Need logic for which sub-renderer to use.
 	m_SpriteRenderer->CreateShaderResources(outShader, shaderData);
+}
+
+void D3D12Renderer::CreateDebugShaderResources(std::shared_ptr<struct Shader>& outShader, const CookedShaderData& shaderData)
+{
+	m_DebugRenderer->CreateShaderResources(outShader, shaderData);
 }
 
 void D3D12Renderer::Resize(const WindowResizeEvent& event)

@@ -7,6 +7,7 @@
 
 constexpr uint32 BufferCount = 2;
 class D3D12SpriteRenderer;
+class D3D12DebugRenderer;
 
 enum class eRootParamIndex : uint32
 {
@@ -29,9 +30,11 @@ public:
 	virtual void Present() override;
 
 	virtual void SubmitSprite(const struct SpriteRenderCommand& cmd) override;
+	virtual void SubmitDebugAABB(const struct DebugAABBCommand& cmd) override;
 
 	virtual void CreateTextureResources(struct Texture& texture, const std::vector<uint8>& pixels) override;
-	virtual void CreateShaderResources(std::shared_ptr<struct Shader>& outShader, const struct CookedShaderData& shaderData) override;
+	virtual void CreateSpriteShaderResources(std::shared_ptr<struct Shader>& outShader, const struct CookedShaderData& shaderData) override;
+	virtual void CreateDebugShaderResources(std::shared_ptr<struct Shader>& outShader, const struct CookedShaderData& shaderData) override;
 
 	ID3D12Device* GetDevice() const { return m_Device.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList.Get(); }
@@ -64,6 +67,7 @@ private:
 	ComPtr<ID3D12Fence>m_UploadFence;
 
 	std::unique_ptr<D3D12SpriteRenderer> m_SpriteRenderer;
+	std::unique_ptr<D3D12DebugRenderer> m_DebugRenderer;
 
 	HANDLE m_FenceEvent;
 	HANDLE m_UploadFenceEvent;

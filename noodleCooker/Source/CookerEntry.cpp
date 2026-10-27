@@ -5,15 +5,15 @@
 
 static const std::unordered_map<std::string, eJsonType> sJsonTypeLookup
 {
-    //{"actor", eJsonType::ACTOR},
-    {"scene", eJsonType::SCENE}
+    {"scene", eJsonType::SCENE},
+    {"shader", eJsonType::SHADER},
 };
 
 int main(int argc, char** argv)
 {
-    if (argc < 4)
+    if (argc < 5)
     {
-        printf("Usage: Cooker <type> <application root> <asset name>\n");
+        printf("Usage: Cooker <type> <asset root> <cooked root> <asset name>\n");
         return -1;
     }
 
@@ -23,8 +23,9 @@ int main(int argc, char** argv)
     //const char* assetName = "Scene/TestScene";
 
     const char* jsonType = argv[1];
-    const char* applicationRoot = argv[2];
-    const char* assetName = argv[3];
+    const char* assetRoot = argv[2];
+    const char* cookedRoot = argv[3];
+    const char* assetName = argv[4];
 
 
     if (!sJsonTypeLookup.contains(jsonType))
@@ -33,7 +34,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    if (!ConvertJsonToBinary(sJsonTypeLookup.find(jsonType)->second, applicationRoot, assetName))
+    if (!ConvertJsonToBinary(sJsonTypeLookup.find(jsonType)->second, assetRoot, cookedRoot, assetName))
     {
         printf("Cook failed.\n");
         return -1;

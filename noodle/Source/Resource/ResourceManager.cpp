@@ -4,7 +4,7 @@
 #include "Rendering/IRenderer.h"
 #include <fstream>
 
-std::shared_ptr<Material> ResourceManager::LoadMaterial(std::ifstream& bin)
+std::shared_ptr<Material> ResourceManager::LoadMaterial(std::ifstream& bin, eShaderType type, IRenderer& renderer)
 {
 	AssetId assetId = ReadAssetId(bin);
 
@@ -16,14 +16,14 @@ std::shared_ptr<Material> ResourceManager::LoadMaterial(std::ifstream& bin)
 		std::string shaderPath = path::ReadFilePath(bin);
 		std::ifstream shaderBin(shaderPath, std::ios::binary);
 		N_ASSERT(shaderBin.is_open(), "Failed to open Shader binary file.");
-		material->shader = LoadShader(shaderBin);
+		material->shader = LoadShader(shaderBin, type, renderer);
 		shaderBin.close();
 
 		// Diffuse Texture
 		std::string diffuseTexturePath = path::ReadFilePath(bin);
 		std::ifstream diffuseTextureBin(diffuseTexturePath, std::ios::binary);
 		N_ASSERT(diffuseTextureBin.is_open(), "Failed to open Texture binary file.");
-		material->diffuseTexture = LoadTexture(diffuseTextureBin);
+		material->diffuseTexture = LoadTexture(diffuseTextureBin, renderer);
 		diffuseTextureBin.close();
 
 		// Texture Layout
@@ -46,7 +46,7 @@ std::shared_ptr<Material> ResourceManager::LoadMaterial(std::ifstream& bin)
 	return nullptr;
 }
 
-std::shared_ptr<Shader> ResourceManager::LoadShader(std::ifstream& bin)
+std::shared_ptr<Shader> ResourceManager::LoadShader(std::ifstream& bin, eShaderType type, IRenderer& renderer)
 {
 	AssetId assetId = ReadAssetId(bin);
 
@@ -64,7 +64,21 @@ std::shared_ptr<Shader> ResourceManager::LoadShader(std::ifstream& bin)
 		N_ASSERT(bin.read(reinterpret_cast<char*>(shaderData.psBytes.data()), psSize), "Failed to read shader bytecode.");
 
 		std::shared_ptr<Shader> shader = nullptr;
-		Engine::Get().GetContext().renderer->CreateShaderResources(shader, shaderData);
+		switch (type)
+		{
+		default:
+			break;
+		case eShaderType::SPRITE_SHADER:
+		{
+			renderer.CreateSpriteShaderResources(shader, shaderData);
+			break;
+		}
+		case eShaderType::DEBUG_SHADER:
+		{
+			renderer.CreateDebugShaderResources(shader, shaderData);
+			break;
+		}
+		}
 
 		m_ShaderCache.insert({ assetId, shader });
 		return shader;
@@ -77,7 +91,7 @@ std::shared_ptr<Shader> ResourceManager::LoadShader(std::ifstream& bin)
 	return nullptr;
 }
 
-std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
+std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin, IRenderer& renderer)
 {
 	AssetId assetId = ReadAssetId(bin);
 
@@ -96,7 +110,7 @@ std::shared_ptr<Texture> ResourceManager::LoadTexture(std::ifstream& bin)
 		pixels.resize(pixelCount);
 		bin.read(reinterpret_cast<char*>(pixels.data()), pixelCount);
 
-		Engine::Get().GetContext().renderer->CreateTextureResources(*tex, pixels);
+		renderer.CreateTextureResources(*tex, pixels);
 
 		m_TextureCache.insert({ assetId, tex });
 		return tex;

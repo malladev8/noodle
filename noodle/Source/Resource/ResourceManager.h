@@ -3,12 +3,14 @@
 #include "ResourceTypes.h"
 #include <unordered_map>
 
+class IRenderer;
+
 class ResourceManager
 {
 public:
-	std::shared_ptr<Material> LoadMaterial(std::ifstream& bin);
-	std::shared_ptr<Shader> LoadShader(std::ifstream& bin);
-	std::shared_ptr<Texture> LoadTexture(std::ifstream& bin);
+	std::shared_ptr<Material> LoadMaterial(std::ifstream& bin, eShaderType type, IRenderer& renderer);
+	std::shared_ptr<Shader> LoadShader(std::ifstream& bin, eShaderType type, IRenderer& renderer);
+	std::shared_ptr<Texture> LoadTexture(std::ifstream& bin, IRenderer& renderer);
 	std::shared_ptr<TextureAtlas> LoadAtlas(std::ifstream& bin);
 
 protected:

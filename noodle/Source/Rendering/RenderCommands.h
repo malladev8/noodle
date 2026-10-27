@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/NoodleCore.h"
 #include "Math/NoodleMath.h"
+#include "Resource/ResourceTypes.h"
 
 struct SpriteRenderCommand
 {
@@ -23,4 +24,10 @@ struct CompareSpriteLayer
 		}
 		return cmd1.layer > cmd2.layer;
 	}
+};
+
+struct DebugAABBCommand
+{
+	AABB aabb;
+	vec4 color;
 };

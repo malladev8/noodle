@@ -93,6 +93,9 @@
     <ClCompile Include="Source\Actor\Components\Collider.cpp">
       <Filter>Actor\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Rendering\D3D12\D3D12DebugRenderer.cpp">
+      <Filter>Rendering\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -197,6 +200,9 @@
     </ClInclude>
     <ClInclude Include="Source\Actor\Components\Collider.h">
       <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Rendering\D3D12\D3D12DebugRenderer.h">
+      <Filter>Rendering\D3D12</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

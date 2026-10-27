@@ -1,0 +1,15 @@
+{
+  "Name": "DebugBoxShader",
+  "VS":
+  {
+    "Source": "Shader/Source/DebugBoxVS",
+    "Entry": "VSMain",
+    "Profile": "vs_6_0"
+  },
+  "PS":
+  {
+    "Source": "Shader/Source/DebugBoxPS",
+    "Entry": "PSMain",
+    "Profile": "ps_6_0"
+  }
+}

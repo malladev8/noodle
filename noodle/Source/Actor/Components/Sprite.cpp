@@ -44,7 +44,7 @@ bool Sprite::Init(std::ifstream& bin, EngineContext& engineContext)
 		N_LOG("Failed to open Material binary file %s", materialPath);
 		return false;
 	}
-	m_Material = engineContext.resourceManager.LoadMaterial(materialBin);
+	m_Material = engineContext.resourceManager.LoadMaterial(materialBin, eShaderType::SPRITE_SHADER, *engineContext.renderer);
 
 	// Load atlas
 	bool usesAtlas = false;

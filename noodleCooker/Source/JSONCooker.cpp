@@ -604,7 +604,7 @@ static bool sParseComponents(const rapidjson::Value& components, std::vector<std
     return true;
 }
 
-static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+static bool sConvertSceneJsonToBinary(const char* assetRoot, const char* cookedRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     if (jsonDoc.HasMember("Actors"))
     {
@@ -675,7 +675,7 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
                 printf("Parsing Actor Prefab: %s.\n", prefabName.data());
 
                 // Parse the actor prefab json
-                std::string inputPath = sGenerateInputFilePath(applicationRoot, prefabName.data(), ".json");
+                std::string inputPath = sGenerateInputFilePath(assetRoot, prefabName.data(), ".json");
                 std::string jsonStr;
                 if (!sLoadFileToString(inputPath, jsonStr))
                 {
@@ -734,9 +734,9 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
                         SpriteSerializationData* spriteData = static_cast<SpriteSerializationData*>(data.get());
 
                         // Cook material
-                        std::string materialOutputPath = sGenerateOutputFilePath(applicationRoot, spriteData->material.data());
+                        std::string materialOutputPath = sGenerateOutputFilePath(cookedRoot, spriteData->material.data());
                         path::WritePath(materialOutputPath, out);
-                        if (!ConvertJsonToBinary(eJsonType::MATERIAL, applicationRoot, spriteData->material.data()))
+                        if (!ConvertJsonToBinary(eJsonType::MATERIAL, assetRoot, cookedRoot, spriteData->material.data()))
                         {
                             printf("Failed to serialize Material for Sprite Component: %s.\n", spriteData->material.data());
                             return false;
@@ -749,9 +749,9 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
                         if (spriteData->usingAtlas)
                         {
                             // Cook Atlas
-                            std::string atlasOutputPath = sGenerateOutputFilePath(applicationRoot, spriteData->atlas.data());
+                            std::string atlasOutputPath = sGenerateOutputFilePath(cookedRoot, spriteData->atlas.data());
                             path::WritePath(atlasOutputPath, out);
-                            if (!ConvertJsonToBinary(eJsonType::ATLAS, applicationRoot, spriteData->atlas.data()))
+                            if (!ConvertJsonToBinary(eJsonType::ATLAS, assetRoot, cookedRoot, spriteData->atlas.data()))
                             {
                                 printf("Failed to serialize Atlas for Sprite Component: %s.\n", spriteData->atlas.data());
                                 return false;
@@ -815,7 +815,7 @@ static bool sConvertSceneJsonToBinary(const char* applicationRoot, rapidjson::Do
     return true;
 }
 
-bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+bool static sConvertMaterialJsonToBinary(const char* assetRoot, const char* cookedRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     // Cook Shaders
     const char* shader = "Shader";
@@ -826,11 +826,11 @@ bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson:
     }
 
     std::string shaderName = jsonDoc[shader].GetString();
-    std::string shaderOutputPath = sGenerateOutputFilePath(applicationRoot, shaderName.data());
+    std::string shaderOutputPath = sGenerateOutputFilePath(cookedRoot, shaderName.data());
 
     path::WritePath(shaderOutputPath, out);
 
-    if (!ConvertJsonToBinary(eJsonType::SHADER, applicationRoot, shaderName.data()))
+    if (!ConvertJsonToBinary(eJsonType::SHADER, assetRoot, cookedRoot, shaderName.data()))
     {
         return false;
     }
@@ -845,7 +845,7 @@ bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson:
     }
     
     std::string textureName = jsonDoc[diffuseTexture].GetString();
-    std::string textureOutputPath = sGenerateOutputFilePath(applicationRoot, textureName.data());
+    std::string textureOutputPath = sGenerateOutputFilePath(cookedRoot, textureName.data());
     
     path::WritePath(textureOutputPath, out);
     
@@ -862,7 +862,7 @@ bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson:
             return false;
         }
     
-        std::string textureInputPath = sGenerateInputFilePath(applicationRoot, textureName.data(), ".png");
+        std::string textureInputPath = sGenerateInputFilePath(assetRoot, textureName.data(), ".png");
         TextureCooker textureCooker;
         if (!textureCooker.CookTexture(textureInputPath.c_str(), textureOut, textureAssetId))
         {
@@ -903,7 +903,7 @@ bool static sConvertMaterialJsonToBinary(const char* applicationRoot, rapidjson:
     return true;
 }
 
-bool static sCookShader(const std::string& shaderType, const char* applicationRoot, rapidjson::Document& jsonDoc, std::string& outOutputFilePath)
+bool static sCookShader(const std::string& shaderType, const char* assetRoot, const char* cookedRoot, rapidjson::Document& jsonDoc, std::string& outOutputFilePath)
 {
     ShaderCooker shaderCooker;
 
@@ -936,8 +936,8 @@ bool static sCookShader(const std::string& shaderType, const char* applicationRo
     const rapidjson::Value& vsProfile = shader["Profile"];
 
     std::string sourceName = vsSource.GetString();
-    std::string inputPath = sGenerateInputFilePath(applicationRoot, sourceName.data(), ".hlsl");
-    outOutputFilePath = sGenerateOutputFilePath(applicationRoot, sourceName.data());
+    std::string inputPath = sGenerateInputFilePath(assetRoot, sourceName.data(), ".hlsl");
+    outOutputFilePath = sGenerateOutputFilePath(cookedRoot, sourceName.data());
     std::filesystem::path fsOutputPath = outOutputFilePath;
     std::filesystem::create_directories(fsOutputPath.parent_path());
     shaderCooker.CookShaderByteCode(inputPath, vsEntry.GetString(), vsProfile.GetString(), outOutputFilePath);
@@ -945,18 +945,18 @@ bool static sCookShader(const std::string& shaderType, const char* applicationRo
     return true;
 }
 
-bool static sConvertShaderJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+bool static sConvertShaderJsonToBinary(const char* assetRoot, const char* cookedRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     // Cook Shader Byte Code
     std::string vsOutputPath;
-    if (!sCookShader("VS", applicationRoot, jsonDoc, vsOutputPath))
+    if (!sCookShader("VS", assetRoot, cookedRoot, jsonDoc, vsOutputPath))
     {
         printf("Failed to Cook VS.\n");
         return false;
     }
 
     std::string psOutputPath;
-    if (!sCookShader("PS", applicationRoot, jsonDoc, psOutputPath))
+    if (!sCookShader("PS", assetRoot, cookedRoot, jsonDoc, psOutputPath))
     {
         printf("Failed to Cook PS.\n");
         return false;
@@ -998,7 +998,7 @@ bool static sConvertShaderJsonToBinary(const char* applicationRoot, rapidjson::D
     return true;
 }
 
-bool static sConvertAtlasJsonToBinary(const char* applicationRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
+bool static sConvertAtlasJsonToBinary(const char* assetRoot, const char* cookedRoot, rapidjson::Document& jsonDoc, std::ofstream& out)
 {
     const char* framesMemberName = "frames";
     if (!sValidateJsonValueMember(jsonDoc, framesMemberName))
@@ -1061,7 +1061,7 @@ bool static sConvertAtlasJsonToBinary(const char* applicationRoot, rapidjson::Do
     return true;
 }
 
-bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char* assetName)
+bool ConvertJsonToBinary(eJsonType type, const char* assetRoot, const char* cookedRoot, const char* assetName)
 {
     AssetId assetId = sGenerateAssetId(assetName);
     if (sCookedAssets.contains(assetId))
@@ -1069,7 +1069,7 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
         return true;
     }
 
-    std::string inputPath = sGenerateInputFilePath(applicationRoot, assetName, ".json");
+    std::string inputPath = sGenerateInputFilePath(assetRoot, assetName, ".json");
     std::string jsonStr;
     if (!sLoadFileToString(inputPath, jsonStr))
     {
@@ -1087,7 +1087,7 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
         return false;
     }
 
-    std::string outputPath = sGenerateOutputFilePath(applicationRoot, assetName);
+    std::string outputPath = sGenerateOutputFilePath(cookedRoot, assetName);
     std::filesystem::path fsOutputPath = outputPath;
     std::filesystem::create_directories(fsOutputPath.parent_path());
     std::ofstream out(outputPath, std::ios::binary);
@@ -1109,23 +1109,23 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     {
     case eJsonType::SCENE:
     {
-        success = sConvertSceneJsonToBinary(applicationRoot, jsonDoc, out);
+        success = sConvertSceneJsonToBinary(assetRoot, cookedRoot, jsonDoc, out);
         sClearCookedCache();
         break;
     }
     case eJsonType::MATERIAL:
     {
-        success = sConvertMaterialJsonToBinary(applicationRoot, jsonDoc, out);
+        success = sConvertMaterialJsonToBinary(assetRoot, cookedRoot, jsonDoc, out);
         break;
     }
     case eJsonType::SHADER:
     {
-        success = sConvertShaderJsonToBinary(applicationRoot, jsonDoc, out);
+        success = sConvertShaderJsonToBinary(assetRoot, cookedRoot, jsonDoc, out);
         break;
     }
     case eJsonType::ATLAS:
     {
-        success = sConvertAtlasJsonToBinary(applicationRoot, jsonDoc, out);
+        success = sConvertAtlasJsonToBinary(assetRoot, cookedRoot, jsonDoc, out);
         break;
     }
     default:
@@ -1133,6 +1133,12 @@ bool ConvertJsonToBinary(eJsonType type, const char* applicationRoot, const char
     }
 
     out.close();
+
+    if (!success)
+    {
+        std::filesystem::remove(outputPath);
+        return false;
+    }
 
     AssetMetadata metadata;
     metadata.assedId = assetId;
