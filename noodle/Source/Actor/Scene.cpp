@@ -1,8 +1,81 @@
 #include "NoodlePch.h"
 #include "Scene.h"
 #include "Components/Camera.h"
+#include "Components/Collider.h"
+#include "Controllers/Controller.h"
 #include "NoodleWindow.h"
 #include "Rendering/IRenderer.h"
+
+Scene::~Scene()
+{
+    Destroy();
+}
+
+void Scene::PostInit()
+{
+    // Resolve parent relationships only after all actors exist.
+    for (const std::unique_ptr<Actor>& actor : m_Actors)
+    {
+        if (actor->GetParentId().has_value())
+        {
+            auto it = m_ActorLookup.find(actor->GetParentId().value());
+
+            N_ASSERT(it != m_ActorLookup.end(), "Actor references a parent that doesn't exist.");
+
+            if (it != m_ActorLookup.end())
+            {
+                actor->SetParent(it->second);
+            }
+        }
+    }
+
+    // Actor PostInit
+    for (const std::unique_ptr<Actor>& actor : m_Actors)
+    {
+        actor->PostInit();
+    }
+
+    // Now that actors and their ownership relationships are established,
+    // register colliders with this scene's physics system.
+    for (const std::unique_ptr<Actor>& actor : m_Actors)
+    {
+        if (Collider* collider = actor->GetComponent<Collider>())
+        {
+            collider->RegisterWithPhysics(m_Physics);
+        }
+    }
+
+    
+}
+
+void Scene::Destroy()
+{
+    if (m_Destroyed)
+    {
+        return;
+    }
+
+    m_Destroyed = true;
+
+    // Controllers may hold pointers to actors, so destroy them first.
+    for (std::unique_ptr<Controller>& controller : m_Controllers)
+    {
+        controller->UnPossess();
+    }
+    m_Controllers.clear();
+
+    // Remove cached camera references
+    m_Cameras.clear();
+
+    // Explicitly destroy actors while their components still exist.
+    for (const std::unique_ptr<Actor>& actor : m_Actors)
+    {
+        actor->Destroy();
+    }
+
+    m_ActorLookup.clear();
+    m_Actors.clear();
+}
 
 void Scene::Update(float deltaSeconds)
 {
@@ -15,6 +88,8 @@ void Scene::Update(float deltaSeconds)
 	{
 		actor->Update(deltaSeconds);
 	}
+
+	m_Physics.Update(deltaSeconds);
 }
 
 void Scene::SubmitRenderCommands(IRenderer& IRenderer) const

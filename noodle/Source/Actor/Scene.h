@@ -3,6 +3,7 @@
 #include "Actor.h"
 #include <unordered_map>
 #include "Controllers/Controller.h"
+#include "Physics/PhysicsSystem.h"
 
 class Actor;
 class IRenderer;
@@ -14,6 +15,10 @@ class Scene
 {
 	friend class SceneFactory;
 public:
+	~Scene();
+
+	void PostInit();
+	void Destroy();
 	void Update(float deltaSeconds);
 	void SubmitRenderCommands(IRenderer& IRenderer) const;
 	void Render(IRenderer& IRenderer, const Window& window) const;
@@ -42,5 +47,10 @@ private:
 	std::unordered_map<ActorId, Actor*> m_ActorLookup;
 	std::vector<Camera*> m_Cameras;
 	std::vector<std::unique_ptr<Controller>> m_Controllers;
+
+	PhysicsSystem m_Physics;
+
+	bool m_Destroyed = false;
+
 	void AddActor(Actor* actor);
 };

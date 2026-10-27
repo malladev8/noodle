@@ -10,19 +10,31 @@ Actor::Actor(ActorId actorId)
 
 Actor::~Actor()
 {
-}
-
-bool Actor::Init()
-{
-	return true;
+	Destroy();
 }
 
 void Actor::PostInit()
 {
+	for (auto it = m_Components.begin(); it != m_Components.end(); ++it)
+	{
+		(*it)->PostInit();
+	}
 }
 
 void Actor::Destroy()
 {
+	if (m_Destroyed)
+	{
+		return;
+	}
+
+	// Teardown components in reverse construction order.
+	for (auto it = m_Components.rbegin(); it != m_Components.rend(); ++it)
+	{
+		(*it)->Destroy();
+	}
+
+	m_Destroyed = true;
 }
 
 void Actor::Update(float deltaSeconds)

@@ -2,6 +2,7 @@
 #include "Collider.h"
 
 #include "Actor/Actor.h"
+#include "Physics/PhysicsSystem.h"
 #include "Resource/SerializationTypes.h"
 #include "Transform.h"
 
@@ -9,42 +10,56 @@
 
 const eComponentId Collider::COMPONENT_ID = eComponentId::COMPONENT_COLLIDER;
 
+void Collider::Destroy()
+{
+	if (m_PhysicsSystem != nullptr)
+	{
+		UnregisterFromPhysics(*m_PhysicsSystem);
+	}
+}
+
 void Collider::Update(float32 deltaSeconds)
 {
 }
 
-AABB Collider::GetWorldAABB() const
+void Collider::RegisterWithPhysics(PhysicsSystem& physics)
 {
+	N_ASSERT(m_PhysicsSystem == nullptr,
+		"Collider is already registered with a PhysicsSystem.");
+
 	Actor* owner = GetOwner();
 	N_ASSERT(owner != nullptr, "Collider owning Actor is null.");
-	Transform* transform = owner->GetComponent<Transform>();
-	N_ASSERT(transform != nullptr, "Collider owning Actor is missing Transform component.");
 
-	const vec3& pos = transform->GetPosition();
-	const float32 centerX = pos.x + m_Offset.x;
-	const float32 centerY = pos.y + m_Offset.y;
-	const float32 centerZ = pos.z + m_Offset.z;
+	m_Handle = physics.RegisterCollider(owner, m_Offset, m_HalfExtents, m_Radius, m_ColliderType);
+	m_PhysicsSystem = &physics;
+}
 
-	const vec3& scale = transform->GetScale();
-	const float32 halfWidth = m_HalfExtents.x * scale.x;
-	const float32 halfHeight = m_HalfExtents.y * scale.y;
-	const float32 halfDepth = m_HalfExtents.z * scale.z;
+void Collider::UnregisterFromPhysics(PhysicsSystem& physics)
+{
+	if (m_PhysicsSystem != &physics)
+	{
+		return;
+	}
 
-	AABB aabb;
-	aabb.min.x = centerX - halfWidth;
-	aabb.min.y = centerY - halfHeight;
-	aabb.min.z = centerZ - halfDepth;
-	aabb.max.x = centerX + halfWidth;
-	aabb.max.y = centerY + halfHeight;
-	aabb.max.z = centerZ + halfDepth;
+	physics.UnregisterCollider(m_Handle);
 
-	return aabb;
+	m_Handle = {};
+	m_PhysicsSystem = nullptr;
+}
+
+AABB Collider::GetWorldAABB() const
+{
+	N_ASSERT(m_PhysicsSystem != nullptr, "Collider is not registered with physics.");
+	const ColliderData* data = m_PhysicsSystem->GetCollider(m_Handle);
+
+	N_ASSERT(data != nullptr,"Collider handle is invalid.");
+	return data->worldAABB;
 }
 
 bool Collider::Init(std::ifstream& bin, EngineContext& engineContext)
 {
 	ColliderSerializationData serializationData;
-	bin.read(reinterpret_cast<char*>(&serializationData), sizeof(serializationData));
+	N_ASSERT(bin.read(reinterpret_cast<char*>(&serializationData), sizeof(serializationData)), "Failed to read collider serialization data.");
 
 	m_ColliderType = serializationData.colliderType;
 	m_Offset = serializationData.offset;

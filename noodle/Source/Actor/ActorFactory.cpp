@@ -60,7 +60,6 @@ Actor* ActorFactory::CreateActor(std::ifstream& sceneStream)
 	sceneStream.read(reinterpret_cast<char*>(&newActorId), sizeof(newActorId));
 
 	Actor* actor = N_NEW Actor(newActorId);
-	actor->Init();
 
 	// Check for parent Actor and cache parent ID
 	bool hasParent = false;
@@ -96,7 +95,6 @@ Actor* ActorFactory::CreateActor(std::ifstream& sceneStream)
 		component->SetOwner(actor);
 	}
 
-	actor->PostInit();
 	return actor;
 }
 

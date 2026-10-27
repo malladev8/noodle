@@ -14,6 +14,7 @@ public:
 	virtual ~ActorComponent() {}
 
 	virtual void PostInit() {}
+	virtual void Destroy() {}
 	virtual void Update(float deltaSeconds) {}
 	virtual void SubmitRenderCommands(IRenderer& IRenderer) const {}
 	virtual eComponentId GetComponentId() const = 0;

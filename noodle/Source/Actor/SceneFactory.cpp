@@ -2,6 +2,7 @@
 #include "SceneFactory.h"
 #include "Scene.h"
 #include "ActorFactory.h"
+#include "Actor/Components/Collider.h"
 #include "Resource/ResourceTypes.h"
 
 #include <fstream>
@@ -36,15 +37,7 @@ Scene* SceneFactory::CreateScene(const char* binPath)
 	}
 	bin.close();
 
-	// Set up parent actor relationships
-	for (uint32 i = 0; i < numActors; ++i)
-	{
-		Actor& actor = *scene->m_Actors[i].get();
-		if (actor.GetParentId().has_value())
-		{
-			actor.SetParent(scene->m_ActorLookup[actor.GetParentId().value()]);
-		}
-	}
+	scene->PostInit();
 
 	return scene;
 }

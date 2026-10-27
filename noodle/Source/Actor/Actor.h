@@ -17,7 +17,6 @@ public:
 	explicit Actor(ActorId actorId);
 	virtual ~Actor();
 
-	bool Init();
 	void PostInit();
 	void Destroy();
 	void Update(float deltaSeconds);
@@ -58,6 +57,8 @@ private:
 	Transform* m_CachedTransform = nullptr;
 
 	std::string m_ControllerType;
+
+	bool m_Destroyed = false;
 
 	// This is called by the ActorFactory. No one else should be adding components
 	void AddComponent(ActorComponent* component);

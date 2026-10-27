@@ -28,6 +28,9 @@
     <Filter Include="Actor\Controllers">
       <UniqueIdentifier>{0f21c863-8994-4edc-afa0-e3c4b329b1eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{968a7044-1ef5-4be5-9039-d7123a951513}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\NoodleAllocator.cpp" />
@@ -95,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="Source\Rendering\D3D12\D3D12DebugRenderer.cpp">
       <Filter>Rendering\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics\PhysicsSystem.cpp">
+      <Filter>Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +209,12 @@
     </ClInclude>
     <ClInclude Include="Source\Rendering\D3D12\D3D12DebugRenderer.h">
       <Filter>Rendering\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\PhysicsSystem.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\ColliderData.h">
+      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

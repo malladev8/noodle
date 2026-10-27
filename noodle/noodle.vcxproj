@@ -41,6 +41,7 @@
     <ClCompile Include="Source\NoodleInput.cpp" />
     <ClCompile Include="Source\NoodlePch.cpp" />
     <ClCompile Include="Source\NoodleWindow.cpp" />
+    <ClCompile Include="Source\Physics\PhysicsSystem.cpp" />
     <ClCompile Include="Source\Rendering\D3D12\D3D12DebugRenderer.cpp" />
     <ClCompile Include="Source\Rendering\D3D12\D3D12Renderer.cpp" />
     <ClCompile Include="Source\Rendering\D3D12\D3D12SpriteRenderer.cpp" />
@@ -77,6 +78,8 @@
     <ClInclude Include="Source\NoodleInput.h" />
     <ClInclude Include="Source\NoodlePch.h" />
     <ClInclude Include="Source\NoodleWindow.h" />
+    <ClInclude Include="Source\Physics\ColliderData.h" />
+    <ClInclude Include="Source\Physics\PhysicsSystem.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12Common.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12DebugRenderer.h" />
     <ClInclude Include="Source\Rendering\D3D12\D3D12Renderer.h" />
