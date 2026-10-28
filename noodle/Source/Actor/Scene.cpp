@@ -101,6 +101,8 @@ void Scene::SubmitRenderCommands(IRenderer& IRenderer) const
 	{
 		actor->SubmitRenderCommands(IRenderer);
 	}
+
+    m_Physics.SubmitDebugRenderCommands(IRenderer);
 }
 
 void Scene::Render(IRenderer& IRenderer, const Window& window) const

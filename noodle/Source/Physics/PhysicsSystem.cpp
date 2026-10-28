@@ -2,6 +2,8 @@
 #include "PhysicsSystem.h"
 #include "Actor/Actor.h"
 #include "Actor/Components/Transform.h"
+#include "Rendering/IRenderer.h"
+#include "Rendering/RenderCommands.h"
 
 ColliderHandle PhysicsSystem::RegisterCollider(Actor* owner, const vec3& offset, const vec3& halfExtents, float32 radius, eColliderType type)
 {
@@ -136,4 +138,15 @@ void PhysicsSystem::Update(float32 deltaSeconds)
     }
 
     // TODO: broadphase, overlap tests, etc.
+}
+
+void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
+{
+    for (const ColliderData& collider : m_Colliders)
+    {
+        DebugAABBCommand cmd;
+        cmd.aabb = collider.worldAABB;
+        cmd.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+        renderer.SubmitDebugAABB(cmd);
+    }
 }

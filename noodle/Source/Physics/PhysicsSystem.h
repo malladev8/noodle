@@ -14,6 +14,7 @@ public:
     const ColliderData* GetCollider(ColliderHandle handle) const;
 
     void Update(float32 deltaSeconds);
+    void SubmitDebugRenderCommands(class IRenderer& renderer) const;
 
 protected:
 
