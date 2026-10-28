@@ -137,7 +137,25 @@ void PhysicsSystem::Update(float32 deltaSeconds)
         collider.worldAABB = CalculateWorldAABB(collider);
     }
 
-    // TODO: broadphase, overlap tests, etc.
+    // Test each unique pair once.
+    const size_t count = m_Colliders.size();
+
+    for (size_t i = 0; i < count; ++i)
+    {
+        for (size_t j = i + 1; j < count; ++j)
+        {
+            ColliderData& a = m_Colliders[i];
+            ColliderData& b = m_Colliders[j];
+
+            // TODO: Narrowphase - Perform appropriate collider type specific tests
+
+            if (sCheckAABBCollision(a.worldAABB, b.worldAABB))
+            {
+                // TODO: Handle overlap.
+            }
+        }
+    }
+
 }
 
 void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
@@ -149,4 +167,11 @@ void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
         cmd.color = { 0.0f, 1.0f, 0.0f, 1.0f };
         renderer.SubmitDebugAABB(cmd);
     }
+}
+
+bool PhysicsSystem::sCheckAABBCollision(const AABB& a, const AABB& b)
+{
+    return a.min.x <= b.max.x && a.max.x >= b.min.x &&
+           a.min.y <= b.max.y && a.max.y >= b.min.y &&
+           a.min.z <= b.max.z && a.max.z >= b.min.z;
 }

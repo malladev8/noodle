@@ -16,6 +16,8 @@ public:
     void Update(float32 deltaSeconds);
     void SubmitDebugRenderCommands(class IRenderer& renderer) const;
 
+    static bool sCheckAABBCollision(const AABB& a, const AABB& b);
+
 protected:
 
 private:
