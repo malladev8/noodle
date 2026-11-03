@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/NoodleCore.h"
 #include "ColliderData.h"
+#include <array>
 #include <vector>
 
 class Collider;
@@ -26,9 +27,14 @@ private:
     {
         uint32 denseIndex = UINT32_MAX;
         uint32 generation = 1;
+        eColliderMobility mobility = eColliderMobility::STATIC;
     };
 
-    std::vector<ColliderData> m_Colliders;
+    std::array<std::vector<ColliderData>, static_cast<uint32>(eColliderMobility::COUNT)> m_Colliders;
     std::vector<HandleSlot> m_HandleSlots;
     std::vector<uint32> m_FreeSlots;
+
+    void UpdateDynamicBounds();
+    void ResolveDynamicStaticCollisions();
+    void DetectDynamicDynamicOverlaps();
 };

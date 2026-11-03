@@ -34,10 +34,12 @@ ColliderHandle PhysicsSystem::RegisterCollider(Actor* owner, const vec3& offset,
         data.worldAABB = sCalculateWorldAABB(data);
     }
 
-    const uint32 denseIndex = static_cast<uint32>(m_Colliders.size());
+    const uint32 mobilityIndex = static_cast<uint32>(mobility);
+    const uint32 denseIndex = static_cast<uint32>(m_Colliders[mobilityIndex].size());
 
-    m_Colliders.push_back(data);
+    m_Colliders[mobilityIndex].push_back(data);
     m_HandleSlots[slotIndex].denseIndex = denseIndex;
+    m_HandleSlots[slotIndex].mobility = mobility;
 
     return { slotIndex, m_HandleSlots[slotIndex].generation };
 }
@@ -56,20 +58,22 @@ void PhysicsSystem::UnregisterCollider(ColliderHandle handle)
         return; // Stale or already-removed handle.
     }
 
+    const uint32 mobilityIndex = static_cast<uint32>(slot.mobility);
     const uint32 denseIndex = slot.denseIndex;
-    const uint32 lastIndex = static_cast<uint32>(m_Colliders.size() - 1);
+    const uint32 lastIndex = static_cast<uint32>(m_Colliders[mobilityIndex].size() - 1);
 
     if (denseIndex != lastIndex)
     {
         // Move the final collider into the removed entry's position.
-        m_Colliders[denseIndex] = std::move(m_Colliders[lastIndex]);
+        m_Colliders[mobilityIndex][denseIndex] = std::move(m_Colliders[mobilityIndex][lastIndex]);
 
         // Find the handle slot belonging to the moved collider.
-        const uint32 movedSlot = m_Colliders[denseIndex].handleSlot;
+        const uint32 movedSlot = m_Colliders[mobilityIndex][denseIndex].handleSlot;
         m_HandleSlots[movedSlot].denseIndex = denseIndex;
+        m_HandleSlots[movedSlot].mobility = slot.mobility;
     }
 
-    m_Colliders.pop_back();
+    m_Colliders[mobilityIndex].pop_back();
      
     slot.denseIndex = UINT32_MAX;
     ++slot.generation;
@@ -84,15 +88,16 @@ ColliderData* PhysicsSystem::GetCollider(ColliderHandle handle)
     }
 
     const HandleSlot& slot = m_HandleSlots[handle.index];
+    const uint32 mobilityIndex = static_cast<uint32>(slot.mobility);
 
     if (slot.generation != handle.generation || slot.denseIndex == UINT32_MAX)
     {
         return nullptr;
     }
 
-    N_ASSERT(slot.denseIndex < m_Colliders.size(), "Collider handle maps to an invalid dense index.");
+    N_ASSERT(slot.denseIndex < m_Colliders[mobilityIndex].size(), "Collider handle maps to an invalid dense index.");
 
-    return &m_Colliders[slot.denseIndex];
+    return &m_Colliders[mobilityIndex][slot.denseIndex];
 }
 
 const ColliderData* PhysicsSystem::GetCollider(ColliderHandle handle) const
@@ -111,7 +116,7 @@ const ColliderData* PhysicsSystem::GetCollider(ColliderHandle handle) const
 
     N_ASSERT(slot.denseIndex < m_Colliders.size(), "Collider handle maps to an invalid dense index.");
 
-    return &m_Colliders[slot.denseIndex];
+    return &m_Colliders[static_cast<uint32>(slot.mobility)][slot.denseIndex];
 }
 
 AABB PhysicsSystem::sCalculateWorldAABB(const ColliderData& collider)
@@ -138,23 +143,68 @@ AABB PhysicsSystem::sCalculateWorldAABB(const ColliderData& collider)
 
 void PhysicsSystem::Update(float32 deltaSeconds)
 {
-    for (ColliderData& collider : m_Colliders)
+    UpdateDynamicBounds();
+    ResolveDynamicStaticCollisions();
+    DetectDynamicDynamicOverlaps();
+}
+
+void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
+{
+    for (const std::vector<ColliderData>& colliderSubArr : m_Colliders)
     {
-        if (collider.mobility == eColliderMobility::DYNAMIC)
+        for (const ColliderData& collider : colliderSubArr)
         {
-            collider.worldAABB = sCalculateWorldAABB(collider);
+            DebugAABBCommand cmd;
+            cmd.aabb = collider.worldAABB;
+            cmd.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+            renderer.SubmitDebugAABB(cmd);
         }
     }
+}
+
+bool PhysicsSystem::sCheckAABBCollision(const AABB& a, const AABB& b)
+{
+    return a.min.x <= b.max.x && a.max.x >= b.min.x &&
+           a.min.y <= b.max.y && a.max.y >= b.min.y &&
+           a.min.z <= b.max.z && a.max.z >= b.min.z;
+}
+
+void PhysicsSystem::UpdateDynamicBounds()
+{
+    const uint32 dynamicColliderIndex = static_cast<uint32>(eColliderMobility::DYNAMIC);
+    for (ColliderData& collider : m_Colliders[dynamicColliderIndex])
+    {
+        collider.worldAABB = sCalculateWorldAABB(collider);
+    }
+}
+
+void PhysicsSystem::ResolveDynamicStaticCollisions()
+{
+    const uint32 staticIndex = static_cast<uint32>(eColliderMobility::STATIC);
+    const uint32 dynamicIndex = static_cast<uint32>(eColliderMobility::DYNAMIC);
+    for (ColliderData& dynamicCollider : m_Colliders[dynamicIndex])
+    {
+        for (ColliderData& staticCollider : m_Colliders[staticIndex])
+        {
+            // TODO: Narrowphase - Perform appropriate collider type specific tests
+            // TODO: resolve dynamic / static collisions
+        }
+    }
+}
+
+void PhysicsSystem::DetectDynamicDynamicOverlaps()
+{
+    const uint32 dynamicIndex = static_cast<uint32>(eColliderMobility::DYNAMIC);
 
     // Test each unique pair once.
-    const size_t count = m_Colliders.size();
+    const size_t count = m_Colliders[dynamicIndex].size();
 
     for (size_t i = 0; i < count; ++i)
     {
         for (size_t j = i + 1; j < count; ++j)
         {
-            ColliderData& a = m_Colliders[i];
-            ColliderData& b = m_Colliders[j];
+            ColliderData& a = m_Colliders[dynamicIndex][i];
+            ColliderData& b = m_Colliders[dynamicIndex][j];
 
             // TODO: Narrowphase - Perform appropriate collider type specific tests
 
@@ -164,23 +214,4 @@ void PhysicsSystem::Update(float32 deltaSeconds)
             }
         }
     }
-
-}
-
-void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
-{
-    for (const ColliderData& collider : m_Colliders)
-    {
-        DebugAABBCommand cmd;
-        cmd.aabb = collider.worldAABB;
-        cmd.color = { 0.0f, 1.0f, 0.0f, 1.0f };
-        renderer.SubmitDebugAABB(cmd);
-    }
-}
-
-bool PhysicsSystem::sCheckAABBCollision(const AABB& a, const AABB& b)
-{
-    return a.min.x <= b.max.x && a.max.x >= b.min.x &&
-           a.min.y <= b.max.y && a.max.y >= b.min.y &&
-           a.min.z <= b.max.z && a.max.z >= b.min.z;
 }

@@ -44,8 +44,6 @@ void Scene::PostInit()
             collider->RegisterWithPhysics(m_Physics);
         }
     }
-
-    
 }
 
 void Scene::Destroy()

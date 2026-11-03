@@ -165,6 +165,7 @@ enum class eColliderMobility : uint32
 {
 	STATIC = 0,
 	DYNAMIC,
+	COUNT
 };
 
 struct AABB
