@@ -108,15 +108,16 @@ const ColliderData* PhysicsSystem::GetCollider(ColliderHandle handle) const
     }
 
     const HandleSlot& slot = m_HandleSlots[handle.index];
+    const uint32 mobilityIndex = static_cast<uint32>(slot.mobility);
 
     if (slot.generation != handle.generation || slot.denseIndex == UINT32_MAX)
     {
         return nullptr;
     }
 
-    N_ASSERT(slot.denseIndex < m_Colliders.size(), "Collider handle maps to an invalid dense index.");
+    N_ASSERT(slot.denseIndex < m_Colliders[mobilityIndex].size(), "Collider handle maps to an invalid dense index.");
 
-    return &m_Colliders[static_cast<uint32>(slot.mobility)][slot.denseIndex];
+    return &m_Colliders[mobilityIndex][slot.denseIndex];
 }
 
 AABB PhysicsSystem::sCalculateWorldAABB(const ColliderData& collider)
@@ -141,6 +142,13 @@ AABB PhysicsSystem::sCalculateWorldAABB(const ColliderData& collider)
     return aabb;
 }
 
+bool PhysicsSystem::sCheckAABBCollision(const AABB& a, const AABB& b)
+{
+    return a.min.x <= b.max.x && a.max.x >= b.min.x &&
+        a.min.y <= b.max.y && a.max.y >= b.min.y &&
+        a.min.z <= b.max.z && a.max.z >= b.min.z;
+}
+
 void PhysicsSystem::Update(float32 deltaSeconds)
 {
     UpdateDynamicBounds();
@@ -160,13 +168,6 @@ void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
             renderer.SubmitDebugAABB(cmd);
         }
     }
-}
-
-bool PhysicsSystem::sCheckAABBCollision(const AABB& a, const AABB& b)
-{
-    return a.min.x <= b.max.x && a.max.x >= b.min.x &&
-           a.min.y <= b.max.y && a.max.y >= b.min.y &&
-           a.min.z <= b.max.z && a.max.z >= b.min.z;
 }
 
 void PhysicsSystem::UpdateDynamicBounds()
