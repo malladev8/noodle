@@ -30,7 +30,7 @@ void Collider::RegisterWithPhysics(PhysicsSystem& physics)
 	Actor* owner = GetOwner();
 	N_ASSERT(owner != nullptr, "Collider owning Actor is null.");
 
-	m_Handle = physics.RegisterCollider(owner, m_Offset, m_HalfExtents, m_Radius, m_ColliderType);
+	m_Handle = physics.RegisterCollider(owner, m_Offset, m_HalfExtents, m_Radius, m_ColliderType, m_ColliderMobility);
 	m_PhysicsSystem = &physics;
 }
 
@@ -62,6 +62,7 @@ bool Collider::Init(std::ifstream& bin, EngineContext& engineContext)
 	N_ASSERT(bin.read(reinterpret_cast<char*>(&serializationData), sizeof(serializationData)), "Failed to read collider serialization data.");
 
 	m_ColliderType = serializationData.colliderType;
+	m_ColliderMobility = serializationData.colliderMobility;
 	m_Offset = serializationData.offset;
 	m_HalfExtents = serializationData.halfExtents;
 	m_Radius = serializationData.radius;

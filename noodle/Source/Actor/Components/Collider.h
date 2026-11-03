@@ -29,6 +29,7 @@ private:
 	vec3 m_HalfExtents = { 0.5f, 0.5f, 0.0f };
 	float32 m_Radius = 0.5f;
 	eColliderType m_ColliderType = eColliderType::AABB;
+	eColliderMobility m_ColliderMobility = eColliderMobility::STATIC;
 
 	ColliderHandle m_Handle;
 	PhysicsSystem* m_PhysicsSystem = nullptr;

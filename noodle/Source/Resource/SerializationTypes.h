@@ -51,4 +51,5 @@ struct ColliderSerializationData : public ComponentSerializationData
 	vec3 offset;
 	float32 radius;
 	eColliderType colliderType = eColliderType::AABB;
+	eColliderMobility colliderMobility = eColliderMobility::STATIC;
 };

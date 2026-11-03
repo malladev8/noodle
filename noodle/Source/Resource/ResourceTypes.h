@@ -158,7 +158,13 @@ enum class eSpriteLayer : uint32
 enum class eColliderType : uint32
 {
 	AABB = 0,
-	CIRCLE,
+	SPHERE,
+};
+
+enum class eColliderMobility : uint32
+{
+	STATIC = 0,
+	DYNAMIC,
 };
 
 struct AABB

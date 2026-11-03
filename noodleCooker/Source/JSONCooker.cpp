@@ -443,9 +443,23 @@ static bool sParseColliderComponent(const rapidjson::Value& component, ColliderS
         {
             outData.colliderType = eColliderType::AABB;
         }
-        else if (_strcmpi(shapeStr.c_str(), "Circle") == 0)
+        else if (_strcmpi(shapeStr.c_str(), "Sphere") == 0)
         {
-            outData.colliderType = eColliderType::CIRCLE;
+            outData.colliderType = eColliderType::SPHERE;
+        }
+    }
+
+    const char* colliderMobilityName = "Mobility";
+    if (component.HasMember(colliderMobilityName))
+    {
+        std::string mobilityStr = component[colliderMobilityName].GetString();
+        if (_strcmpi(mobilityStr.c_str(), "Static") == 0)
+        {
+            outData.colliderMobility = eColliderMobility::STATIC;
+        }
+        else if (_strcmpi(mobilityStr.c_str(), "Dynamic") == 0)
+        {
+            outData.colliderMobility = eColliderMobility::DYNAMIC;
         }
     }
 

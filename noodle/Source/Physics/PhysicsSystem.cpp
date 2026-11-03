@@ -5,7 +5,7 @@
 #include "Rendering/IRenderer.h"
 #include "Rendering/RenderCommands.h"
 
-ColliderHandle PhysicsSystem::RegisterCollider(Actor* owner, const vec3& offset, const vec3& halfExtents, float32 radius, eColliderType type)
+ColliderHandle PhysicsSystem::RegisterCollider(Actor* owner, const vec3& offset, const vec3& halfExtents, float32 radius, eColliderType type, eColliderMobility mobility)
 {
     uint32 slotIndex;
 
@@ -26,7 +26,13 @@ ColliderHandle PhysicsSystem::RegisterCollider(Actor* owner, const vec3& offset,
     data.halfExtents = halfExtents;
     data.radius = radius;
     data.type = type;
+    data.mobility = mobility;
     data.handleSlot = slotIndex;
+
+    if (mobility == eColliderMobility::STATIC)
+    {
+        data.worldAABB = sCalculateWorldAABB(data);
+    }
 
     const uint32 denseIndex = static_cast<uint32>(m_Colliders.size());
 
@@ -108,7 +114,7 @@ const ColliderData* PhysicsSystem::GetCollider(ColliderHandle handle) const
     return &m_Colliders[slot.denseIndex];
 }
 
-static AABB CalculateWorldAABB(const ColliderData& collider)
+AABB PhysicsSystem::sCalculateWorldAABB(const ColliderData& collider)
 {
     N_ASSERT(collider.owner != nullptr, "Collider owning Actor is null.");
 
@@ -134,7 +140,10 @@ void PhysicsSystem::Update(float32 deltaSeconds)
 {
     for (ColliderData& collider : m_Colliders)
     {
-        collider.worldAABB = CalculateWorldAABB(collider);
+        if (collider.mobility == eColliderMobility::DYNAMIC)
+        {
+            collider.worldAABB = sCalculateWorldAABB(collider);
+        }
     }
 
     // Test each unique pair once.

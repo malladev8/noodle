@@ -18,6 +18,7 @@ struct ColliderData
     float32 radius = 0.5f;
     uint32 handleSlot = UINT32_MAX;
     eColliderType type = eColliderType::AABB;
+    eColliderMobility mobility = eColliderMobility::STATIC;
 
     AABB worldAABB = {};
 };

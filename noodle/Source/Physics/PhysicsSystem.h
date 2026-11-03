@@ -8,7 +8,7 @@ class Collider;
 class PhysicsSystem
 {
 public:
-    ColliderHandle RegisterCollider(class Actor* owner, const vec3& offset, const vec3& halfExtents, float32 radius, eColliderType type);
+    ColliderHandle RegisterCollider(class Actor* owner, const vec3& offset, const vec3& halfExtents, float32 radius, eColliderType type, eColliderMobility mobility);
     void UnregisterCollider(ColliderHandle handle);
     ColliderData* GetCollider(ColliderHandle handle);
     const ColliderData* GetCollider(ColliderHandle handle) const;
@@ -16,6 +16,7 @@ public:
     void Update(float32 deltaSeconds);
     void SubmitDebugRenderCommands(class IRenderer& renderer) const;
 
+    static AABB sCalculateWorldAABB(const ColliderData& collider);
     static bool sCheckAABBCollision(const AABB& a, const AABB& b);
 
 protected:
