@@ -171,8 +171,7 @@ bool PhysicsSystem::sCheckAABBCollision(const AABB& a, const AABB& b)
 
 void PhysicsSystem::UpdateDynamicBounds()
 {
-    const uint32 dynamicColliderIndex = static_cast<uint32>(eColliderMobility::DYNAMIC);
-    for (ColliderData& collider : m_Colliders[dynamicColliderIndex])
+    for (ColliderData& collider : m_Colliders[DYNAMIC_COLLIDER_INDEX])
     {
         collider.worldAABB = sCalculateWorldAABB(collider);
     }
@@ -180,11 +179,9 @@ void PhysicsSystem::UpdateDynamicBounds()
 
 void PhysicsSystem::ResolveDynamicStaticCollisions()
 {
-    const uint32 staticIndex = static_cast<uint32>(eColliderMobility::STATIC);
-    const uint32 dynamicIndex = static_cast<uint32>(eColliderMobility::DYNAMIC);
-    for (ColliderData& dynamicCollider : m_Colliders[dynamicIndex])
+    for (ColliderData& dynamicCollider : m_Colliders[DYNAMIC_COLLIDER_INDEX])
     {
-        for (ColliderData& staticCollider : m_Colliders[staticIndex])
+        for (ColliderData& staticCollider : m_Colliders[STATIC_COLLIDER_INDEX])
         {
             // TODO: Narrowphase - Perform appropriate collider type specific tests
             // TODO: resolve dynamic / static collisions
@@ -194,17 +191,15 @@ void PhysicsSystem::ResolveDynamicStaticCollisions()
 
 void PhysicsSystem::DetectDynamicDynamicOverlaps()
 {
-    const uint32 dynamicIndex = static_cast<uint32>(eColliderMobility::DYNAMIC);
-
     // Test each unique pair once.
-    const size_t count = m_Colliders[dynamicIndex].size();
+    const size_t count = m_Colliders[DYNAMIC_COLLIDER_INDEX].size();
 
     for (size_t i = 0; i < count; ++i)
     {
         for (size_t j = i + 1; j < count; ++j)
         {
-            ColliderData& a = m_Colliders[dynamicIndex][i];
-            ColliderData& b = m_Colliders[dynamicIndex][j];
+            ColliderData& a = m_Colliders[DYNAMIC_COLLIDER_INDEX][i];
+            ColliderData& b = m_Colliders[DYNAMIC_COLLIDER_INDEX][j];
 
             // TODO: Narrowphase - Perform appropriate collider type specific tests
 

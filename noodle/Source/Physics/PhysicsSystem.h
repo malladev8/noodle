@@ -6,6 +6,9 @@
 
 class Collider;
 
+static constexpr uint32 STATIC_COLLIDER_INDEX = static_cast<uint32>(eColliderMobility::STATIC);
+static constexpr uint32 DYNAMIC_COLLIDER_INDEX = static_cast<uint32>(eColliderMobility::DYNAMIC);
+
 class PhysicsSystem
 {
 public:
