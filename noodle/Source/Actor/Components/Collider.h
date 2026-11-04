@@ -9,6 +9,7 @@ class Collider : public ActorComponent
 public:
 	const static eComponentId COMPONENT_ID;
 
+	virtual void PostInit(const struct WorldContext& worldContext) override;
 	virtual void Destroy() override;
 	virtual void Update(float32 deltaSeconds) override;
 	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }

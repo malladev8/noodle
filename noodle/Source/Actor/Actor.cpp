@@ -1,6 +1,8 @@
 #include "NoodlePch.h"
 #include "Actor.h"
 #include "Components/Transform.h"
+#include "WorldContext.h"
+
 #include <algorithm>
 
 Actor::Actor(ActorId actorId)
@@ -13,11 +15,11 @@ Actor::~Actor()
 	Destroy();
 }
 
-void Actor::PostInit()
+void Actor::PostInit(const WorldContext& worldContext)
 {
 	for (auto it = m_Components.begin(); it != m_Components.end(); ++it)
 	{
-		(*it)->PostInit();
+		(*it)->PostInit(worldContext);
 	}
 }
 

@@ -61,6 +61,7 @@
     <ClInclude Include="Source\Actor\Controllers\Controller.h" />
     <ClInclude Include="Source\Actor\Scene.h" />
     <ClInclude Include="Source\Actor\SceneFactory.h" />
+    <ClInclude Include="Source\Actor\WorldContext.h" />
     <ClInclude Include="Source\Core\NoodleConfig.h" />
     <ClInclude Include="Source\Core\NoodleCore.h" />
     <ClInclude Include="Source\Core\NoodleLogger.h" />

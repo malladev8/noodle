@@ -1,11 +1,19 @@
 #include "NoodlePch.h"
 #include "Movement.h"
-#include "Transform.h"
 #include "Actor/Actor.h"
+#include "Actor/WorldContext.h"
+#include "Physics/PhysicsSystem.h"
+#include "Transform.h"
 #include "Resource/SerializationTypes.h"
+
 #include <fstream>
 
 const eComponentId Movement::COMPONENT_ID = eComponentId::COMPONENT_MOVEMENT;
+
+void Movement::PostInit(const WorldContext& worldContext)
+{
+	m_Physics = worldContext.physics;
+}
 
 void Movement::Update(float32 deltaSeconds)
 {

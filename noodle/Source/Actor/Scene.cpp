@@ -5,6 +5,7 @@
 #include "Controllers/Controller.h"
 #include "NoodleWindow.h"
 #include "Rendering/IRenderer.h"
+#include "WorldContext.h"
 
 Scene::~Scene()
 {
@@ -32,17 +33,11 @@ void Scene::PostInit()
     // Actor PostInit
     for (const std::unique_ptr<Actor>& actor : m_Actors)
     {
-        actor->PostInit();
-    }
-
-    // Now that actors and their ownership relationships are established,
-    // register colliders with this scene's physics system.
-    for (const std::unique_ptr<Actor>& actor : m_Actors)
-    {
-        if (Collider* collider = actor->GetComponent<Collider>())
-        {
-            collider->RegisterWithPhysics(m_Physics);
-        }
+        WorldContext worldContext
+        { 
+            &m_Physics, 
+        };
+        actor->PostInit(worldContext);
     }
 }
 

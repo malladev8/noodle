@@ -17,7 +17,7 @@ public:
 	explicit Actor(ActorId actorId);
 	virtual ~Actor();
 
-	void PostInit();
+	void PostInit(const struct WorldContext& worldContext);
 	void Destroy();
 	void Update(float deltaSeconds);
 	void SubmitRenderCommands(class IRenderer& IRenderer) const;

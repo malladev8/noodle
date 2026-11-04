@@ -216,5 +216,8 @@
     <ClInclude Include="Source\Physics\ColliderData.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Actor\WorldContext.h">
+      <Filter>Actor</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

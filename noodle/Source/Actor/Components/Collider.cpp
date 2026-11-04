@@ -2,6 +2,7 @@
 #include "Collider.h"
 
 #include "Actor/Actor.h"
+#include "Actor/WorldContext.h"
 #include "Physics/PhysicsSystem.h"
 #include "Resource/SerializationTypes.h"
 #include "Transform.h"
@@ -9,6 +10,18 @@
 #include <fstream>
 
 const eComponentId Collider::COMPONENT_ID = eComponentId::COMPONENT_COLLIDER;
+
+void Collider::PostInit(const WorldContext& worldContext)
+{
+	if (worldContext.physics != nullptr)
+	{
+		RegisterWithPhysics(*worldContext.physics);
+	}
+	else
+	{
+		N_LOG("Could not register collider with physics in component PostInit(). WorldContext Physics system was not valid.");
+	}
+}
 
 void Collider::Destroy()
 {
@@ -24,8 +37,7 @@ void Collider::Update(float32 deltaSeconds)
 
 void Collider::RegisterWithPhysics(PhysicsSystem& physics)
 {
-	N_ASSERT(m_PhysicsSystem == nullptr,
-		"Collider is already registered with a PhysicsSystem.");
+	N_ASSERT(m_PhysicsSystem == nullptr, "Collider is already registered with a PhysicsSystem.");
 
 	Actor* owner = GetOwner();
 	N_ASSERT(owner != nullptr, "Collider owning Actor is null.");
