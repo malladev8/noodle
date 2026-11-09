@@ -57,8 +57,7 @@
     {
       "Id": 4,
       "Prefab": "Actor/TreeActorAtlasTest",
-      "Components": 
-      [
+      "Components": [
         {
           "Type": "Transform",
           "Position": [ -7.0, 0.0, 0.0 ],
@@ -68,6 +67,34 @@
         {
           "Type": "Sprite",
           "Color": [ 1.0, 0.0, 0.0, 1.0 ]
+        }
+      ]
+    },
+    {
+      "Id": 5,
+      "Components": [
+        {
+          "Type": "Transform",
+          "Position": [ 0.0, -4.0, 0.0 ],
+          "Rotation": [ 0.0, 0.0, 0.0 ],
+          "Scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "Type": "Sprite",
+          "Material": "Material/AutumnForestMaterial",
+          "Atlas": "Atlas/AutumnForestAtlas",
+          "Region": "Autumn_Forest_2D_Platformer_Tileset_Platformer - Ground Additional 01",
+          "PixelsPerUnit": 100,
+          "Color": [ 1.0, 1.0, 1.0, 1.0 ],
+          "Layer": "World",
+          "Order": 0
+        },
+        {
+          "Type": "Collider",
+          "Shape": "AABB",
+          "Mobility": "Static",
+          "HalfExtents": [ 1.25, 1.65, 0.0 ],
+          "Offset": [ 0.0, 0.0, 0.0 ]
         }
       ]
     }

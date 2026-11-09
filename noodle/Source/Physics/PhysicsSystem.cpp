@@ -166,7 +166,18 @@ void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
         {
             DebugAABBCommand cmd;
             cmd.aabb = collider.worldAABB;
-            cmd.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+            if (collider.mobility == eColliderMobility::DYNAMIC)
+            {
+                cmd.color = { 0.0f, 1.0f, 0.0f, 1.0f };
+            }
+            else if(collider.mobility == eColliderMobility::STATIC)
+            {
+                cmd.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+            }
+            else
+            {
+                cmd.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+            }
             renderer.SubmitDebugAABB(cmd);
         }
     }
@@ -206,7 +217,7 @@ void PhysicsSystem::ProcessMovementRequests()
         collider->worldAABB = sCalculateWorldAABB(*collider);
 
         // Z-Axis movement.
-        const float32 dz = ResolveAxis(*collider, request.displacement.y, 2);
+        const float32 dz = ResolveAxis(*collider, request.displacement.z, 2);
         position = transform->GetPosition();
         position.z += dz;
         transform->SetPosition(position);
@@ -287,7 +298,7 @@ float32 PhysicsSystem::ResolveAxis(const ColliderData& dynamicCollider, float32 
 
 bool PhysicsSystem::sCheckAABBCollisionOnOtherAxes(const AABB& a, const AABB& b, uint32 axis)
 {
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint32 i = 0; i < 2; ++i)
     {
         if (i == axis)
         {
