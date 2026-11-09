@@ -38,7 +38,11 @@ void RedAngelApp::Initialize()
 
 	// Testing scene creation
 	std::filesystem::path scenePath = m_CookedAssetRoot / "Scene" / "TestScene.bin";
-	Scene* scene = Engine::Get().LoadScene(scenePath.string().c_str());
+	SceneInitParameters sceneParams
+	{
+		ePhysicsDimension::TWO_D,
+	};
+	Scene* scene = Engine::Get().LoadScene(scenePath.string().c_str(), sceneParams);
 
 	// Create Controllers
 	std::vector<PlayerController*> playerControllers = scene->CreateControllers<PlayerController>("Player");

@@ -11,7 +11,7 @@ SceneFactory::SceneFactory()
 {
 }
 
-Scene* SceneFactory::CreateScene(const char* binPath)
+Scene* SceneFactory::CreateScene(const char* binPath, const SceneInitParameters& sceneInitParamters)
 {
 	std::ifstream bin(binPath, std::ios::binary);
 	if (!bin.is_open())
@@ -21,6 +21,7 @@ Scene* SceneFactory::CreateScene(const char* binPath)
 	}
 
 	Scene* scene = N_NEW Scene();
+	scene->Init(sceneInitParamters);
 
 	// Scene Asset Id
 	AssetId sceneId = 0;

@@ -11,12 +11,18 @@ class Camera;
 class Window;
 class Controller;
 
+struct SceneInitParameters
+{
+	ePhysicsDimension physicsDimension = ePhysicsDimension::TWO_D;
+};
+
 class Scene
 {
 	friend class SceneFactory;
 public:
 	~Scene();
 
+	void Init(const SceneInitParameters& sceneInitParamters);
 	void PostInit();
 	void Destroy();
 	void Update(float deltaSeconds);
@@ -48,7 +54,7 @@ private:
 	std::vector<Camera*> m_Cameras;
 	std::vector<std::unique_ptr<Controller>> m_Controllers;
 
-	PhysicsSystem m_Physics;
+	std::unique_ptr<PhysicsSystem> m_Physics;
 
 	bool m_Destroyed = false;
 

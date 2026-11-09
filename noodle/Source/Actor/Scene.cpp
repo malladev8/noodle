@@ -4,12 +4,26 @@
 #include "Components/Collider.h"
 #include "Controllers/Controller.h"
 #include "NoodleWindow.h"
+#include "Physics/PhysicsSystem2D.h"
+#include "Physics/PhysicsSystem3D.h"
 #include "Rendering/IRenderer.h"
 #include "WorldContext.h"
 
 Scene::~Scene()
 {
     Destroy();
+}
+
+void Scene::Init(const SceneInitParameters& sceneInitParamters)
+{
+    if (sceneInitParamters.physicsDimension == ePhysicsDimension::TWO_D)
+    {
+        m_Physics = std::unique_ptr<PhysicsSystem>(N_NEW PhysicsSystem2D);
+    }
+    else if (sceneInitParamters.physicsDimension == ePhysicsDimension::THREE_D)
+    {
+        m_Physics = std::unique_ptr<PhysicsSystem>(N_NEW PhysicsSystem3D);
+    }
 }
 
 void Scene::PostInit()
@@ -35,7 +49,7 @@ void Scene::PostInit()
     {
         WorldContext worldContext
         { 
-            &m_Physics, 
+            m_Physics.get(),
         };
         actor->PostInit(worldContext);
     }
@@ -82,7 +96,7 @@ void Scene::Update(float deltaSeconds)
 		actor->Update(deltaSeconds);
 	}
 
-	m_Physics.Update(deltaSeconds);
+	m_Physics->Update(deltaSeconds);
 }
 
 void Scene::SubmitRenderCommands(IRenderer& IRenderer) const
@@ -95,7 +109,7 @@ void Scene::SubmitRenderCommands(IRenderer& IRenderer) const
 		actor->SubmitRenderCommands(IRenderer);
 	}
 
-    m_Physics.SubmitDebugRenderCommands(IRenderer);
+    m_Physics->SubmitDebugRenderCommands(IRenderer);
 }
 
 void Scene::Render(IRenderer& IRenderer, const Window& window) const

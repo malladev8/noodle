@@ -6,7 +6,7 @@ class SceneFactory
 {
 public:
 	SceneFactory();
-	Scene* CreateScene(const char* binPath);
+	Scene* CreateScene(const char* binPath, const SceneInitParameters& sceneInitParamters);
 
 protected:
 private:

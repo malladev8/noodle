@@ -90,10 +90,10 @@ void Engine::Shutdown()
 	PlatformShutdown();
 }
 
-Scene* Engine::LoadScene(const char* scenePath)
+Scene* Engine::LoadScene(const char* scenePath, const SceneInitParameters& sceneInitParamters)
 {
 	SceneFactory sceneFactory;
-	Scene* scene = sceneFactory.CreateScene(scenePath);
+	Scene* scene = sceneFactory.CreateScene(scenePath, sceneInitParamters);
 	m_ActiveScene = std::unique_ptr<Scene>(scene);
 	return m_ActiveScene.get();
 }

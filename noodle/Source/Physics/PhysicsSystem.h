@@ -10,6 +10,12 @@ class Collider;
 static constexpr uint32 STATIC_COLLIDER_INDEX = static_cast<uint32>(eColliderMobility::STATIC);
 static constexpr uint32 DYNAMIC_COLLIDER_INDEX = static_cast<uint32>(eColliderMobility::DYNAMIC);
 
+enum class ePhysicsDimension : uint8
+{
+    TWO_D = 0,
+    THREE_D
+};
+
 struct MovementRequest
 {
     ColliderHandle colliderHandle;
@@ -19,12 +25,13 @@ struct MovementRequest
 class PhysicsSystem
 {
 public:
+    virtual ~PhysicsSystem() {}
     ColliderHandle RegisterCollider(class Actor* owner, const vec3& offset, const vec3& halfExtents, float32 radius, eColliderType type, eColliderMobility mobility);
     void UnregisterCollider(ColliderHandle handle);
     ColliderData* GetCollider(ColliderHandle handle);
     const ColliderData* GetCollider(ColliderHandle handle) const;
 
-    void Update(float32 deltaSeconds);
+    virtual void Update(float32 deltaSeconds) = 0;
     void SubmitDebugRenderCommands(class IRenderer& renderer) const;
 
     void RequestMovement(ColliderHandle colliderHandle, const vec3& displacement);
@@ -33,8 +40,6 @@ public:
     static bool sCheckAABBCollision(const AABB& a, const AABB& b);
 
 protected:
-
-private:
     struct HandleSlot
     {
         uint32 denseIndex = UINT32_MAX;
@@ -47,10 +52,5 @@ private:
     std::vector<uint32> m_FreeSlots;
     std::vector<MovementRequest> m_MovementRequests;
 
-    void ProcessMovementRequests();
-    void UpdateDynamicBounds();
-    void DetectDynamicDynamicOverlaps();
-    float32 ResolveAxis(const ColliderData& dynamicCollider, float32 displacement, uint32 axis) const;
-
-    static bool sCheckAABBCollisionOnOtherAxes(const AABB& a, const AABB& b, uint32 axis);
+private:
 };
