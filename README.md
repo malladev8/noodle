@@ -12,6 +12,7 @@ Current Features:
 - Texture Atlases
 - Sprite Layering
 - Debug Rendering
+- 2D Dynamic/Static AABB collision detection
 
 To Build and Run
 - Build the RA.slnx solution in the debug configuration in Visual Studio 2026
