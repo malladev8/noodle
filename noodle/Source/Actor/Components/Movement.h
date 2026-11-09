@@ -5,7 +5,7 @@
 class Movement : public ActorComponent
 {
 public:
-	virtual void PostInit(const struct WorldContext& worldContext) override;
+	virtual void PostInit(const WorldContext& worldContext) override;
 	virtual void Update(float32 deltaSeconds) override;
 	void SetMoveInput(const vec3& moveInput) { m_MoveInput = moveInput; }
 	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }

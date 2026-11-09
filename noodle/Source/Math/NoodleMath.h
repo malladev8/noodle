@@ -52,6 +52,7 @@ struct vec2
 	vec2& operator+=(const vec2& other) { x += other.x; y += other.y; return *this; }
 	vec2& operator-=(const vec2& other) { x -= other.x; y -= other.y; return *this; }
 	vec2& operator*=(float s) { x *= s; y *= s; return *this; }
+	float32 operator[](uint32 i) const { N_ASSERT(i < 2, "Index is out of bounds.");  return data[i]; }
 
 	float LengthSq() const { return x * x + y * y; }
 	float Length() const { return sqrtf(LengthSq()); }
@@ -79,6 +80,7 @@ struct vec3
 	vec3& operator+=(const vec3& other) { x += other.x; y += other.y; z += other.z; return *this; }
 	vec3& operator-=(const vec3& other) { x -= other.x; y -= other.y; z -= other.z; return *this; }
 	vec3& operator*=(float s) { x *= s; y *= s; z *= s; return *this; }
+	float32 operator[](uint32 i) const { N_ASSERT(i < 3, "Index is out of bounds.");  return data[i]; }
 
 	float LengthSq() const { return x * x + y * y + z * z; }
 	float Length() const { return sqrtf(LengthSq()); }
@@ -122,6 +124,7 @@ struct vec4
 	vec4& operator+=(const vec4& other) { x += other.x; y += other.y; z += other.z; w += other.w; return *this; }
 	vec4& operator-=(const vec4& other) { x -= other.x; y -= other.y; z -= other.z; w -= other.w; return *this; }
 	vec4& operator*=(float s) { x *= s; y *= s; z *= s; w *= s; return *this; }
+	float32 operator[](uint32 i) const { N_ASSERT(i < 4, "Index is out of bounds.");  return data[i]; }
 
 	float LengthSq() const { return x * x + y * y + z * z + w * w; }
 	float Length() const { return sqrtf(LengthSq()); }

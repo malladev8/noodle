@@ -1,6 +1,7 @@
 #include "NoodlePch.h"
 #include "PhysicsSystem.h"
 #include "Actor/Actor.h"
+#include "Actor/Components/Collider.h"
 #include "Actor/Components/Transform.h"
 #include "Rendering/IRenderer.h"
 #include "Rendering/RenderCommands.h"
@@ -151,9 +152,10 @@ bool PhysicsSystem::sCheckAABBCollision(const AABB& a, const AABB& b)
 
 void PhysicsSystem::Update(float32 deltaSeconds)
 {
+    ProcessMovementRequests();
     UpdateDynamicBounds();
-    ResolveDynamicStaticCollisions();
     DetectDynamicDynamicOverlaps();
+    m_MovementRequests.clear();
 }
 
 void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
@@ -170,23 +172,53 @@ void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
     }
 }
 
+void PhysicsSystem::RequestMovement(ColliderHandle colliderHandle, const vec3& displacement)
+{
+    m_MovementRequests.push_back({ colliderHandle, displacement });
+}
+
+void PhysicsSystem::ProcessMovementRequests()
+{
+    for (const MovementRequest& request : m_MovementRequests)
+    {
+        ColliderData* collider = GetCollider(request.colliderHandle);
+
+        if (collider == nullptr || collider->mobility != eColliderMobility::DYNAMIC)
+        {
+            continue;
+        }
+
+        Transform* transform = collider->owner->GetComponent<Transform>();
+
+        vec3 position = transform->GetPosition();
+
+        // X-Axis movement.
+        const float32 dx = ResolveAxis(*collider, request.displacement.x, 0);
+        position.x += dx;
+        transform->SetPosition(position);
+        collider->worldAABB = sCalculateWorldAABB(*collider);
+
+        // Y-Axis movement.
+        const float32 dy = ResolveAxis(*collider, request.displacement.y, 1);
+        position = transform->GetPosition();
+        position.y += dy;
+        transform->SetPosition(position);
+        collider->worldAABB = sCalculateWorldAABB(*collider);
+
+        // Z-Axis movement.
+        const float32 dz = ResolveAxis(*collider, request.displacement.y, 2);
+        position = transform->GetPosition();
+        position.z += dz;
+        transform->SetPosition(position);
+        collider->worldAABB = sCalculateWorldAABB(*collider);
+    }
+}
+
 void PhysicsSystem::UpdateDynamicBounds()
 {
     for (ColliderData& collider : m_Colliders[DYNAMIC_COLLIDER_INDEX])
     {
         collider.worldAABB = sCalculateWorldAABB(collider);
-    }
-}
-
-void PhysicsSystem::ResolveDynamicStaticCollisions()
-{
-    for (ColliderData& dynamicCollider : m_Colliders[DYNAMIC_COLLIDER_INDEX])
-    {
-        for (ColliderData& staticCollider : m_Colliders[STATIC_COLLIDER_INDEX])
-        {
-            // TODO: Narrowphase - Perform appropriate collider type specific tests
-            // TODO: resolve dynamic / static collisions
-        }
     }
 }
 
@@ -210,4 +242,63 @@ void PhysicsSystem::DetectDynamicDynamicOverlaps()
             }
         }
     }
+}
+
+float32 PhysicsSystem::ResolveAxis(const ColliderData& dynamicCollider, float32 displacement, uint32 axis) const
+{
+    if (displacement == 0.0f)
+    {
+        return 0.0f;
+    }
+
+    float32 resolvedDisplacement = displacement;
+
+    const AABB& bounds = dynamicCollider.worldAABB;
+
+    for (const ColliderData& staticCollider : m_Colliders[STATIC_COLLIDER_INDEX])
+    {
+        if (!sCheckAABBCollisionOnOtherAxes(bounds, staticCollider.worldAABB, axis))
+        {
+            continue;
+        }
+
+        const AABB& obstacle = staticCollider.worldAABB;
+
+        if (displacement > 0.0f)
+        {
+            const float32 distance = obstacle.min[axis] - bounds.max[axis];
+            if (distance >= 0.0f && distance < resolvedDisplacement)
+            {
+                resolvedDisplacement = distance;
+            }
+        }
+        else
+        {
+            const float32 distance = obstacle.max[axis] - bounds.min[axis];
+            if (distance <= 0.0f && distance > resolvedDisplacement)
+            {
+                resolvedDisplacement = distance;
+            }
+        }
+    }
+
+    return resolvedDisplacement;
+}
+
+bool PhysicsSystem::sCheckAABBCollisionOnOtherAxes(const AABB& a, const AABB& b, uint32 axis)
+{
+    for (uint32 i = 0; i < 3; ++i)
+    {
+        if (i == axis)
+        {
+            continue;
+        }
+
+        if (a.min[i] >= b.max[i] || a.max[i] <= b.min[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

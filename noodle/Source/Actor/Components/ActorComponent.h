@@ -5,6 +5,7 @@
 class Actor;
 class IRenderer;
 struct EngineContext;
+struct WorldContext;
 
 class ActorComponent
 {
@@ -13,7 +14,7 @@ class ActorComponent
 public:
 	virtual ~ActorComponent() {}
 
-	virtual void PostInit(const struct WorldContext&) {}
+	virtual void PostInit(const WorldContext&) {}
 	virtual void Destroy() {}
 	virtual void Update(float deltaSeconds) {}
 	virtual void SubmitRenderCommands(IRenderer& IRenderer) const {}

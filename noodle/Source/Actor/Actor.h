@@ -33,7 +33,7 @@ public:
 	const std::string& GetControllerType() const { return m_ControllerType; }
 
 	template<class ComponentType>
-	ComponentType* GetComponent()
+	ComponentType* GetComponent() const
 	{
 		auto it = m_ComponentLookup.find(ComponentType::COMPONENT_ID);
 		if (it != m_ComponentLookup.end())
