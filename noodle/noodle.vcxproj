@@ -25,6 +25,7 @@
     <ClCompile Include="Source\Actor\Components\Camera.cpp" />
     <ClCompile Include="Source\Actor\Components\Collider.cpp" />
     <ClCompile Include="Source\Actor\Components\Movement.cpp" />
+    <ClCompile Include="Source\Actor\Components\Physics.cpp" />
     <ClCompile Include="Source\Actor\Components\Sprite.cpp" />
     <ClCompile Include="Source\Actor\Components\SpriteAnimator.cpp" />
     <ClCompile Include="Source\Actor\Components\Transform.cpp" />
@@ -57,6 +58,7 @@
     <ClInclude Include="Source\Actor\Components\Collider.h" />
     <ClInclude Include="Source\Actor\Components\ComponentIds.h" />
     <ClInclude Include="Source\Actor\Components\Movement.h" />
+    <ClInclude Include="Source\Actor\Components\Physics.h" />
     <ClInclude Include="Source\Actor\Components\Sprite.h" />
     <ClInclude Include="Source\Actor\Components\SpriteAnimator.h" />
     <ClInclude Include="Source\Actor\Components\Transform.h" />

@@ -108,6 +108,9 @@
     <ClCompile Include="Source\Physics\PhysicsSystem3D.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Components\Physics.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -230,6 +233,9 @@
     </ClInclude>
     <ClInclude Include="Source\Physics\PhysicsSystem3D.h">
       <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\Physics.h">
+      <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

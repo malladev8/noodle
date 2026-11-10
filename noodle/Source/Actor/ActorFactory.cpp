@@ -3,6 +3,7 @@
 #include "Components/Camera.h"
 #include "Components/Collider.h"
 #include "Components/Movement.h"
+#include "Components/Physics.h"
 #include "Components/Sprite.h"
 #include "Components/SpriteAnimator.h"
 #include "Components/Transform.h"
@@ -41,6 +42,11 @@ static ActorComponent* sCreateColliderComponent()
 	return N_NEW Collider;
 }
 
+static ActorComponent* sCreatePhysicsComponent()
+{
+	return N_NEW Physics;
+}
+
 ActorFactory::ActorFactory()
 	: m_LastActorId(0)
 {
@@ -50,6 +56,7 @@ ActorFactory::ActorFactory()
 	m_ActorComponentCreators[eComponentId::COMPONENT_CAMERA] = sCreateCameraComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_MOVEMENT] = sCreateMovementComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_COLLIDER] = sCreateColliderComponent;
+	m_ActorComponentCreators[eComponentId::COMPONENT_PHYSICS] = sCreatePhysicsComponent;
 }
 
 Actor* ActorFactory::CreateActor(std::ifstream& sceneStream)

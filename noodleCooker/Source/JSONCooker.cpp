@@ -45,6 +45,7 @@ static std::unordered_map<std::string, eComponentId> sComponentTypeLookup
     {"Movement", eComponentId::COMPONENT_MOVEMENT},
     {"Camera", eComponentId::COMPONENT_CAMERA},
     {"Collider", eComponentId::COMPONENT_COLLIDER},
+    {"Physics", eComponentId::COMPONENT_PHYSICS},
 };
 
 static AssetId sGenerateAssetId(const std::string& path)
@@ -483,6 +484,22 @@ static bool sParseColliderComponent(const rapidjson::Value& component, ColliderS
     return true;
 }
 
+static bool sParsePhysicsComponent(const rapidjson::Value& component, PhysicsSerializationData& outData)
+{
+    const char* usesGravityName = "UsesGravity";
+    if (component.HasMember(usesGravityName))
+    {
+        outData.usesGravity = component[usesGravityName].GetBool();
+    }
+
+    const char* gravityScaleName = "GravityScale";
+    if (component.HasMember(gravityScaleName))
+    {
+        outData.gravityScale = component[gravityScaleName].GetFloat();
+    }
+    return true;
+}
+
 static bool sParseComponents(const rapidjson::Value& components, std::vector<std::unique_ptr<ComponentSerializationData>>& componentData, uint8& numComponents)
 {
     if (!components.IsArray())
@@ -611,6 +628,23 @@ static bool sParseComponents(const rapidjson::Value& components, std::vector<std
             }
             colliderData->componentId = componentType;
             sParseColliderComponent(component, *colliderData);
+            break;
+        }
+        case eComponentId::COMPONENT_PHYSICS:
+        {
+            PhysicsSerializationData* physicsData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                physicsData = N_NEW PhysicsSerializationData();
+                componentData[(uint32)componentType].reset(physicsData);
+                ++numComponents;
+            }
+            else
+            {
+                physicsData = static_cast<PhysicsSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            physicsData->componentId = componentType;
+            sParsePhysicsComponent(component, *physicsData);
             break;
         }
         }
@@ -812,6 +846,12 @@ static bool sConvertSceneJsonToBinary(const char* assetRoot, const char* cookedR
                     case eComponentId::COMPONENT_COLLIDER:
                     {
                         out.write(reinterpret_cast<const char*>(data.get()), sizeof(ColliderSerializationData));
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    case eComponentId::COMPONENT_PHYSICS:
+                    {
+                        out.write(reinterpret_cast<const char*>(data.get()), sizeof(PhysicsSerializationData));
                         printf("Successfully serialized Component: %i.\n", (uint32)componentId);
                         break;
                     }

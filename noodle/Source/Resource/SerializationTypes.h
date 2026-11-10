@@ -53,3 +53,9 @@ struct ColliderSerializationData : public ComponentSerializationData
 	eColliderType colliderType = eColliderType::AABB;
 	eColliderMobility colliderMobility = eColliderMobility::STATIC;
 };
+
+struct PhysicsSerializationData : public ComponentSerializationData
+{
+	float32 gravityScale = 1.0f;
+	bool usesGravity = false;
+};
