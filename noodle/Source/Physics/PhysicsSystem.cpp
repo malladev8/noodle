@@ -175,7 +175,12 @@ void PhysicsSystem::SubmitDebugRenderCommands(IRenderer& renderer) const
     }
 }
 
-void PhysicsSystem::RequestMovement(ColliderHandle colliderHandle, const vec3& displacement)
+void PhysicsSystem::RequestForce(ColliderHandle handle, const vec3& force)
 {
-    m_MovementRequests.push_back({ colliderHandle, displacement });
+    m_ForceRequests.push_back({ handle, force });
+}
+
+void PhysicsSystem::RequestImpulse(ColliderHandle handle, const vec3& impulse)
+{
+    m_ImpulseRequests.push_back({ handle, impulse });
 }

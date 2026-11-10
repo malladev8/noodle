@@ -13,6 +13,8 @@ bool Physics::Init(std::ifstream& bin, EngineContext& engineContext)
 	N_ASSERT(bin.read(reinterpret_cast<char*>(&serializationData), sizeof(serializationData)), "Failed to read physics component serialization data.");
 
 	m_GravityScale = serializationData.gravityScale;
+	m_Mass = serializationData.mass;
+	N_ASSERT(m_Mass > 0.0f, "Mass must be greater than 0.");
 	m_UsesGravity = serializationData.usesGravity;
 
 	return true;

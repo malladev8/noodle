@@ -30,10 +30,17 @@ void PlayerController::Update(float deltaSeconds)
 	{
 		movementInput.x += 1.0f;
 	}
+
+	bool jump = false;
+	if (inputManager.IsKeyDown(eKey::SPACE))
+	{
+		jump = true;
+	}
 	
 	Movement* movementComponent = m_PossessedActor->GetComponent<Movement>();
 	if (movementComponent)
 	{
 		movementComponent->SetMoveInput(movementInput);
+		movementComponent->SetJump(jump);
 	}
 }

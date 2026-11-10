@@ -33,7 +33,8 @@ struct SpriteAnimatorSerializationData : ComponentSerializationData
 
 struct MovementSerializationData : public ComponentSerializationData
 {
-	float32 speed = 0.0f;
+	float32 walkSpeed = 0.0f;
+	float32 jumpSpeed = 0.0f;
 };
 
 struct CameraSerializationData : public ComponentSerializationData
@@ -57,5 +58,6 @@ struct ColliderSerializationData : public ComponentSerializationData
 struct PhysicsSerializationData : public ComponentSerializationData
 {
 	float32 gravityScale = 1.0f;
+	float32 mass = 1.0f;
 	bool usesGravity = false;
 };

@@ -9,7 +9,7 @@ public:
 protected:
 
 private:
-    void ProcessMovementRequests();
+    void IntegrateBodies(float32 deltaSeconds);
     void UpdateDynamicBounds();
     void DetectDynamicDynamicOverlaps();
     float32 ResolveAxis(const ColliderData& dynamicCollider, float32 displacement, uint32 axis) const;

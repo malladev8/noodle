@@ -425,12 +425,20 @@ static bool sParseCameraComponent(const rapidjson::Value& component, CameraSeria
 
 static bool sParseMovementComponent(const rapidjson::Value& component, MovementSerializationData& outData)
 {
-    const char* speedName = "Speed";
-    if (component.HasMember(speedName))
+    const char* walkSpeedName = "WalkSpeed";
+    if (component.HasMember(walkSpeedName))
     {
-        float32 speed = component[speedName].GetFloat();
-        outData.speed = speed;
+        float32 walkSpeed = component[walkSpeedName].GetFloat();
+        outData.walkSpeed = walkSpeed;
     }
+
+    const char* jumpSpeedName = "JumpSpeed";
+    if (component.HasMember(walkSpeedName))
+    {
+        float32 jumpSpeed = component[jumpSpeedName].GetFloat();
+        outData.jumpSpeed = jumpSpeed;
+    }
+
     return true;
 }
 
@@ -496,6 +504,17 @@ static bool sParsePhysicsComponent(const rapidjson::Value& component, PhysicsSer
     if (component.HasMember(gravityScaleName))
     {
         outData.gravityScale = component[gravityScaleName].GetFloat();
+    }
+
+    const char* massName = "Mass";
+    if (component.HasMember(massName))
+    {
+        outData.mass = component[massName].GetFloat();
+        if (outData.mass <= 0)
+        {
+            printf("Error: Physics component mass must be greater than 0.\n");
+            return false;
+        }
     }
     return true;
 }

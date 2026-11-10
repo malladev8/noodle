@@ -2,43 +2,106 @@
 #include "PhysicsSystem2D.h"
 #include "Actor/Actor.h"
 #include "Actor/Components/Collider.h"
+#include "Actor/Components/Physics.h"
 #include "Actor/Components/Transform.h"
 
 void PhysicsSystem2D::Update(float32 deltaSeconds)
 {
-    ProcessMovementRequests();
+    // TODO: Aggregate forces and impulses by collider handle before integrating bodies to avoid O(nm) force and impulse integration in IntegrateBodies()
+    IntegrateBodies(deltaSeconds);
     UpdateDynamicBounds();
     DetectDynamicDynamicOverlaps();
-    m_MovementRequests.clear();
+    m_ForceRequests.clear();
+    m_ImpulseRequests.clear();
 }
 
-void PhysicsSystem2D::ProcessMovementRequests()
+void PhysicsSystem2D::IntegrateBodies(float32 deltaSeconds)
 {
-    for (const MovementRequest& request : m_MovementRequests)
+    for (ColliderData& collider : m_Colliders[DYNAMIC_COLLIDER_INDEX])
     {
-        ColliderData* collider = GetCollider(request.colliderHandle);
+        Physics* physicsComponent = collider.owner->GetComponent<Physics>();
+        N_ASSERT(physicsComponent != nullptr, "Actors with Dynamic Colliders require Physics component.");
 
-        if (collider == nullptr || collider->mobility != eColliderMobility::DYNAMIC)
+        Transform* transform = collider.owner->GetComponent<Transform>();
+        N_ASSERT(transform != nullptr, "Dynamic Collider owner is missing Transform component.");
+
+        vec3 velocity = physicsComponent->GetVelocity();
+
+        // Apply accumulated impulses.
+        vec3 totalImpulse = {};
+
+        for (const ImpulseRequest& request : m_ImpulseRequests)
         {
-            continue;
+            if (GetCollider(request.colliderHandle) == &collider)
+            {
+                totalImpulse += request.impulse;
+            }
         }
 
-        Transform* transform = collider->owner->GetComponent<Transform>();
+        velocity += totalImpulse * (1 / physicsComponent->GetMass());
+
+        // Accumulate forces.
+        vec3 totalForce = {};
+
+        for (const ForceRequest& request : m_ForceRequests)
+        {
+            if (GetCollider(request.colliderHandle) == &collider)
+            {
+                totalForce += request.force;
+            }
+        }
+        vec3 acceleration = totalForce * (1 / physicsComponent->GetMass());
+
+        // Apply gravity as acceleration.
+        if (physicsComponent->IsAffectedByGravity())
+        {
+            acceleration += GRAVITY_ACCELERATION * physicsComponent->GetGravityScale();
+        }
+
+        // Semi-implicit Euler integration.
+        velocity += acceleration * deltaSeconds;
+
+        // Calculate requested displacement.
+        const vec3 displacement = velocity * deltaSeconds;
 
         vec3 position = transform->GetPosition();
 
-        // X-Axis movement.
-        const float32 dx = ResolveAxis(*collider, request.displacement.x, 0);
-        position.x += dx;
-        transform->SetPosition(position);
-        collider->worldAABB = sCalculateWorldAABB(*collider);
+        // X-axis resolution.
+        const float32 requestedX = displacement.x;
+        const float32 resolvedX = ResolveAxis(collider, requestedX, 0);
 
-        // Y-Axis movement.
-        const float32 dy = ResolveAxis(*collider, request.displacement.y, 1);
-        position = transform->GetPosition();
-        position.y += dy;
+        position.x += resolvedX;
+
         transform->SetPosition(position);
-        collider->worldAABB = sCalculateWorldAABB(*collider);
+        collider.worldAABB = sCalculateWorldAABB(collider);
+
+        if (std::abs(resolvedX - requestedX) > EPSILON)
+        {
+            velocity.x = 0.0f;
+        }
+
+        // Y-axis resolution.
+        const float32 requestedY = displacement.y;
+        const float32 resolvedY = ResolveAxis(collider, requestedY, 1);
+
+        position.y += resolvedY;
+
+        transform->SetPosition(position);
+        collider.worldAABB = sCalculateWorldAABB(collider);
+
+        physicsComponent->m_IsGrounded = false;
+
+        if (std::abs(resolvedY - requestedY) > EPSILON)
+        {
+            if (requestedY < 0.0f)
+            {
+                physicsComponent->m_IsGrounded = true;
+            }
+
+            velocity.y = 0.0f;
+        }
+
+        physicsComponent->SetVelocity(velocity);
     }
 }
 

@@ -13,9 +13,9 @@ const eComponentId Collider::COMPONENT_ID = eComponentId::COMPONENT_COLLIDER;
 
 void Collider::PostInit(const WorldContext& worldContext)
 {
-	if (worldContext.physics != nullptr)
+	if (worldContext.physicsSystem != nullptr)
 	{
-		RegisterWithPhysics(*worldContext.physics);
+		RegisterWithPhysics(*worldContext.physicsSystem);
 	}
 	else
 	{

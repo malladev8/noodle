@@ -24,7 +24,8 @@
 		},
 		{
 			"Type": "Movement",
-			"Speed": 5.0
+			"WalkSpeed": 5.0,
+			"JumpSpeed": 5.0
 		},
 		{
 			"Type": "Collider",
@@ -36,7 +37,8 @@
 		{
 			"Type": "Physics",
 			"UsesGravity": true,
-			"GravityScale": 1.0
+			"GravityScale": 1.0,
+			"Mass" :  1.0
 		}
 	]
 }
