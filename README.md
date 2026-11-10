@@ -13,12 +13,13 @@ Current Features:
 - Sprite Layering
 - Debug Rendering
 - 2D Dynamic/Static AABB collision detection
+- Gravity and Jumping
 
 To Build and Run
 - Build the RA.slnx solution in the debug configuration in Visual Studio 2026
 - Run RedAngel/CookAssets.bat (requires the noodleCooker debug exe)
 - Run the RedAngel project
-- Should be able to move the sprite around the window with WASD
+- Should be able to move the sprite around the window with WASD, Jump with Spacebar
 
 Planned:
 - https://trello.com/b/leydXdFM/noodle
