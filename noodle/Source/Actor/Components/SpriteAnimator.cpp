@@ -9,24 +9,22 @@ const eComponentId SpriteAnimator::COMPONENT_ID = eComponentId::COMPONENT_SPRITE
 
 void SpriteAnimator::Update(float32 deltaSeconds)
 {
-	m_FrameTime += deltaSeconds;
-	const SpriteAnimationClip& currentClip = m_AnimationClipMap[m_CurrentClipKey];
-	if (m_FrameTime >= (1.0f / (float32)currentClip.fps))
+	if (m_IsFinished)
 	{
-		m_FrameTime = 0.0f;
-		if (m_CurrentFrameIndex >= currentClip.frames)
-		{
-			if (currentClip.loop)
-			{
-				m_CurrentFrameIndex = 0;
-			}
-		}
-		else
-		{
-			++m_CurrentFrameIndex;
-		}
+		return;
 	}
 
+	m_FrameTime += deltaSeconds;
+	const SpriteAnimationClip& currentClip = m_AnimationClipMap[m_CurrentClipKey];
+	N_ASSERT(currentClip.fps > 0, "Animation Clip FPS cannot be 0.");
+	const float32 frameDuration = 1.0f / currentClip.fps;
+
+	while (m_FrameTime >= frameDuration)
+	{
+		m_FrameTime -= frameDuration;
+		AdvanceFrame(currentClip);
+	}
+	
 	Sprite* sprite = m_Owner->GetComponent<Sprite>();
 	N_ASSERT(sprite != nullptr, "Actor is missing Sprite component.");
 	std::shared_ptr<Material> material = sprite->GetMaterial().lock();
@@ -43,6 +41,31 @@ void SpriteAnimator::Update(float32 deltaSeconds)
 
 		sprite->SetUvRect(uvRect);
 	}
+}
+
+bool SpriteAnimator::SetClipKey(const std::string& clipName)
+{
+	if (m_CurrentClipKey == clipName)
+	{
+		return false;
+	}
+	PlayClip(clipName);
+	return true;
+}
+
+void SpriteAnimator::PlayClip(const std::string& clipName)
+{
+	m_CurrentClipKey = clipName;
+	m_FrameTime = 0.0f;
+	m_CurrentFrameIndex = 0;
+	m_IsFinished = false;
+}
+
+void SpriteAnimator::Stop()
+{
+	m_FrameTime = 0.0f;
+	m_CurrentFrameIndex = 0;
+	m_IsFinished = true;
 }
 
 bool SpriteAnimator::Init(std::ifstream& bin, EngineContext& engineContext)
@@ -68,4 +91,21 @@ bool SpriteAnimator::Init(std::ifstream& bin, EngineContext& engineContext)
 	}
 
 	return true;
+}
+
+void SpriteAnimator::AdvanceFrame(const SpriteAnimationClip& clip)
+{
+	if (m_CurrentFrameIndex + 1 < clip.frames)
+	{
+		++m_CurrentFrameIndex;
+	}
+	else if (clip.loop)
+	{
+		m_CurrentFrameIndex = 0;
+	}
+	else
+	{
+		m_CurrentFrameIndex = clip.frames - 1;
+		m_IsFinished = true;
+	}
 }
