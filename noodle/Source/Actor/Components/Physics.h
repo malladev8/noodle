@@ -25,11 +25,11 @@ private:
 	friend class PhysicsSystem2D;
 	friend class PhysicsSystem3D;
 
-	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
-
 	vec3 m_Velocity;
 	float32 m_Mass = 1.0f;
 	float32 m_GravityScale = 1.0f;
 	bool m_UsesGravity = true;
 	bool m_IsGrounded = false;
+
+	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

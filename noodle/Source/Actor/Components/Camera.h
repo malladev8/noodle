@@ -6,19 +6,19 @@
 class Camera : public ActorComponent 
 {
 public:
-	virtual void Update(float deltaSeconds) override;
-	struct CameraData BuildCameraData(float32 aspectRatio) const;
+	const static eComponentId COMPONENT_ID;
 	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
 
-	const static eComponentId COMPONENT_ID;
+	virtual void Update(float deltaSeconds) override;
+	struct CameraData BuildCameraData(float32 aspectRatio) const;
 
 protected:
 private:
-	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
-
 	vec4 m_ClearColor { 0.0f, 0.0f, 0.0f, 0.0f };
 	float32 m_NearPlane = 0.0f;
 	float32 m_FarPlane = 0.0f;
 	float32 m_OrthoHeight = 0.0f;
 	eProjectionType m_ProjectionType = eProjectionType::ORTHOGRAPHIC;
+
+	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

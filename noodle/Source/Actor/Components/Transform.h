@@ -6,6 +6,9 @@
 class Transform : public ActorComponent
 {
 public:
+	const static eComponentId COMPONENT_ID;
+	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
+
 	const vec3& GetPosition() const { return m_Position; }
 	const vec3& GetScale() const { return m_Scale; }
 	const quaternion& GetRotation() const { return m_Rotation; }
@@ -17,10 +20,6 @@ public:
 	void SetRotation(const quaternion& rot) { m_Rotation = rot; }
 
 	void Translate(const vec3& translation);
-
-	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
-
-	const static eComponentId COMPONENT_ID;
 
 protected:
 private:

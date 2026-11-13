@@ -24,9 +24,6 @@ public:
 
 protected:
 private:
-
-	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
-
 	vec3 m_Offset = {};
 	vec3 m_HalfExtents = { 0.5f, 0.5f, 0.0f };
 	float32 m_Radius = 0.5f;
@@ -35,4 +32,6 @@ private:
 
 	ColliderHandle m_Handle;
 	PhysicsSystem* m_PhysicsSystem = nullptr;
+
+	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

@@ -14,11 +14,11 @@ class ActorComponent
 public:
 	virtual ~ActorComponent() {}
 
+	virtual eComponentId GetComponentId() const = 0;
 	virtual void PostInit(const WorldContext&) {}
 	virtual void Destroy() {}
 	virtual void Update(float deltaSeconds) {}
 	virtual void SubmitRenderCommands(IRenderer& IRenderer) const {}
-	virtual eComponentId GetComponentId() const = 0;
 	Actor* const GetOwner() const { return m_Owner; }
 
 protected:

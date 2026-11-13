@@ -5,10 +5,10 @@
 class SpriteAnimator : public ActorComponent
 {
 public:
-	virtual void Update(float32 deltaSeconds) override;
+	const static eComponentId COMPONENT_ID;
 	virtual eComponentId GetComponentId() const override { return COMPONENT_ID; }
 
-	const static eComponentId COMPONENT_ID;
+	virtual void Update(float32 deltaSeconds) override;
 
 protected:
 

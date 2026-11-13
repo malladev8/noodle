@@ -22,6 +22,7 @@
     <ClCompile Include="Source\Actor\Actor.cpp" />
     <ClCompile Include="Source\Actor\ActorFactory.cpp" />
     <ClCompile Include="Source\Actor\Components\ActorComponent.cpp" />
+    <ClCompile Include="Source\Actor\Components\AnimationStateMachine.cpp" />
     <ClCompile Include="Source\Actor\Components\Camera.cpp" />
     <ClCompile Include="Source\Actor\Components\Collider.cpp" />
     <ClCompile Include="Source\Actor\Components\Movement.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="Source\Actor\Actor.h" />
     <ClInclude Include="Source\Actor\ActorFactory.h" />
     <ClInclude Include="Source\Actor\Components\ActorComponent.h" />
+    <ClInclude Include="Source\Actor\Components\AnimationStateMachine.h" />
     <ClInclude Include="Source\Actor\Components\Camera.h" />
     <ClInclude Include="Source\Actor\Components\Collider.h" />
     <ClInclude Include="Source\Actor\Components\ComponentIds.h" />

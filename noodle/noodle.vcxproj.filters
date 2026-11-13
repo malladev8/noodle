@@ -111,6 +111,9 @@
     <ClCompile Include="Source\Actor\Components\Physics.cpp">
       <Filter>Actor\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Actor\Components\AnimationStateMachine.cpp">
+      <Filter>Actor\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NoodleAllocator.h" />
@@ -235,6 +238,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Actor\Components\Physics.h">
+      <Filter>Actor\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Actor\Components\AnimationStateMachine.h">
       <Filter>Actor\Components</Filter>
     </ClInclude>
   </ItemGroup>
