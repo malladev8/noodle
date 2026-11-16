@@ -5,10 +5,15 @@
 #include "Physics.h"
 #include "SpriteAnimator.h"
 
+#include <fstream>
+
+const eComponentId AnimationStateMachine::COMPONENT_ID = eComponentId::COMPONENT_ANIMATION_STATE_MACHINE;
+
 void AnimationStateMachine::PostInit(const WorldContext& worldContext)
 {
 	m_SpriteAnimator = GetOwner()->GetComponent<SpriteAnimator>();
 	N_ASSERT(m_SpriteAnimator != nullptr, "SpriteAnimator component is required for AnimationStateMachine.");
+	m_CurrentStateKey = m_SpriteAnimator->GetCurrentClipKey();
 }
 
 void AnimationStateMachine::Update(float32 deltaSeconds)
@@ -19,14 +24,14 @@ void AnimationStateMachine::Update(float32 deltaSeconds)
 	if (physics)
 	{
 		SetBool("IsGrounded", physics->IsGrounded());
-		SetFloat("HorizontalSpeed", physics->GetVelocity().x);
+		SetFloat("HorizontalSpeed", abs(physics->GetVelocity().x));
 		SetFloat("VerticalSpeed", physics->GetVelocity().y);
 	}
 
 	// Evaluate State Transitions
 	N_ASSERT(m_AnimationStates.contains(m_CurrentStateKey), "Invalid Animation State");
-	AnimationState& currentState = m_AnimationStates[m_CurrentStateKey];
-	std::string nextStateKey = EvaluateTransitions(currentState);
+	const AnimationState& currentState = m_AnimationStates[m_CurrentStateKey];
+	const std::string nextStateKey = EvaluateTransitions(currentState);
 	ConsumeTriggers();
 
 	// Transition States
@@ -37,39 +42,80 @@ void AnimationStateMachine::Update(float32 deltaSeconds)
 
 void AnimationStateMachine::SetBool(const std::string& name, bool value)
 {
-	if (!m_ConditionStateLookup.contains(name))
+	if (m_ConditionStateLookup.contains(name))
 	{
-		N_LOG("Invalid Animation Transition Condition Key: %s", name.c_str());
-		return;
+		ConditionState& conditionState = m_ConditionStates[m_ConditionStateLookup[name]];
+		conditionState.boolValue = value;
 	}
-	ConditionState& conditionState = m_ConditionStates[m_ConditionStateLookup[name]];
-	conditionState.boolValue = value;
 }
 
 void AnimationStateMachine::SetFloat(const std::string& name, float32 value)
 {
-	if (!m_ConditionStateLookup.contains(name))
+	if (m_ConditionStateLookup.contains(name))
 	{
-		N_LOG("Invalid Animation Transition Condition Key: %s", name.c_str());
-		return;
+		ConditionState& conditionState = m_ConditionStates[m_ConditionStateLookup[name]];
+		conditionState.floatValue = value;
 	}
-	ConditionState& conditionState = m_ConditionStates[m_ConditionStateLookup[name]];
-	conditionState.floatValue = value;
 }
 
 void AnimationStateMachine::SetTrigger(const std::string& name)
 {
-	if (!m_ConditionStateLookup.contains(name))
+	if (m_ConditionStateLookup.contains(name))
 	{
-		N_LOG("Invalid Animation Transition Condition Key: %s", name.c_str());
-		return;
+		ConditionState& conditionState = m_ConditionStates[m_ConditionStateLookup[name]];
+		conditionState.triggerValue = true;
 	}
-	ConditionState& conditionState = m_ConditionStates[m_ConditionStateLookup[name]];
-	conditionState.triggerValue = true;
 }
 
 bool AnimationStateMachine::Init(std::ifstream& bin, EngineContext& engineContext)
 {
+	uint32 numStates = 0;
+	bin.read(reinterpret_cast<char*>(&numStates), sizeof(numStates));
+
+	for (uint32 i = 0; i < numStates; ++i)
+	{
+		AnimationState state;
+		state.name = path::ReadFilePath(bin);
+		state.clipKey = path::ReadFilePath(bin);
+
+		uint32 numTransitions = 0;
+		bin.read(reinterpret_cast<char*>(&numTransitions), sizeof(numTransitions));
+
+		for (uint32 j = 0; j < numTransitions; ++j)
+		{
+			AnimationTransition transition;
+			transition.targetState = path::ReadFilePath(bin);
+
+			bin.read(reinterpret_cast<char*>(&transition.priority), sizeof(transition.priority));
+
+			uint32 numConditions = 0;
+			bin.read(reinterpret_cast<char*>(&numConditions), sizeof(numConditions));
+
+			for (uint32 k = 0; k < numConditions; ++k)
+			{
+				AnimationTransitionCondition condition;
+				condition.name = path::ReadFilePath(bin);
+
+				bin.read(reinterpret_cast<char*>(&condition.type), sizeof(condition.type));
+				bin.read(reinterpret_cast<char*>(&condition.comparison), sizeof(condition.comparison));
+				bin.read(reinterpret_cast<char*>(&condition.floatValue), sizeof(condition.floatValue));
+				bin.read(reinterpret_cast<char*>(&condition.boolValue), sizeof(condition.boolValue));
+
+				transition.conditions.push_back(condition);
+
+				if (!m_ConditionStateLookup.contains(condition.name))
+				{
+					ConditionState conditionState;
+					conditionState.name = condition.name;
+					m_ConditionStates.push_back(conditionState);
+					m_ConditionStateLookup.insert({ conditionState.name, static_cast<uint32>(m_ConditionStates.size()) - 1 });
+				}
+			}
+			state.transitions.push_back(transition);
+		}
+		m_AnimationStates.insert({ state.name, state });
+	}
+
 	return true;
 }
 
@@ -117,7 +163,6 @@ bool AnimationStateMachine::EvaluateCondition(const AnimationTransitionCondition
 		return conditionState.triggerValue;
 	}
 	}
-	return false;
 }
 
 bool AnimationStateMachine::EvaluateBool(const ConditionState& conditionState, const AnimationTransitionCondition& testCondition) const

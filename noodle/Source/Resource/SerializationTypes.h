@@ -1,5 +1,6 @@
 #pragma once
 #include "ResourceTypes.h"
+#include "Actor/Components/AnimationStateMachine.h"
 
 struct ComponentSerializationData
 {
@@ -61,4 +62,9 @@ struct PhysicsSerializationData : public ComponentSerializationData
 	float32 gravityScale = 1.0f;
 	float32 mass = 1.0f;
 	bool usesGravity = false;
+};
+
+struct AnimationStateMachineSerializationData : public ComponentSerializationData
+{
+	std::vector<AnimationState> states;
 };

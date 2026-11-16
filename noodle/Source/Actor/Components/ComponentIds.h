@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/NoodleCore.h"
 
-enum class eComponentId : uint32
+enum class eComponentId : uint8
 {
 	COMPONENT_TRANSFORM = 0,
 	COMPONENT_SPRITE,
@@ -10,5 +10,6 @@ enum class eComponentId : uint32
 	COMPONENT_MOVEMENT,
 	COMPONENT_COLLIDER,
 	COMPONENT_PHYSICS,
+	COMPONENT_ANIMATION_STATE_MACHINE,
 	COUNT
 };

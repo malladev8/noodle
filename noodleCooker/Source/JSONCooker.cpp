@@ -46,6 +46,24 @@ static std::unordered_map<std::string, eComponentId> sComponentTypeLookup
     {"Camera", eComponentId::COMPONENT_CAMERA},
     {"Collider", eComponentId::COMPONENT_COLLIDER},
     {"Physics", eComponentId::COMPONENT_PHYSICS},
+    {"AnimationStateMachine", eComponentId::COMPONENT_ANIMATION_STATE_MACHINE},
+};
+
+static std::unordered_map<std::string, eAnimationTransitionConditionType> sAnimTransitionConditionTypeLookup
+{
+    {"Bool", eAnimationTransitionConditionType::BOOL},
+    {"Float", eAnimationTransitionConditionType::FLOAT},
+    {"Trigger", eAnimationTransitionConditionType::TRIGGER},
+};
+
+static std::unordered_map<std::string, eAnimationTransitionComparisonOperator> sAnimTransitionConditionOperatorLookup
+{
+    {"Equal", eAnimationTransitionComparisonOperator::EQUAL},
+    {"NotEqual", eAnimationTransitionComparisonOperator::NOT_EQUAL},
+    {"Greater", eAnimationTransitionComparisonOperator::GREATER},
+    {"Less", eAnimationTransitionComparisonOperator::LESS},
+    {"GreaterEqual", eAnimationTransitionComparisonOperator::GREATER_EQUAL},
+    {"LessEqual", eAnimationTransitionComparisonOperator::LESS_EQUAL},
 };
 
 static AssetId sGenerateAssetId(const std::string& path)
@@ -533,6 +551,120 @@ static bool sParsePhysicsComponent(const rapidjson::Value& component, PhysicsSer
     return true;
 }
 
+static bool sParseAnimationStateMachineComponent(const rapidjson::Value& component, AnimationStateMachineSerializationData& outData)
+{
+    const char* statesName = "States";
+    if (component.HasMember(statesName))
+    {
+        if (!component[statesName].IsArray())
+        {
+            printf("Error: Animation State Machine component States member must be an array.\n");
+            return false;
+        }
+
+        for (const rapidjson::Value& state : component[statesName].GetArray())
+        {
+            AnimationState stateData;
+
+            const char* stateNameMember = "Name";
+            if (state.HasMember(stateNameMember))
+            {
+                stateData.name = state[stateNameMember].GetString();
+            }
+
+            const char* stateClipKeyMember = "ClipKey";
+            if (state.HasMember(stateClipKeyMember))
+            {
+                stateData.clipKey = state[stateClipKeyMember].GetString();
+            }
+
+            const char* transitionsMember = "Transitions";
+            if (state.HasMember(transitionsMember))
+            {
+                if (!state[transitionsMember].IsArray())
+                {
+                    printf("Error: Animation State Machine component state Transitions member must be an array.\n");
+                    return false;
+                }
+
+                for (const rapidjson::Value& transition : state[transitionsMember].GetArray())
+                {
+                    AnimationTransition transitionData;
+
+                    const char* targetStateMember = "TargetState";
+                    if (transition.HasMember(targetStateMember))
+                    {
+                        transitionData.targetState = transition[targetStateMember].GetString();
+                    }
+
+                    const char* priorityMember = "Priority";
+                    if (transition.HasMember(priorityMember))
+                    {
+                        transitionData.priority = transition[priorityMember].GetUint();
+                    }
+
+                    const char* conditionsMember = "Conditions";
+                    if (transition.HasMember(conditionsMember))
+                    {
+                        if (!transition[conditionsMember].IsArray())
+                        {
+                            printf("Error: Animation State Machine component transition Conditions member must be an array.\n");
+                            return false;
+                        }
+
+                        for (const rapidjson::Value& condition : transition[conditionsMember].GetArray())
+                        {
+                            AnimationTransitionCondition conditionData;
+
+                            const char* conditionNameMember = "ConditionName";
+                            if (condition.HasMember(conditionNameMember))
+                            {
+                                conditionData.name = condition[conditionNameMember].GetString();
+                            }
+
+                            const char* typeMember = "Type";
+                            if (condition.HasMember(typeMember))
+                            {
+                                conditionData.type = sAnimTransitionConditionTypeLookup[condition[typeMember].GetString()];
+                            }
+
+                            const char* operatorMember = "Operator";
+                            if (condition.HasMember(operatorMember))
+                            {
+                                conditionData.comparison = sAnimTransitionConditionOperatorLookup[condition[operatorMember].GetString()];
+                            }
+
+                            const char* valueMember = "Value";
+                            if (condition.HasMember(valueMember))
+                            {
+                                switch (conditionData.type)
+                                {
+                                default:
+                                    break;
+                                case eAnimationTransitionConditionType::BOOL:
+                                {
+                                    conditionData.boolValue = condition[valueMember].GetBool();
+                                    break;
+                                }
+                                case eAnimationTransitionConditionType::FLOAT:
+                                {
+                                    conditionData.boolValue = condition[valueMember].GetFloat();
+                                    break;
+                                }
+                                }
+                            }
+                            transitionData.conditions.push_back(conditionData);
+                        }
+                    }
+                    stateData.transitions.push_back(transitionData);
+                }
+            }
+            outData.states.push_back(stateData);
+        }
+    }
+    return true;
+}
+
 static bool sParseComponents(const rapidjson::Value& components, std::vector<std::unique_ptr<ComponentSerializationData>>& componentData, uint8& numComponents)
 {
     if (!components.IsArray())
@@ -678,6 +810,23 @@ static bool sParseComponents(const rapidjson::Value& components, std::vector<std
             }
             physicsData->componentId = componentType;
             sParsePhysicsComponent(component, *physicsData);
+            break;
+        }
+        case eComponentId::COMPONENT_ANIMATION_STATE_MACHINE:
+        {
+            AnimationStateMachineSerializationData* animationStateMachineData = nullptr;
+            if (componentData[(uint32)componentType].get() == nullptr)
+            {
+                animationStateMachineData = N_NEW AnimationStateMachineSerializationData();
+                componentData[(uint32)componentType].reset(animationStateMachineData);
+                ++numComponents;
+            }
+            else
+            {
+                animationStateMachineData = static_cast<AnimationStateMachineSerializationData*>(componentData[(uint32)componentType].get());
+            }
+            animationStateMachineData->componentId = componentType;
+            sParseAnimationStateMachineComponent(component, *animationStateMachineData);
             break;
         }
         }
@@ -887,6 +1036,42 @@ static bool sConvertSceneJsonToBinary(const char* assetRoot, const char* cookedR
                     case eComponentId::COMPONENT_PHYSICS:
                     {
                         out.write(reinterpret_cast<const char*>(data.get()), sizeof(PhysicsSerializationData));
+                        printf("Successfully serialized Component: %i.\n", (uint32)componentId);
+                        break;
+                    }
+                    case eComponentId::COMPONENT_ANIMATION_STATE_MACHINE:
+                    {
+                        const AnimationStateMachineSerializationData* animStateMachineData = static_cast<AnimationStateMachineSerializationData*>(data.get());
+                        
+                        uint32 numStates = static_cast<uint32>(animStateMachineData->states.size());
+                        out.write(reinterpret_cast<const char*>(&numStates), sizeof(numStates));
+
+                        for (const AnimationState& state : animStateMachineData->states)
+                        {
+                            path::WritePath(state.name, out);
+                            path::WritePath(state.clipKey, out);
+
+                            uint32 numTransitions = static_cast<uint32>(state.transitions.size());
+                            out.write(reinterpret_cast<const char*>(&numTransitions), sizeof(numTransitions));
+
+                            for (const AnimationTransition& transition : state.transitions)
+                            {
+                                path::WritePath(transition.targetState, out);
+                                out.write(reinterpret_cast<const char*>(&transition.priority), sizeof(transition.priority));
+
+                                uint32 numConditions = static_cast<uint32>(transition.conditions.size());
+                                out.write(reinterpret_cast<const char*>(&numConditions), sizeof(numConditions));
+
+                                for (const AnimationTransitionCondition& condition : transition.conditions)
+                                {
+                                    path::WritePath(condition.name, out);
+                                    out.write(reinterpret_cast<const char*>(&condition.type), sizeof(condition.type));
+                                    out.write(reinterpret_cast<const char*>(&condition.comparison), sizeof(condition.comparison));
+                                    out.write(reinterpret_cast<const char*>(&condition.floatValue), sizeof(condition.floatValue));
+                                    out.write(reinterpret_cast<const char*>(&condition.boolValue), sizeof(condition.boolValue));
+                                }
+                            }
+                        }
                         printf("Successfully serialized Component: %i.\n", (uint32)componentId);
                         break;
                     }

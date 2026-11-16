@@ -1,5 +1,6 @@
 #include "NoodlePch.h"
 #include "ActorFactory.h"
+#include "Components/AnimationStateMachine.h"
 #include "Components/Camera.h"
 #include "Components/Collider.h"
 #include "Components/Movement.h"
@@ -47,6 +48,11 @@ static ActorComponent* sCreatePhysicsComponent()
 	return N_NEW Physics;
 }
 
+static ActorComponent* sCreateAnimationStateMachineComponent()
+{
+	return N_NEW AnimationStateMachine;
+}
+
 ActorFactory::ActorFactory()
 	: m_LastActorId(0)
 {
@@ -57,6 +63,7 @@ ActorFactory::ActorFactory()
 	m_ActorComponentCreators[eComponentId::COMPONENT_MOVEMENT] = sCreateMovementComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_COLLIDER] = sCreateColliderComponent;
 	m_ActorComponentCreators[eComponentId::COMPONENT_PHYSICS] = sCreatePhysicsComponent;
+	m_ActorComponentCreators[eComponentId::COMPONENT_ANIMATION_STATE_MACHINE] = sCreateAnimationStateMachineComponent;
 }
 
 Actor* ActorFactory::CreateActor(std::ifstream& sceneStream)

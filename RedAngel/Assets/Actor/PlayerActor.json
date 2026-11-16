@@ -13,8 +13,7 @@
 		{
 			"Type": "SpriteAnimator",
 			"DefaultClip": "Idle",
-			"AnimationClips": 
-			[
+			"AnimationClips": [
 				{
 					"Name": "Attack_1",
 					"FPS": 12,
@@ -35,6 +34,52 @@
 					"StartFrame": 56,
 					"EndFrame": 63,
 					"Loop": true
+				}
+			]
+		},
+		{
+			"Type": "AnimationStateMachine",
+			"States": 
+			[
+				{
+					"Name": "Idle",
+					"ClipKey": "Idle",
+					"Transitions": 
+					[
+						{
+							"TargetState": "Run",
+							"Priority": 0,
+							"Conditions": 
+							[
+								{
+									"ConditionName": "HorizontalSpeed",
+									"Type": "Float",
+									"Operator": "Greater",
+									"Value": 0.0
+								}
+							]
+						}
+					]
+				},
+				{
+					"Name": "Run",
+					"ClipKey": "Run",
+					"Transitions": 
+					[
+						{
+							"TargetState": "Idle",
+							"Priority":  0,
+							"Conditions": 
+							[
+								{
+									"ConditionName": "HorizontalSpeed",
+									"Type": "Float",
+									"Operator": "Equal",
+									"Value": 0.0
+								}
+							]
+						}
+					]
 				}
 			]
 		},

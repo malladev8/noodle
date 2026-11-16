@@ -73,8 +73,8 @@ void SpriteAnimator::Stop()
 
 bool SpriteAnimator::Init(std::ifstream& bin, EngineContext& engineContext)
 {
-	uint32 numClips = 0;
 	std::string defaultClip = path::ReadFilePath(bin);
+	uint32 numClips = 0;
 	bin.read(reinterpret_cast<char*>(&numClips), sizeof(numClips));
 
 	for (uint32 i = 0; i < numClips; ++i)

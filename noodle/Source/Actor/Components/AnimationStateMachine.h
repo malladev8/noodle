@@ -23,8 +23,8 @@ enum class eAnimationTransitionComparisonOperator : uint8
 struct AnimationTransitionCondition
 {
 	std::string name = "";
-	eAnimationTransitionConditionType type;
-	eAnimationTransitionComparisonOperator comparison;
+	eAnimationTransitionConditionType type = eAnimationTransitionConditionType::BOOL;
+	eAnimationTransitionComparisonOperator comparison = eAnimationTransitionComparisonOperator::EQUAL;
 	float32 floatValue = 0.0f;
 	bool boolValue = false;
 };
