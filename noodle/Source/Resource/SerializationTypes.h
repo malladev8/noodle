@@ -27,6 +27,7 @@ struct SpriteSerializationData : public ComponentSerializationData
 
 struct SpriteAnimatorSerializationData : ComponentSerializationData
 {
+	std::string defaultClip = "";
 	std::vector<SpriteAnimationClip> animationClips;
 	uint32 numClips = 0;
 };
@@ -50,7 +51,7 @@ struct ColliderSerializationData : public ComponentSerializationData
 {
 	vec3 halfExtents;
 	vec3 offset;
-	float32 radius;
+	float32 radius = 1.0f;
 	eColliderType colliderType = eColliderType::AABB;
 	eColliderMobility colliderMobility = eColliderMobility::STATIC;
 };

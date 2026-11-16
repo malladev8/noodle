@@ -142,7 +142,8 @@ struct SpriteAnimationClip
 {
 	std::string name = "";
 	uint32 fps = 0;
-	uint32 frames = 0;
+	uint32 startFrame = 0;
+	uint32 endFrame = 0;
 	bool loop = false;
 };
 

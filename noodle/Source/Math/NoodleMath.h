@@ -113,6 +113,7 @@ struct vec4
 	{
 		struct { float32 x, y, z, w; };
 		struct { float32 r, g, b, a; };
+		struct { float32 xMin, yMin, xMax, yMax; };
 		float32 data[4];
 	};
 	

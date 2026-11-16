@@ -4,7 +4,7 @@
 	[
 		{
 			"Type": "Sprite",
-			"Material": "Material/TestIdleAnimMaterial",
+			"Material": "Material/MusketeerSpriteSheetMaterial",
 			"PixelsPerUnit": 50,
 			"Color": [ 1.0, 1.0, 1.0, 1.0 ],
 			"Layer": "Character",
@@ -12,15 +12,31 @@
 		},
 		{
 			"Type": "SpriteAnimator",
+			"DefaultClip": "Idle",
 			"AnimationClips": 
 			[
 				{
+					"Name": "Attack_1",
+					"FPS": 12,
+					"StartFrame": 0,
+					"EndFrame": 4,
+					"Loop": false
+				},
+				{
 					"Name": "Idle",
 					"FPS": 12,
-					"Frames": 5,
+					"StartFrame": 40,
+					"EndFrame": 44,
+					"Loop": true
+				},
+				{
+					"Name": "Run",
+					"FPS": 12,
+					"StartFrame": 56,
+					"EndFrame": 63,
 					"Loop": true
 				}
-	    ]
+			]
 		},
 		{
 			"Type": "Movement",

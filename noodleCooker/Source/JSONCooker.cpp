@@ -316,6 +316,13 @@ static bool sParseSpriteComponent(const rapidjson::Value& component, SpriteSeria
 
 static bool sParseSpriteAnimatorComponent(const rapidjson::Value& component, SpriteAnimatorSerializationData& outData)
 {
+    const char* defaultClipName = "DefaultClip";
+    if (component.HasMember(defaultClipName))
+    {
+        std::string clipNameStr = component[defaultClipName].GetString();
+        outData.defaultClip = clipNameStr;
+    }
+
     const char* animationClipsName = "AnimationClips";
     if (!sValidateJsonValueMember(component, animationClipsName))
     {
@@ -342,7 +349,6 @@ static bool sParseSpriteAnimatorComponent(const rapidjson::Value& component, Spr
             return false;
         }
         std::string clipNameStr = animationClip[clipName].GetString();
-        uint32 clipNameLength = (uint32)clipNameStr.length();
         animClipData.name = clipNameStr;
 
         const char* fpsName = "FPS";
@@ -353,13 +359,21 @@ static bool sParseSpriteAnimatorComponent(const rapidjson::Value& component, Spr
         uint32 fps = animationClip[fpsName].GetUint();
         animClipData.fps = fps;
 
-        const char* framesName = "Frames";
-        if (!sValidateJsonValueMember(animationClip, framesName))
+        const char* startFrameName = "StartFrame";
+        if (!sValidateJsonValueMember(animationClip, startFrameName))
         {
             return false;
         }
-        uint32 frames = animationClip[framesName].GetUint();
-        animClipData.frames = frames;
+        uint32 startFrame = animationClip[startFrameName].GetUint();
+        animClipData.startFrame = startFrame;
+
+        const char* endFrameName = "EndFrame";
+        if (!sValidateJsonValueMember(animationClip, endFrameName))
+        {
+            return false;
+        }
+        uint32 endFrame = animationClip[endFrameName].GetUint();
+        animClipData.endFrame = endFrame;
 
         const char* loopName = "Loop";
         if (!sValidateJsonValueMember(animationClip, loopName))
@@ -839,12 +853,14 @@ static bool sConvertSceneJsonToBinary(const char* assetRoot, const char* cookedR
                     case eComponentId::COMPONENT_SPRITE_ANIMATOR:
                     {
                         SpriteAnimatorSerializationData* spriteAnimatorData = static_cast<SpriteAnimatorSerializationData*>(data.get());
+                        path::WritePath(spriteAnimatorData->defaultClip, out);
                         out.write(reinterpret_cast<const char*>(&spriteAnimatorData->numClips), sizeof(spriteAnimatorData->numClips));
                         for (const SpriteAnimationClip& animClip : spriteAnimatorData->animationClips)
                         {
                             path::WritePath(animClip.name, out);
                             out.write(reinterpret_cast<const char*>(&animClip.fps), sizeof(animClip.fps));
-                            out.write(reinterpret_cast<const char*>(&animClip.frames), sizeof(animClip.frames));
+                            out.write(reinterpret_cast<const char*>(&animClip.startFrame), sizeof(animClip.startFrame));
+                            out.write(reinterpret_cast<const char*>(&animClip.endFrame), sizeof(animClip.endFrame));
                             out.write(reinterpret_cast<const char*>(&animClip.loop), sizeof(animClip.loop));
                         }
                         printf("Successfully serialized Component: %i.\n", (uint32)componentId);

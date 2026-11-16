@@ -1,0 +1,11 @@
+{
+  "Name": "MusketeerSpriteSheetMaterial",
+  "Shader": "Shader/SpriteShader",
+  "DiffuseTexture": "Texture/craftpix/Musketeer/MusketeerSpriteSheet",
+
+  "SpriteSheet":
+  {
+    "NumRows": 9,
+    "NumColumns": 8
+  }
+}
