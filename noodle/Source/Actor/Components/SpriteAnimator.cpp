@@ -38,7 +38,6 @@ void SpriteAnimator::Update(float32 deltaSeconds)
 		uint32 columnIndex = m_CurrentFrameIndex % textureLayout.numColumns;
 		uint32 rowIndex = m_CurrentFrameIndex / textureLayout.numColumns;
 
-		// TODO: Need to account for multi row sprite sheets
 		uvRect.xMin = (float32)(columnIndex * textureLayout.tileWidth) / (float32)material->diffuseTexture->width;
 		uvRect.yMin = (float32)(rowIndex * textureLayout.tileHeight) / (float32)material->diffuseTexture->height;
 		uvRect.xMax = ((float32)(columnIndex * textureLayout.tileWidth) + (float32)textureLayout.tileWidth) / (float32)material->diffuseTexture->width;
