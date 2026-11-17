@@ -23,10 +23,19 @@ void Sprite::SubmitRenderCommands(IRenderer& renderer) const
 	cmd.world = transform->GetWorldMatrix() * mat4x4::BuildScale(m_WorldSize.x, m_WorldSize.y, 1.0f);
 	cmd.color = m_Color;
 
-	cmd.uvMin.x = m_UvRect.x;
-	cmd.uvMin.y = m_UvRect.y;
-	cmd.uvMax.x = m_UvRect.z;
-	cmd.uvMax.y = m_UvRect.w;
+	cmd.uvMin.x = m_UvRect.xMin;
+	cmd.uvMin.y = m_UvRect.yMin;
+	cmd.uvMax.x = m_UvRect.xMax;
+	cmd.uvMax.y = m_UvRect.yMax;
+
+	if (GetFlipX())
+	{
+		std::swap(cmd.uvMin.x, cmd.uvMax.x);
+	}
+	if (GetFlipY())
+	{
+		std::swap(cmd.uvMin.y, cmd.uvMax.y);
+	}
 	
 	cmd.layer = (uint32)m_Layer;
 	cmd.order = m_Order;

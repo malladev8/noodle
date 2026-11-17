@@ -4,6 +4,7 @@
 #include "NoodleInput.h"
 #include "Actor/Actor.h"
 #include "Actor/Components/Movement.h"
+#include "Actor/Components/Sprite.h"
 
 PlayerController::PlayerController()
 {
@@ -31,6 +32,24 @@ void PlayerController::Update(float deltaSeconds)
 		movementInput.x += 1.0f;
 	}
 
+	Sprite* spriteComponent = m_PossessedActor->GetComponent<Sprite>();
+	if (movementInput.x > 0.0f)
+	{
+		SetFacingDirection(eFacingDirection::RIGHT);
+		if (spriteComponent)
+		{
+			spriteComponent->SetFlipX(false);
+		}
+	}
+	else if (movementInput.x < 0.0f)
+	{
+		SetFacingDirection(eFacingDirection::LEFT);
+		if (spriteComponent)
+		{
+			spriteComponent->SetFlipX(true);
+		}
+	}
+
 	bool jump = false;
 	if (inputManager.IsKeyDown(eKey::SPACE))
 	{
@@ -43,4 +62,9 @@ void PlayerController::Update(float deltaSeconds)
 		movementComponent->SetMoveInput(movementInput);
 		movementComponent->SetJump(jump);
 	}
+}
+
+vec3 PlayerController::GetForwardDirection() const
+{
+	return m_FacingDirection == eFacingDirection::RIGHT ? vec3(1.0f, 0.0f, 0.0f) : vec3(-1.0f, 0.0f, 0.0f);
 }

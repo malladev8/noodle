@@ -13,6 +13,10 @@ public:
 	void SetUvRect(const vec4& uvRect) { m_UvRect = uvRect; }
 	std::weak_ptr<Material> GetMaterial() const { return m_Material; }
 
+	void SetFlipX(bool flip) { m_FlipX = flip; }
+	bool GetFlipX() const { return m_FlipX; }
+	void SetFlipY(bool flip) { m_FlipY = flip; }
+	bool GetFlipY() const { return m_FlipY; }
 
 protected:
 private:
@@ -25,6 +29,8 @@ private:
 	uint32 m_PixelsPerUnit = 100;
 	eSpriteLayer m_Layer = eSpriteLayer::BACKGROUND;
 	int32 m_Order = 0;
+	bool m_FlipX = false;
+	bool m_FlipY = false;
 
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 };

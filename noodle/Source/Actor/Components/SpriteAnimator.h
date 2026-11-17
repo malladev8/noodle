@@ -19,11 +19,6 @@ public:
 	bool IsFinished() const { return m_IsFinished; }
 	const std::string& GetCurrentClipKey() const { return m_CurrentClipKey; }
 
-	void SetFlipX(bool flip) { m_FlipX = flip; }
-	bool GetFlipX() const { return m_FlipX; }
-	void SetFlipY(bool flip) { m_FlipY = flip; }
-	bool GetFlipY() const { return m_FlipY; }
-
 protected:
 
 private:
@@ -32,8 +27,6 @@ private:
 	float32 m_FrameTime = 0.0f;
 	uint32 m_CurrentFrameIndex = 0; 
 	bool m_IsFinished = false;
-	bool m_FlipX = false;
-	bool m_FlipY = false;
 
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 	void AdvanceFrame(const SpriteAnimationClip& clip);

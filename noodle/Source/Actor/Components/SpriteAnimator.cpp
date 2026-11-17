@@ -43,15 +43,6 @@ void SpriteAnimator::Update(float32 deltaSeconds)
 		uvRect.xMax = ((float32)(columnIndex * textureLayout.tileWidth) + (float32)textureLayout.tileWidth) / (float32)material->diffuseTexture->width;
 		uvRect.yMax = ((float32)(rowIndex * textureLayout.tileHeight) + (float32)textureLayout.tileHeight) / (float32)material->diffuseTexture->height;
 
-		if (GetFlipX())
-		{
-			std::swap(uvRect.xMin, uvRect.xMax);
-		}
-		if (GetFlipY())
-		{
-			std::swap(uvRect.yMin, uvRect.yMax);
-		}
-
 		sprite->SetUvRect(uvRect);
 	}
 }
