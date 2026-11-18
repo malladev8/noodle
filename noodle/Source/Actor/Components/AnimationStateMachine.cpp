@@ -88,7 +88,7 @@ void AnimationStateMachine::PlayMontage(const std::string& montageKey)
 {
 	if (m_PlayingMontage)
 	{
-		N_LOG("Cannot start new montage %s while another is playing. Current active montage: %s", m_ActiveMontageClip, montageKey);
+		N_LOG("Cannot start new montage %s while another is playing. Current active montage: %s", m_ActiveMontageClip.c_str(), montageKey.c_str());
 		return;
 	}
 
