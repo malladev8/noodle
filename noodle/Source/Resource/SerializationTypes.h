@@ -66,5 +66,6 @@ struct PhysicsSerializationData : public ComponentSerializationData
 
 struct AnimationStateMachineSerializationData : public ComponentSerializationData
 {
+	std::string defaultState = "";
 	std::vector<AnimationState> states;
 };

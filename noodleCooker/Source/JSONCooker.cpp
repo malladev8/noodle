@@ -553,6 +553,12 @@ static bool sParsePhysicsComponent(const rapidjson::Value& component, PhysicsSer
 
 static bool sParseAnimationStateMachineComponent(const rapidjson::Value& component, AnimationStateMachineSerializationData& outData)
 {
+    const char* defaultStateName = "DefaultState";
+    if (component.HasMember(defaultStateName))
+    {
+        outData.defaultState = component[defaultStateName].GetString();
+    }
+
     const char* statesName = "States";
     if (component.HasMember(statesName))
     {
@@ -1043,6 +1049,13 @@ static bool sConvertSceneJsonToBinary(const char* assetRoot, const char* cookedR
                     {
                         const AnimationStateMachineSerializationData* animStateMachineData = static_cast<AnimationStateMachineSerializationData*>(data.get());
                         
+                        if (animStateMachineData->defaultState == "")
+                        {
+                            printf("AnimationStateMachine component DefaultState must be specified.\n");
+                            return false;
+                        }
+                        path::WritePath(animStateMachineData->defaultState, out);
+
                         uint32 numStates = static_cast<uint32>(animStateMachineData->states.size());
                         out.write(reinterpret_cast<const char*>(&numStates), sizeof(numStates));
 

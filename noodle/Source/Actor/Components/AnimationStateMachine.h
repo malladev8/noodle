@@ -74,6 +74,8 @@ private:
 	std::unordered_map<std::string, AnimationState> m_AnimationStates;
 	std::string m_CurrentStateKey = "";
 
+	std::string m_DefaultStateKey = "";
+
 	std::unordered_map<std::string, uint32> m_ConditionStateLookup;
 	std::vector<ConditionState> m_ConditionStates;
 

@@ -5,6 +5,7 @@
 #include "Physics.h"
 #include "SpriteAnimator.h"
 
+#include <algorithm>
 #include <fstream>
 
 const eComponentId AnimationStateMachine::COMPONENT_ID = eComponentId::COMPONENT_ANIMATION_STATE_MACHINE;
@@ -13,7 +14,7 @@ void AnimationStateMachine::PostInit(const WorldContext& worldContext)
 {
 	m_SpriteAnimator = GetOwner()->GetComponent<SpriteAnimator>();
 	N_ASSERT(m_SpriteAnimator != nullptr, "SpriteAnimator component is required for AnimationStateMachine.");
-	m_CurrentStateKey = m_SpriteAnimator->GetCurrentClipKey();
+	m_CurrentStateKey = m_DefaultStateKey;
 }
 
 void AnimationStateMachine::Update(float32 deltaSeconds)
@@ -74,13 +75,10 @@ void AnimationStateMachine::SetTrigger(const std::string& name)
 
 void AnimationStateMachine::OnClipFinished(const std::string& clipKey)
 {
-	if (m_PlayingMontage)
+	if (m_PlayingMontage && clipKey == m_ActiveMontageClip)
 	{
-		if (clipKey == m_ActiveMontageClip)
-		{
-			m_PlayingMontage = false;
-			m_ActiveMontageClip = "";
-		}
+		m_PlayingMontage = false;
+		m_ActiveMontageClip = "";
 	}
 }
 
@@ -100,6 +98,8 @@ void AnimationStateMachine::PlayMontage(const std::string& montageKey)
 
 bool AnimationStateMachine::Init(std::ifstream& bin, EngineContext& engineContext)
 {
+	m_DefaultStateKey = path::ReadFilePath(bin);
+
 	uint32 numStates = 0;
 	bin.read(reinterpret_cast<char*>(&numStates), sizeof(numStates));
 
@@ -144,6 +144,12 @@ bool AnimationStateMachine::Init(std::ifstream& bin, EngineContext& engineContex
 			}
 			state.transitions.push_back(transition);
 		}
+
+		std::sort(state.transitions.begin(), state.transitions.end(), [](const AnimationTransition& a, const AnimationTransition& b)
+			{
+				return a.priority > b.priority;
+			});
+
 		m_AnimationStates.insert({ state.name, state });
 	}
 

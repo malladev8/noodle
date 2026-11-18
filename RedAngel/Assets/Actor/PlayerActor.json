@@ -39,6 +39,7 @@
 		},
 		{
 			"Type": "AnimationStateMachine",
+			"DefaultState": "Idle",
 			"States": 
 			[
 				{
