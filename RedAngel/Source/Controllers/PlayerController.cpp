@@ -3,6 +3,7 @@
 #include "NoodleEngine.h"
 #include "NoodleInput.h"
 #include "Actor/Actor.h"
+#include "Actor/Components/AnimationStateMachine.h"
 #include "Actor/Components/Movement.h"
 #include "Actor/Components/Sprite.h"
 
@@ -14,6 +15,7 @@ void PlayerController::Update(float deltaSeconds)
 {
 	const InputManager& inputManager = Engine::Get().GetContext().inputManager;
 
+	// Movement testing
 	vec3 movementInput;
 	if (inputManager.IsKeyDown(eKey::W))
 	{
@@ -61,6 +63,16 @@ void PlayerController::Update(float deltaSeconds)
 	{
 		movementComponent->SetMoveInput(movementInput);
 		movementComponent->SetJump(jump);
+	}
+
+	// Attack testing
+	if (inputManager.WasKeyPressed(eKey::MOUSE_L))
+	{
+		AnimationStateMachine* animStateMachine = m_PossessedActor->GetComponent<AnimationStateMachine>();
+		if (animStateMachine)
+		{
+			animStateMachine->PlayMontage("Attack_1");
+		}
 	}
 }
 

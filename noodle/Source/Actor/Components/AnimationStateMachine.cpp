@@ -18,6 +18,11 @@ void AnimationStateMachine::PostInit(const WorldContext& worldContext)
 
 void AnimationStateMachine::Update(float32 deltaSeconds)
 {
+	if (m_PlayingMontage)
+	{
+		return;
+	}
+
 	// Update Transition Condition Values for Evaluation
 	Physics* physics = m_Owner->GetComponent<Physics>();
 
@@ -65,6 +70,32 @@ void AnimationStateMachine::SetTrigger(const std::string& name)
 		ConditionState& conditionState = m_ConditionStates[m_ConditionStateLookup[name]];
 		conditionState.triggerValue = true;
 	}
+}
+
+void AnimationStateMachine::OnClipFinished(const std::string& clipKey)
+{
+	if (m_PlayingMontage)
+	{
+		if (clipKey == m_ActiveMontageClip)
+		{
+			m_PlayingMontage = false;
+			m_ActiveMontageClip = "";
+		}
+	}
+}
+
+void AnimationStateMachine::PlayMontage(const std::string& montageKey)
+{
+	if (m_PlayingMontage)
+	{
+		N_LOG("Cannot start new montage %s while another is playing. Current active montage: %s", m_ActiveMontageClip, montageKey);
+		return;
+	}
+
+	m_PlayingMontage = true;
+	m_ActiveMontageClip = montageKey;
+	N_ASSERT(m_SpriteAnimator != nullptr, "SpriteAnimator component is required for AnimationStateMachine.");
+	m_SpriteAnimator->PlayClip(m_ActiveMontageClip);
 }
 
 bool AnimationStateMachine::Init(std::ifstream& bin, EngineContext& engineContext)

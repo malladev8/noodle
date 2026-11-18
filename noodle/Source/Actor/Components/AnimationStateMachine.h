@@ -66,6 +66,9 @@ public:
 
 	const std::string& GetCurrentAnimationStateName() const { return m_CurrentStateKey; }
 
+	void OnClipFinished(const std::string& clipKey);
+	void PlayMontage(const std::string& montageKey);
+
 protected:
 private:
 	std::unordered_map<std::string, AnimationState> m_AnimationStates;
@@ -75,6 +78,9 @@ private:
 	std::vector<ConditionState> m_ConditionStates;
 
 	class SpriteAnimator* m_SpriteAnimator = nullptr;
+
+	std::string m_ActiveMontageClip = "";
+	bool m_PlayingMontage = false;
 
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 	std::string EvaluateTransitions(const AnimationState& state) const;

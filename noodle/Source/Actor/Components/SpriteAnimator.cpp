@@ -2,6 +2,7 @@
 #include "SpriteAnimator.h"
 
 #include "Actor/Actor.h"
+#include "Actor/Components/AnimationStateMachine.h"
 #include "Actor/Components/Sprite.h"
 #include "Resource/ResourceTypes.h"
 
@@ -61,7 +62,8 @@ void SpriteAnimator::PlayClip(const std::string& clipName)
 {
 	m_CurrentClipKey = clipName;
 	m_FrameTime = 0.0f;
-	m_CurrentFrameIndex = m_AnimationClipMap[clipName].startFrame;
+	N_ASSERT(m_AnimationClipMap.contains(m_CurrentClipKey), "Sprite Animator Clip Map does not contain clip key.");
+	m_CurrentFrameIndex = m_AnimationClipMap[m_CurrentClipKey].startFrame;
 	m_IsFinished = false;
 }
 
@@ -109,5 +111,15 @@ void SpriteAnimator::AdvanceFrame(const SpriteAnimationClip& clip)
 	{
 		m_CurrentFrameIndex = clip.endFrame - 1;
 		m_IsFinished = true;
+		OnClipFinished();
+	}
+}
+
+void SpriteAnimator::OnClipFinished() const
+{
+	AnimationStateMachine* animStateMachine = GetOwner()->GetComponent<AnimationStateMachine>();
+	if (animStateMachine)
+	{
+		animStateMachine->OnClipFinished(m_CurrentClipKey);
 	}
 }

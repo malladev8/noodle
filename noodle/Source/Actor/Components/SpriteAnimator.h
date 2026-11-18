@@ -30,4 +30,5 @@ private:
 
 	virtual bool Init(std::ifstream& bin, EngineContext& engineContext) override;
 	void AdvanceFrame(const SpriteAnimationClip& clip);
+	void OnClipFinished() const;
 };
