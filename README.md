@@ -14,6 +14,7 @@ Current Features:
 - Debug Rendering
 - 2D Dynamic/Static AABB collision detection
 - Gravity and Jumping
+- Animation State Machine and Montages
 
 To Build and Run
 - Build the RA.slnx solution in the debug configuration in Visual Studio 2026
